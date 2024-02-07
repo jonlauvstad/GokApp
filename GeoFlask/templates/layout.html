@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/static/styles.css" rel="stylesheet">
+    <title>{% block title %}{% endblock %}</title>
+    <!--<link rel="icon" type="image/x-icon" href="static/images/sunflower.ico">-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            if (screenWidth > 550) {
+                document.getElementById("userBottomLabel").style.display = "none";
+            }
+            else{
+                document.getElementById('userNavLabel').style.display = "none";
+                document.getElementById("attendanceNav").style.display = "none";
+            }
+        });
+
+    </script>
+</head>
+<body>
+    <nav>
+        {% if user %}
+            <!--<a href="/" style="text-decoration: none">-->
+                <h1 style="text-align: center; font-weight: normal;display: inline;" class="logoH1" id="navH1">
+                    <span style="text-decoration: overline underline;text-underline-offset: 10px;font-size: 1em;">GA</span>
+                    <span style="font-size: 0.5em;position: relative; top:-3px;">GOKSTAD AKADEMIET</span>
+                </h1>
+            <!--</a>-->
+            <a href="/">Hjem</a>
+            <a href="/logout">Logg ut</a>   <!--class="right"-->
+            {% if user.role in ["admin", "teacher"] %}
+                <a href="/attendance" id="attendanceNav">Oppmøte</a>
+            {% endif %}
+            <label id="userNavLabel" style="float: right;padding-right: 100px;">Bruker: <label style="color: limegreen">{{user.gokstadmail}}</label></label>
+        {% endif %}
+        <br>
+    </nav>
+    <main>
+        {% block main %}{% endblock %}
+    </main>
+    <div id="userBottomLabel" style="z-index: 2; background: black; color: white; width: 88%; text-align: center; padding:2px;border-radius: 6px;">
+        {% if user %}
+            Logget inn som <label style="color: yellow;">{{user.gokstadmail}}</label>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+
+<!--        # id, examId, venueId, startTime, endTime, category, durationHours, courseImplementationId,-->
+<!--        # courseImplementationName, courseImplementationCode, venueName, location,-->
+<!--        # courseImplementationLink, venueLink, link-->
+
+<h1 id="singleH1" style="text-align: center">EKSAMEN</h1>
+<div class="singleDiv">
+    <table class="singleTable">
+        <tr>
+            <td class="singleBoldTd">Id:</td><td>{{examImp.id}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringsid:</td>
+            <td><a href="{{examImp.courseImplementationLink}}">{{examImp.courseImplementationId}}</a></td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringskode:</td><td>{{examImp.courseImplementationCode}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringsnavn:</td><td>{{examImp.courseImplementationName}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Type:</td><td>{{examImp.category}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Start:</td><td>{{examImp.start_string}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Slutt:</td><td>{{examImp.end_string}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Varighet:</td><td>{{examImp.duration}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Rom:</td>
+            <td><a href="{{examImp.venueLink}}">{{examImp.venueName}}</a></td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Sted:</td><td>{{examImp.location}}</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

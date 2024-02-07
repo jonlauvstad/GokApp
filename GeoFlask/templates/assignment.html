@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}Arbeidskrav{% endblock %}
+
+{% block main %}
+
+<h1 id="singleH1" style="text-align: center">ARBEIDSKRAV</h1>
+<div class="singleDiv">
+    <table class="singleTable">
+        <tr>
+            <td class="singleBoldTd">Id:</td><td>{{assignment.id}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Navn:</td><td>{{assignment.name}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Beskrivelse:</td><td>{{assignment.description}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Frist:</td><td>{{assignment.datetime_string}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringsid:</td>
+            <td><a href="{{assignment.courseImplementationLink}}">{{assignment.courseImplementationId}}</a></td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringskode:</td><td>{{assignment.courseImplementationCode}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringsnavn:</td><td>{{assignment.courseImplementationName}}</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

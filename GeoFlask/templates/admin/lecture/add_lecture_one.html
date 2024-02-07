@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}NewLecture{% endblock %}
+
+{% block main %}
+<script>
+    // document.addEventListener('DOMContentLoaded', function(){
+    //     var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    //     if (screenWidth > 550) {
+    //         document.getElementById("indexAttendanceA").style.display = "none";
+    //     }
+    //     else{
+    //
+    //     }
+    //
+    // });
+</script>
+<h1 class="bigHeadlineH1">
+    NY FORLESNING
+</h1>
+<div class="singleDiv">
+    <form>
+        <table class="singleTable">
+            <tr>
+                <td>Kurs-gjennomføring:</td>
+                <td>
+                    <select name="courseId">
+                        {% for cimp in courseImps %}
+                        <option data-couseimpid="{{cimp.id}}">{{cimp.id}} {{cimp.code}} {{cimp.name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Tema:</td>
+                <td><input name="theme"></td>
+            </tr>
+            <tr>
+                <td>Beskrivelse:</td>
+                <td><textarea name="description"></textarea></td>
+            </tr>
+            <tr>
+                <td>Start-tidspunkt:</td>
+                <td><input type="datetime-local" name="start"></td>
+            </tr>
+            <tr>
+                <td>Slutt-tidspunkt:</td>
+                <td><input type="datetime-local" name="end"></td>
+            </tr>
+            <tr>
+                <td id="empytTd"></td>
+                <td id="buttonTd"><button class="styleButt">Registrér</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+{% endblock %}

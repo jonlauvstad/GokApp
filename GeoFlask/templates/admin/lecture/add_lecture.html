@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}NewLecture{% endblock %}
+
+{% block main %}
+
+<h1 class="bigHeadlineH1">
+    NY FORLESNING
+</h1>
+
+<div>
+    <a class="menuDiv" style="background: orangered; display: block;text-decoration: none" href="/add_lecture_one">
+        <div><!--style="margin-bottom: -20px;"-->REGISTRÉRE ÉN FORLESNING<!--<BR>--></div>
+    </a>
+
+    <a class="menuDiv" style="background: green;" href="/add_lecture_multiple">
+        <div><!-- style="margin-bottom: -20px;"-->REGISTRÉRE MANGE <span class="adHocFontSize1">FORELESNINGER</span><!--<BR>--></div>
+    </a>
+</div>
+
+{% endblock %}

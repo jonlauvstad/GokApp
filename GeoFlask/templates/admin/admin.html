@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block main %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        if (screenWidth > 550) {
+            document.getElementById("indexAttendanceA").style.display = "none";
+        }
+        else{
+
+        }
+
+});
+</script>
+<h1 class="bigHeadlineH1">
+    ADMINISTRASJON
+</h1>
+
+<div>
+    <a class="menuDiv" style="background: orangered; display: block;text-decoration: none" href="/admin_lecture">
+        <div><!--style="margin-bottom: -20px;"-->FORELESNING<!--<BR>--></div>
+        <label class="menuLabel">🧑‍🏫</label>
+    </a>
+
+    <a class="menuDiv" style="background: green;" href="/admin_venue">
+        <div><!-- style="margin-bottom: -20px;"-->ROM<!--<BR>--></div>
+        <label class="menuLabel">🚪</label>
+    </a>
+</div>
+
+{% endblock %}

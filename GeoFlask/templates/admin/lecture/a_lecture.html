@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}LectureAdmin{% endblock %}
+
+{% block main %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        if (screenWidth > 550) {
+            document.getElementById("indexAttendanceA").style.display = "none";
+        }
+        else{
+
+        }
+
+});
+</script>
+<h1 class="bigHeadlineH1">
+    FORLESNINGER
+</h1>
+
+<div>
+    <a class="menuDiv" style="background: orangered; display: block;text-decoration: none" href="/add_lecture">
+        <div><!--style="margin-bottom: -20px;"-->REGISTRÉRE<!--<BR>--></div>
+    </a>
+
+    <a class="menuDiv" style="background: green;" href="/update_lecture">
+        <div><!-- style="margin-bottom: -20px;"-->ENDRE<!--<BR>--></div>
+    </a>
+
+    <a class="menuDiv" style="background: purple;" href="/delete_lecture">
+        <div><!-- style="margin-bottom: -20px;"-->SLETTE<!--<BR>--></div>
+    </a>
+
+    <a class="menuDiv" style="background: palevioletred;" href="/get_lecture">
+        <div><!-- style="margin-bottom: -20px;"-->SØKE<!--<BR>--></div>
+    </a>
+</div>
+
+{% endblock %}

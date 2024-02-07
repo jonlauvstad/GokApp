@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}Error{% endblock %}
+
+{% block main %}
+<h1 style="text-align: center">FEILMELDING</h1>
+<div id="errorDiv">
+    {% if status == 500 %}
+        <h1 class="errEmoji">😳</h1><br>
+        <h1 class="errText">SORRY, DETTE VAR PINLIG.<br>EN {{status}} BETYR AT DET VAR VÅR FEIL...</h1>
+    {% elif status > 399 and status < 500 %}
+        <h1 class="errEmoji">🤬</h1><br>
+        <h1 class="errText">DET ÆKKE MEG, DET ER DEG!<br>EN {{status}} HER BETYR AT DET ER DIN FEIL...</h1>
+    {% endif %}
+    <br>
+    <h1 class="errMsg">{{msg}}</h1>
+</div>
+
+
+{% endblock %}

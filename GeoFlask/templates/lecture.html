@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}Forelesning{% endblock %}
+
+{% block main %}
+
+<!--id, courseImplementationId, theme, description, startTime, endTime,-->
+<!--courseImplementationLink, link, duration, courseImplementationName, courseImplementationCode-->
+
+<h1 id="singleH1" style="text-align: center">FORELESNING</h1>
+<div class="singleDiv">
+    <table class="singleTable">
+        <tr>
+            <td class="singleBoldTd">Id:</td><td>{{lecture.id}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Tema:</td><td>{{lecture.theme}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Beskrivelse:</td><td>{{lecture.description}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Start:</td><td>{{lecture.start_string}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Slutt:</td><td>{{lecture.end_string}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Varighet:</td><td>{{lecture.duration}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Rom:</td><td>{{lecture.venueNames}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Lærer(e):</td><td>{{lecture.teacherNames}}</td>
+        </tr>
+
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringsid:</td>
+            <td><a href="{{lecture.courseImplementationLink}}">{{lecture.courseImplementationId}}</a></td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringskode:</td><td>{{lecture.courseImplementationCode}}</td>
+        </tr>
+        <tr>
+            <td class="singleBoldTd">Kursgjennom-føringsnavn:</td><td>{{lecture.courseImplementationName}}</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,234 @@
+nav{
+    margin-left: 100px;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+}
+@media screen and (max-width: 550px){
+    nav{
+        margin-left: 15px;
+        margin-right: 15px;
+        font-size: 1em;
+    }
+}
+nav a, nav h1{
+    margin-right:20px;
+}
+@media screen and(min-width: 550px){
+    #navH1{
+        font-size: 1.2em;
+        vertical-align: top;
+    }
+}
+/*@media screen and(min-width: 550px){*/
+/*    #userBottomLabel{*/
+/*        display: none;*/
+/*    }*/
+/*}*/
+.right{
+    float:right;
+}
+.logoAbbrev{
+    text-decoration: overline underline;
+    text-underline-offset: 10px;
+    font-size: 2.5em;
+}
+.logoText{
+    position: relative;
+    top: -7px;
+}
+.logoH1{
+    margin-bottom: 35px;
+    margin-top: 30px;
+    vertical-align: top;
+    font-size:20px;
+}
+@media screen and (min-width: 550px){
+    .logoH1{
+        font-size: 30px;
+    }
+}
+.menuDiv{
+    color: white;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    width: 36%;
+    text-align: center;
+    font-size: 44px;    /* var 48px */
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 14px;      /* var 20px */
+
+    display: block;
+    text-decoration: none;
+}
+@media screen and (max-width: 550px){
+    .menuDiv{
+        width: 80%;
+        font-size: 34px;
+    }
+}
+.menuLabel{
+    font-size: 130px;
+}
+@media screen and (max-width: 550px){
+    .menuLabel{
+        font-size: 80px;
+    }
+}
+#loginDiv{
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+}
+#loginDiv td{
+    font-size: 1.5em;
+}
+#loginDiv input, button{
+    font-size: 28px;
+    width: 100%;
+}
+@media screen and (max-width: 550px){
+    #loginDiv{
+        width: 80%;
+        margin-top: 70px;
+    }
+}
+
+#userBottomLabel{
+    position: absolute;
+    bottom: 10px;
+    /*margin-left: 32%;*/
+}
+@media screen and (max-width:550px){
+    #userBottomLabel{
+        font-size: 0.7em;
+        margin-left: 15px;
+    }
+}
+.calMobDayTr{
+
+}
+.calMobDayTab td{
+    vertical-align: top;
+}
+.calendarMobileDayDiv{
+    border-bottom: 1px solid black;
+    min-height: 3em;
+}
+
+#calendarMobileDiv{
+    max-height: 78%;
+    overflow-y: auto;
+}
+#calendarPcDiv{
+    width: 91%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 80%;
+    overflow-y: auto;
+}
+.calendarPcDayDiv{
+    width: 13%;
+    height: 49%;
+    border: 1px solid black;
+    display: inline-block;
+    overflow-y: auto;
+}
+.calPcDayTab{
+    overflow-y: auto;
+}
+#calendarH1{
+    margin-left:4.5%;
+    position: relative;
+    margin-bottom: 15px;
+}
+@media screen and (max-width:550px){
+    #calendarH1{
+        text-align: center;
+        margin-bottom: 5px;
+    }
+}
+.singleDiv{
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1em;
+}
+.singleDiv input, .singleDiv textarea, .singleDiv select{
+    width: 400px;
+}
+.singleTable td{
+    padding-right: 15px;
+}
+@media screen and (max-width:550px){
+    .singleDiv{
+        width: 96%;
+        font-size: medium;
+    }
+    .singleTable input, .singleTable textarea, .singleTable select{
+        width: 100%;
+        font-size: large;
+    }
+    #buttonTd{
+        padding-top: 30px;
+    }
+}
+@media screen and (min-width: 550px){
+    .singleTable{
+        font-size: 1.8em;
+    }
+    .singleDiv input, .singleDiv textarea, .singleDiv select {
+        font-size: large;
+    }
+}
+
+.singleBoldTd{
+    font-weight: bold;
+    padding-right: 15px;
+}
+@media screen and (max-width: 550px){
+    .singleBoldTd{
+        padding-right: 4px;
+    }
+}
+.errEmoji{
+    font-size: 130px;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 0px;
+}
+
+@media screen and (max-width: 550px){
+    .errEmoji{
+        font-size: 100px;
+    }
+}
+.errText{
+    font-size: 36px;
+    text-align: center;
+    color: red;
+    margin-bottom: 0px;
+}
+
+.errMsg{
+    font-size: 24px;
+    text-align: center;
+}
+.bigHeadlineH1{
+    text-align: center;
+    font-weight: bold;
+    color: green;
+}
+@media screen and (max-width: 550px){
+    .adHocFontSize1{
+        font-size: 0.9em;
+    }
+}
+.styleButt{
+    border-radius: 5px;
+    background: green;
+    color: white;
+}

@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}Kalender{% endblock %}
+
+{% block main %}
+<script src="../static/JS/toEvent.js"></script>
+
+<h1 id="calendarH1"> <!-- style="margin-left:4.5%; position: relative; margin-bottom: 15px;" -->
+    <div style="display: inline;position: relative; top:10px;" id="calendarPcOptionsDiv">
+        <label style="float: left; font-weight: normal;font-size: medium">Fra og med:</label>
+        <input type="date" style="float: left;margin-left: 6px; margin-right: 20px;" value="{{today}}" id="startDate">
+        <label style="float: left; font-weight: normal;font-size: medium">Antall dager:</label>
+        <input type="number"  value="{{num_days}}" style="float: left; width: 60px;margin-left: 6px; margin-right: 20px;" id="number">
+        <button type="submit" style="float: left; font-size: medium; width:80px;" onclick="getDays('startDate', 'number')">Send</button>
+    </div>
+        <label style="padding-left: 140px;" id="calPcLabel">KALENDER</label>
+</h1>
+
+<div id="calendarMobileOptionsDiv" style="margin-bottom: 10px;">
+    <label style="font-size: small">Fra:</label>
+    <input type="date" style="max-width: 100px;" value="{{today}}" id="mobileStart">
+    <label style="font-size: small">Ant. dager:</label>
+    <input type="number" style="max-width: 50px;" value="{{num_days}}" id="mobileNumber">
+    <button style="font-size: small; max-width: 40px;padding: 1px;" onclick="getDays('mobileStart', 'mobileNumber')">Send</button>
+</div>
+
+<div id="calendarMobileDiv" style="border-top: 1px solid black;">
+    {% for day in days %}
+        <div class="calendarMobileDayDiv" data-weekday="{{day.weekday}}">
+            <div><label style="font-weight: bold;">{{day.datestring}}</label>
+                <table class="calMobDayTab">
+                    {% for event in day.events %}
+                    <tr class="calMobDayTr">
+                        <td>{{event.strftime}}</td>
+                        <td>{{event.type}}</td>
+<!--                        <td><a href="/{{event.type}}/{{event.underlyingId}}">{{event.underlyingId}}</a></td>-->
+                        <td><a href="{{event.link}}">{{event.underlyingId}}</a></td>
+                        <td>{{event.courseImpName}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div id="calendarPcDiv">
+    {% for day in days %}
+        <div class="calendarPcDayDiv" data-weekday="{{day.weekday}}">
+            <label style="font-weight: bold;">{{day.datestring}}</label>
+            <table class="calPcDayTab">
+                    {% for event in day.events %}
+                    <tr class="calMobDayTr">
+                        <td style="vertical-align: top;">{{event.strftime}}</td>
+<!--                        <td><a href="/{{event.type}}/{{event.underlyingId}}">{{event.type}} {{event.underlyingId}}</a><br>{{event.courseImpName}}</td>-->
+                        <td><a href="{{event.link}}">{{event.type}} {{event.underlyingId}}</a><br>{{event.courseImpName}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
