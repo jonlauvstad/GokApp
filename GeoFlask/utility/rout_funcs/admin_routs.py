@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, redirect, render_template, request, session
 from ..config import configuration
 
@@ -24,6 +26,8 @@ def add_lecture_one_function():
 
     url_ext = f"courseImplementation"
     url = URLpre + url_ext
+    now = datetime.datetime.now().isoformat()
+    url += f"?endDate={now}"
 
     headers = {"Authorization": f"Bearer {session['token']}"}
     response = requests.get(url, verify=False, headers=headers)
