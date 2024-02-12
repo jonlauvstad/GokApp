@@ -48,6 +48,16 @@
                 <td><input type="datetime-local" name="end"></td>
             </tr>
             <tr>
+                <td>Rom:</td>
+                <td>
+                    <select name="venueId">
+                        {% for venue in venues %}
+                        <option data-venueid="{{venue.id}}">{{venue.id}} {{venue.name}} {{venue.locationName}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td id="empytTd"></td>
                 <td id="buttonTd"><button class="styleButt">Registrér</button></td>
             </tr>
