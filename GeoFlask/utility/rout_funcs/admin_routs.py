@@ -27,7 +27,7 @@ def add_lecture_one_function():
     url_ext = f"courseImplementation"
     url = URLpre + url_ext
     now = datetime.datetime.now().isoformat()
-    url += f"?endDate={now}"
+    url += f"?endDate={now}&userRole=Balle"
 
     headers = {"Authorization": f"Bearer {session['token']}"}
     response = requests.get(url, verify=False, headers=headers)
