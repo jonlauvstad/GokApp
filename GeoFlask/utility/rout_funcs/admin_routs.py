@@ -40,10 +40,8 @@ def add_lecture_one_function():
         response2 = requests.get(url2, verify=False, headers=headers)
         if response2.ok:
             as_lOfDicts_2 = response2.json()
-        # as_lOfDicts_2 = []
 
             return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2)
-        print(f"NOT OK!!! {url2} {response2.status_code}")
-        print(url)
+
     msg = f"Statuskode: {response.status_code if not response.ok else response2.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))

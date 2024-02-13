@@ -232,3 +232,13 @@ nav a, nav h1{
     background: green;
     color: white;
 }
+#roomCheckBox{
+    width: 22px;
+    height: 22px;
+}
+@media screen and (max-width: 550px){
+    #roomCheckBox{
+        width: 14px;
+        height: 14px;
+    }
+}

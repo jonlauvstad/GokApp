@@ -60,7 +60,7 @@
             <tr>
                 <td>
                     Book rom:
-                    <input type="checkbox" onchange="showBookRoom()" style="width: 22px; height: 22px;"></td>
+                    <input type="checkbox" onchange="showBookRoom()" id="roomCheckBox"></td>
                 <td>
                     <select name="venueId" id="venueSelect" style="visibility: hidden">
                         {% for venue in venues %}
@@ -70,8 +70,8 @@
                 </td>
             </tr>
             <tr>
-                <td id="empytTd"></td>
-                <td id="buttonTd"><button class="styleButt">Registrér</button></td>
+                <!--<td id="empytTd"></td>-->
+                <td id="buttonTd" colspan="2"><button class="styleButt">Registrér</button></td>
             </tr>
         </table>
     </form>
