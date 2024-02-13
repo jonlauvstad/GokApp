@@ -14,6 +14,16 @@
     //     }
     //
     // });
+    function showBookRoom(){
+        const roomSelect = document.getElementById("venueSelect");
+        const visible = roomSelect.style.visibility;
+        if(visible == 'hidden'){
+            roomSelect.style.visibility = "visible";
+        }
+        else{
+            roomSelect.style.visibility = "hidden";
+        }
+    }
 </script>
 <h1 class="bigHeadlineH1">
     NY FORLESNING
@@ -48,9 +58,11 @@
                 <td><input type="datetime-local" name="end"></td>
             </tr>
             <tr>
-                <td>Rom:</td>
                 <td>
-                    <select name="venueId">
+                    Book rom:
+                    <input type="checkbox" onchange="showBookRoom()" style="width: 22px; height: 22px;"></td>
+                <td>
+                    <select name="venueId" id="venueSelect" style="visibility: hidden">
                         {% for venue in venues %}
                         <option data-venueid="{{venue.id}}">{{venue.id}} {{venue.name}} {{venue.locationName}}</option>
                         {% endfor %}
