@@ -95,6 +95,10 @@ def add_lecture():
 def add_lecture_one():
     return adm_routs.add_lecture_one_function()
 
+@app.route("/conf_lecture_one", methods=["POST"])
+@login_required(roles=["teacher", "admin"])
+def conf_lecture_one():
+    return adm_routs.conf_lecture_one_function()
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -152,13 +152,16 @@ nav a, nav h1{
     }
 }
 .singleDiv{
-    width: 40%;
+    width: 45%;
     margin-left: auto;
     margin-right: auto;
     font-size: 1em;
 }
 .singleDiv input, .singleDiv textarea, .singleDiv select{
     width: 400px;
+}
+.singleDiv input, .singleDiv textarea{
+    padding-left: 6px;
 }
 .singleTable td{
     padding-right: 15px;
@@ -241,4 +244,10 @@ nav a, nav h1{
         width: 14px;
         height: 14px;
     }
+}
+.colorRed{
+    color: red;
+}
+.colorGreen{
+    color: green;
 }
