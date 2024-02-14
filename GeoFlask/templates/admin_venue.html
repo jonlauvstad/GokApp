@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Venue Calendar{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h2>Venues and Bookings</h2>
+    {% if days %}
+    <div class="calendar-container">
+        {% for day in days %}
+        <div class="calendarPcDayDiv">
+            <h4>{{ day.date.strftime('%Y-%m-%d') }}</h4>
+            {% for event in day.events %}
+            <div class="event">
+                <span>{{ event.lectureName or event.eventName }}</span> in <span>{{ event.venueName }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Capacity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venue in venues %}
+            <tr>
+                <td>{{ venue.name }}</td>
+                <td>{{ venue.capacity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
