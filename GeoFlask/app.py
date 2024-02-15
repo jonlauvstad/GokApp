@@ -60,7 +60,7 @@ def calendar():
 def assignment_id(id):
     return ass_routs.assignment_id_function(id)
 
-@app.route("/Lecture/<int:id>")
+@app.route("/Lecture/<int:id>", methods=["get", "post"])
 @login_required(roles=None)
 def lecture_id(id):
     return lec_routs.lecture_id_function(id)

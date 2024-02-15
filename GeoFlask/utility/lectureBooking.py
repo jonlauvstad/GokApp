@@ -2,7 +2,7 @@ from dateutil import parser
 
 class LectureBooking:
     def __init__(self, lectureId, courseImplementationCode, numStudents, venueCapacity, venueName, links, success, message,
-                 startTime, endTime, room, roomString):
+                 startTime, endTime, room, roomString, lectureLink):
         self.lectureId = lectureId
         self.courseImplementationCode = courseImplementationCode
         self.numStudents = numStudents
@@ -15,3 +15,4 @@ class LectureBooking:
         self.endTime = parser.parse(endTime).strftime("%d.%b.%Y %H:%M")
         self.room = room
         self.roomString = roomString
+        self.lectureLink = lectureLink

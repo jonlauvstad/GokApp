@@ -83,7 +83,8 @@ def conf_lecture_one_function():
         print("SUCCESS:", dic['success'])
         lectBook = \
             LectureBooking(dic['lectureId'], dic['courseImplementationCode'],dic['numStudents'], dic['venueCapacity'], dic['venueName'],
-                           dic['links'], dic['success'], dic['message'], dic['startTime'], dic['endTime'], dic['room'], dic['roomString'])
+                           dic['links'], dic['success'], dic['message'], dic['startTime'], dic['endTime'], dic['room'], dic['roomString'],
+                           dic['lectureLink'])
     # lectBook = LectureBooking(20, 50, 90, "Fjorden", {"NewLecture": ""}, "true", "Vellykket osv")
         return render_template("admin/lecture/conf_lecture_one.html", user=user, lectBook=lectBook)
 

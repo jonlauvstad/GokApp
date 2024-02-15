@@ -2,7 +2,7 @@ from dateutil import parser
 
 class Lecture:
     def __init__(self, id, courseImplementationId, theme, description, startTime, endTime,
-                 courseImplementationLink, link, duration, courseImplementationName, courseImplementationCode, teacherNames, venueNames):
+                 courseImplementationLink, link, duration, courseImplementationName, courseImplementationCode, teacherNames, venueNames, venueIds):
         self.id = id
         self.courseImplementationId = courseImplementationId
         self.theme = theme
@@ -20,6 +20,6 @@ class Lecture:
         self.end_string = self.end_datetime.strftime("%d.%b %H:%M")
         self.teacherNames = teacherNames
         self.venueNames = venueNames
-
+        self.venueId = None if len(venueIds) == 0 else venueIds[0]
 
 
