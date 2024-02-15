@@ -28,53 +28,76 @@
     }
 </script>
 <h1 class="bigHeadlineH1">
-    NY FORLESNING
+    {% if put %} ENDRE FORELESNING #{{put}} {% else %} NY FORLESNING {% endif %}
 </h1>
 <div class="singleDiv">
-    <form action="/conf_lecture_one" method="post">
+    <form {% if put %} action="{{lecture.link}}" {% else %} action="/conf_lecture_one" {% endif %} method="post">
         <table class="singleTable">
             <tr>
                 <td>Kurs-gjennomføring:</td>
                 <td>
                     <select name="courseId">
                         {% for cimp in courseImps %}
-                        <option value="{{cimp.id}}">{{cimp.id}} {{cimp.code}} {{cimp.name}}</option>
+                        <option value="{{cimp.id}}" {% if put %} {% if cimp.id == lecture.courseImplementationId %} selected {% endif %} {% endif %}>
+                            {{cimp.id}} {{cimp.code}} {{cimp.name}}
+                        </option>
                         {% endfor %}
                     </select>
                 </td>
             </tr>
             <tr>
                 <td>Tema:</td>
-                <td><input name="theme" required placeholder="obligatorisk"></td>
+                <td><input name="theme" required placeholder="obligatorisk"
+                    {% if put %} value="{{lecture.theme}}" {% endif %}>
+                </td>
             </tr>
             <tr>
                 <td>Beskrivelse:</td>
-                <td><textarea name="description" placeholder="valgfri"></textarea></td>
+                <td><textarea name="description" placeholder="valgfri">
+                        {% if put %} {{lecture.description}} {% endif %}
+                    </textarea>
+                </td>
             </tr>
             <tr>
                 <td>Start-tidspunkt:</td>
-                <td><input type="datetime-local" name="start" required></td>
+                <td><input type="datetime-local" name="start" required
+                    {% if put %} value="{{lecture.startTime}}" {% endif %}>
+                </td>
             </tr>
             <tr>
                 <td>Slutt-tidspunkt:</td>
-                <td><input type="datetime-local" name="end" required></td>
+                <td><input type="datetime-local" name="end" required
+                    {% if put %} value="{{lecture.endTime}}" {% endif %}>
+                </td>
             </tr>
             <tr>
                 <td>
                     Book rom:
                     <input type="checkbox" onchange="showBookRoom()" id="roomCheckBox"></td>
                 <td>
-                    <select name="venueId" id="venueSelect" style="visibility: hidden">
+                    <select name="venueId" id="venueSelect"
+                        {% if put and lecture.venueId %} style="visibility: visible" {% else %} style="visibility: hidden" {% endif %}>
                         <option selected value="0"></option>
                         {% for venue in venues %}
-                        <option value="{{venue.id}}">{{venue.id}} {{venue.name}} {{venue.locationName}}</option>
+                        <option value="{{venue.id}}" {% if put and lecture.venueId== venue.id %} selected {% endif %}>
+                            {{venue.id}} {{venue.name}} {{venue.locationName}}
+                        </option>
                         {% endfor %}
                     </select>
                 </td>
             </tr>
+            <tr style="display:none">
+                <td>
+                    <input value="PUT_EXECUTE" name="to_do">
+                </td>
+            </tr>
             <tr>
                 <!--<td id="empytTd"></td>-->
-                <td id="buttonTd" colspan="2"><button class="styleButt" type="submit">Registrér</button></td>
+                {% if put %}
+                    <td class="buttonTd" colspan="2"><button class="styleButt" type="submit">Endre</button></td>
+                {% else %}
+                    <td class="buttonTd" colspan="2"><button class="styleButt" type="submit">Registrér</button></td>
+                {% endif %}
             </tr>
         </table>
     </form>

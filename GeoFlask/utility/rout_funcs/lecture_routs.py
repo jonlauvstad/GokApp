@@ -2,6 +2,7 @@ from flask import Flask, redirect, render_template, request, session
 from ..config import configuration
 import requests
 from ..lecture import Lecture
+from . import admin_routs
 
 URLpre = configuration["URLpre"]
 
@@ -14,7 +15,7 @@ def lecture_id_function(id):
 
     headers = {"Authorization": f"Bearer {session['token']}"}
     to_do = None
-    print("REQUEST:", request)
+    # print("REQUEST:", request)
 
     if (request.method == "GET"):
         response = requests.get(url, verify=False, headers=headers)
@@ -33,8 +34,8 @@ def lecture_id_function(id):
             response = requests.put(url, verify=False, headers=headers, json=data)
             # Håndtere response.ok
         else:
-            # Ny add_lecture_one med ferdigutfylte verdier og oppdatér istedet for ny
-            pass
+            # SKAL NÅ CALLLE add_lecture_one_function()
+            return admin_routs.add_lecture_one_function(put=id)    # put=int(to_do)
 
     if response.ok:
         as_dic = response.json()

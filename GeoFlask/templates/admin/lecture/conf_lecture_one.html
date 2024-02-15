@@ -84,7 +84,7 @@
                 <td class="paddTop15"><button class="redButt">✖ Slett siste </button></td>
             </form>
             <form action="{{lectBook.lectureLink}}" method="post">
-                <input style="display:none" value="PUT" name="to_do">
+                <input style="display:none" value="{{lectBook.lectureId}}" name="to_do">
                 <td class="paddTop15"><button class="orangeButt">✎ Endre siste </button></td>   <!-- ✐ 🖉 -->
             </form>
         </tr>
