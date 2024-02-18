@@ -3,6 +3,7 @@ from ..config import configuration
 import requests
 from ..lecture import Lecture
 from . import admin_routs
+from dateutil import parser
 
 URLpre = configuration["URLpre"]
 
@@ -28,9 +29,23 @@ def lecture_id_function(id):
             # Håndtere response.ok
         elif to_do == "PUT_EXECUTE":
             to_do = "ENDRET "
-            data = {
+            courseId = request.form.get("courseId")
+            theme = request.form.get("theme")
+            description = request.form.get("description")
+            start = request.form.get("start")
+            end = request.form.get("end")
+            venueId = request.form.get("venueId")
 
+            data = {
+                "Id": id,
+                "CourseImplementationId": courseId,
+                "Theme": theme,
+                "Description": description,
+                "StartTime": parser.parse(start).isoformat(),
+                "EndTime": end,
+                "VenueIds": [venueId]  # json.dumps([venueId])
             }
+            print("DATA:", data)
             response = requests.put(url, verify=False, headers=headers, json=data)
             # Håndtere response.ok
         else:

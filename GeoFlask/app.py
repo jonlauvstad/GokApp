@@ -65,10 +65,10 @@ def assignment_id(id):
 def lecture_id(id):
     return lec_routs.lecture_id_function(id)
 
-@app.route("/Lecture/<int:id>", methods=["post"])
-@login_required(roles=["teacher, admin"])
-def lecture_id_post(id):
-    return lec_routs.lecture_id_post_function(id)
+# @app.route("/Lecture/<int:id>", methods=["post"])
+# @login_required(roles=["teacher, admin"])
+# def lecture_id_post(id):
+#     return lec_routs.lecture_id_post_function(id)
 
 @app.route("/ExamImplementation/<int:id>")
 @login_required(roles=None)
