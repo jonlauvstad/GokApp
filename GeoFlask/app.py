@@ -10,7 +10,8 @@ import utility.rout_funcs.admin_routs as adm_routs
 import utility.rout_funcs.assignment_routs as ass_routs
 import utility.rout_funcs.lecture_routs as lec_routs
 import utility.rout_funcs.examImp_routs as exImp_routs
-import utility.rout_funcs.venue_routs as ven_routs
+import utility.rout_funcs.a_admin_venue_routs as ven_routs
+import utility.rout_funcs.a_student_resources_routs as stud_rescr
 
 urllib3.disable_warnings()
 
@@ -65,7 +66,12 @@ def calendar():
 @app.route("/admin_venue")
 @login_required(roles=["admin"])
 def admin_venue():
-    return ven_routs.get_venues()
+    return ven_routs.get_venues_and_events()
+
+@app.route("/StudentResources")
+@login_required(roles=None)
+def student_resources():
+    return stud_rescr.get_resources()
 # ------------------------------------------------------------------
 
 

@@ -1,0 +1,127 @@
+/* admin_venue_styles.css */
+
+.admin-venue-container {
+    width: 100%;
+    margin: auto;
+    padding: 20px;
+    font-size: 30px;
+    background-color: white;
+    background-image: conic-gradient(green, whitesmoke);
+}
+
+.admin-calendar-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+
+}
+
+.admin-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.admin-calendar-header h3 {
+    margin: 0;
+}
+
+.admin-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.admin-calendar-day {
+    padding: 10px;
+    background: #f0f0f0;
+    text-align: center;
+    border-radius: 5px;
+}
+
+
+
+
+
+
+.admin-event {
+    background-color: #eef;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.admin-venue-table {
+    width: 100%; /* Make the table span the full width of its container */
+    border-collapse: collapse; /* Remove space between borders */
+    margin: 20px 0; /* Add some margin for spacing around the table */
+    background-color: whitesmoke;
+}
+
+.admin-venue-table th, .admin-venue-table td {
+    border: 1px solid #ddd; /* Add border to each cell */
+    padding: 10px; /* Add padding inside each cell for spacing */
+    text-align: left; /* Align text to the left */
+}
+
+.admin-venue-table th {
+    background-color: #f2f2f2; /* Light grey background for header cells */
+    font-weight: bold; /* Make header text bold */
+}
+
+.admin-venue-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for rows */
+}
+
+
+.admin-venue-table, .calPcDayTab {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-venue-table th, .admin-venue-table td, .calPcDayTab th, .calPcDayTab td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.admin-venue-table th, .calPcDayTab th {
+    background-color: #f2f2f2;
+}
+
+.admin-venue-table tr:nth-child(even), .calPcDayTab tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+
+.admin-venue-event {
+    background-color: #f0f0f0; /* Light grey background */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light grey border */
+}
+
+.admin-venue-event span {
+    display: block; /* Make each span take up its own line */
+    margin-bottom: 5px;
+}
+
+.admin-venue-event span:last-child {
+    margin-bottom: 0; /* Remove bottom margin from the last span */
+}
+
+
+.event {
+    background-color: #f0f0f0; /* Light grey background */
+    border: 1px solid #ddd; /* Light grey border */
+    padding: 10px; /* Padding inside each event box */
+    margin-bottom: 5px; /* Space between events */
+    border-radius: 5px; /* Rounded corners for the event boxes */
+    font-size: 0.9em; /* Smaller font size for event text */
+}
+
