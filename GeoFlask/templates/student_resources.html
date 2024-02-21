@@ -11,14 +11,14 @@
 
 {% block main %}
 <div class="admin-venue-container">
-    <h1>Student Resources</h1>
+    <h1>Student Ressurser</h1>
     {% if resources %}
         <ul>
             {% for resource in resources %}
                 <li>
                     <h2>{{ resource.title }}</h2>
                     <p>{{ resource.description }}</p>
-                    <a href="{{ resource.url }}" target="_blank">Access Resource</a>
+                    <a href="{{ resource.url }}" target="_blank">Undervisnings-opptak</a>
                 </li>
             {% endfor %}
         </ul>
