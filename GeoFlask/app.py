@@ -80,15 +80,15 @@ def student_resources():
 def assignment_id(id):
     return ass_routs.assignment_id_function(id)
 
-@app.route("/Lecture/<int:id>")
+@app.route("/Lecture/<int:id>", methods=["get", "post"])
 @login_required(roles=None)
 def lecture_id(id):
     return lec_routs.lecture_id_function(id)
 
-@app.route("/Lecture/<int:id>", methods=["post"])
-@login_required(roles=["teacher, admin"])
-def lecture_id_post(id):
-    return lec_routs.lecture_id_post_function(id)
+# @app.route("/Lecture/<int:id>", methods=["post"])
+# @login_required(roles=["teacher, admin"])
+# def lecture_id_post(id):
+#     return lec_routs.lecture_id_post_function(id)
 
 @app.route("/ExamImplementation/<int:id>")
 @login_required(roles=None)
@@ -115,6 +115,10 @@ def add_lecture():
 def add_lecture_one():
     return adm_routs.add_lecture_one_function()
 
+@app.route("/conf_lecture_one", methods=["POST"])
+@login_required(roles=["teacher", "admin"])
+def conf_lecture_one():
+    return adm_routs.conf_lecture_one_function()
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}LectureConfirmation{% endblock %}
+
+{% block main %}
+<style>
+    .paddTop15{
+        padding-top: 15px;
+    }
+    .paddTop25{
+        padding-top: 25px;
+    }
+    td{
+        vertical-align: top;
+    }
+    #messageTd{
+        font-weight: bold;
+    }
+    #singleDiv{
+        width: 42%;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1em;
+    }
+    @media screen and (max-width:550px) {
+        #singleDiv {
+            width: 96%;
+            font-size: medium;
+        }
+    }
+</style>
+
+<!--<h1 class="bigHeadlineH1" style="text-align: left">NY-FORLESNING-BEKREFTELSE</h1>-->
+
+<div id="singleDiv">
+    <h1 class="bigHeadlineH1" style="text-align: left">NY-FORLESNING-BEKREFTELSE</h1>
+    <table class="singleTable">
+        <!--<tr>
+            <td>ForelesningsId:</td><td>{{lectBook.lectureId}}</td>
+        </tr>-->
+        <tr>
+            <td id="messageTd" {% if not lectBook.success %} class="colorRed" {% else %} class="colorGreen" {% endif %} colspan="2">{{lectBook.message|safe}}</td>
+        </tr>
+
+        {% if lectBook.success %}
+        <tr>
+            <td>ForelesningsId:</td><td>{{lectBook.lectureId}}</td>
+        </tr>
+        <tr>
+            <td>Kursgjennomføring:</td><td>{{lectBook.courseImplementationCode}}</td>
+        </tr>
+        <tr>
+            <td>Start:</td><td>{{lectBook.startTime}}</td>
+        </tr>
+        <tr>
+            <td>Slutt:</td><td>{{lectBook.endTime}}</td>
+        </tr>
+        <tr>
+            <td>Rom:</td><td>{{lectBook.roomString}}</td>
+        </tr>
+        <tr>
+            <td>Forelesning:</td><td><a href="{{lectBook.links.NewLecture}}">Link til forelesning</a></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2" class="paddTop15"><u>Blokkering(er):</u></td>
+        </tr>
+            {% if "VenueEvent" in lectBook.links %}
+            <tr>
+                <td>Event:</td><td><a href="{{lectBook.links.VenueEvent}}">Link til event</a></td>
+            </tr>
+            {% endif %}
+            {% if "TeacherLecture" in lectBook.links %}
+            <tr>
+                <td>Forelesning:</td><td><a href="{{lectBook.links.TeacherLecture}}">Link til forelesning</a></td>
+            </tr>
+            {% endif %}
+        {% endif %}
+
+        {% if lectBook.success %}
+        <tr>
+            <form action="{{lectBook.lectureLink}}" method="post">
+                <input style="display:none" value="DELETE" name="to_do">
+                <td class="paddTop15"><button class="redButt">✖ Slett siste </button></td>
+            </form>
+            <form action="{{lectBook.lectureLink}}" method="post">
+                <input style="display:none" value="{{lectBook.lectureId}}" name="to_do">
+                <td class="paddTop15"><button class="orangeButt">✎ Endre siste </button></td>   <!-- ✐ 🖉 -->
+            </form>
+        </tr>
+        {% endif %}
+        <tr>
+            <td colspan="2"  class="paddTop25"><a href="/add_lecture_one">Tilbake til ny forelesning </a></td>
+        </tr>
+    </table>
+</div>
+
+
+{% endblock %}

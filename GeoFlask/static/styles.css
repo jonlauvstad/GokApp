@@ -152,13 +152,16 @@ nav a, nav h1{
     }
 }
 .singleDiv{
-    width: 40%;
+    width: 45%;
     margin-left: auto;
     margin-right: auto;
     font-size: 1em;
 }
 .singleDiv input, .singleDiv textarea, .singleDiv select{
     width: 400px;
+}
+.singleDiv input, .singleDiv textarea{
+    padding-left: 6px;
 }
 .singleTable td{
     padding-right: 15px;
@@ -172,7 +175,7 @@ nav a, nav h1{
         width: 100%;
         font-size: large;
     }
-    #buttonTd{
+    .buttonTd{
         padding-top: 30px;
     }
 }
@@ -222,6 +225,11 @@ nav a, nav h1{
     font-weight: bold;
     color: green;
 }
+@media screen and (min-width: 550px){
+    .bigHeadlineH1{
+        width: 100%;
+    }
+}
 @media screen and (max-width: 550px){
     .adHocFontSize1{
         font-size: 0.9em;
@@ -236,3 +244,31 @@ nav a, nav h1{
 
 
 
+#roomCheckBox{
+    width: 22px;
+    height: 22px;
+}
+@media screen and (max-width: 550px){
+    #roomCheckBox{
+        width: 14px;
+        height: 14px;
+    }
+}
+.colorRed{
+    color: red;
+}
+.colorGreen{
+    color: green;
+}
+.redButt{
+    background: red;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.orangeButt{
+    background: orange;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+}

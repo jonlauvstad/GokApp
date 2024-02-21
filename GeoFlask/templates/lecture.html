@@ -7,7 +7,9 @@
 <!--id, courseImplementationId, theme, description, startTime, endTime,-->
 <!--courseImplementationLink, link, duration, courseImplementationName, courseImplementationCode-->
 
-<h1 id="singleH1" style="text-align: center">FORELESNING</h1>
+<h1 id="singleH1" style="text-align: center; {% if to_do %} color:red; {% endif %}">
+    {% if to_do %}{{to_do}}{% endif %}FORELESNING
+</h1>
 <div class="singleDiv">
     <table class="singleTable">
         <tr>
