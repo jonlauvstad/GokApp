@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <link href="/static/styles.css" rel="stylesheet">
+    <link href="/static/styles_venues.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}
+    Student Resources
+{% endblock %}
+
+{% block main %}
+<div class="admin-venue-container">
+    <h1>Student Ressurser</h1>
+    {% if resources %}
+        <ul>
+            {% for resource in resources %}
+                <li>
+                    <h2>{{ resource.title }}</h2>
+                    <p>{{ resource.description }}</p>
+                    <a href="{{ resource.url }}" target="_blank">Undervisnings-opptak</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No resources found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <link href="/static/styles.css" rel="stylesheet">
+    <link href="/static/styles_venues.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Admin Venue Calendar{% endblock %}
+
+{% block main %}
+<div class="admin-venue-container">
+    <h2>Venues and Bookings</h2>
+    <table class="admin-venue-table">
+        <thead>
+            <tr>
+                <th>Venue Name</th>
+                <th>Capacity</th>
+            </tr>
+        </thead>
+        <tbody>
+           {% for venue in venues %}
+            <tr>
+                <td>{{ venue.name }}</td>
+                <td>{{ venue.capacity }}</td>
+            </tr>
+           {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <div class="admin-calendar-container">
+    <div class="admin-calendar-header">
+        <h3 id="monthYear"></h3>
+    </div>
+    <div class="calendar-grid" id="calendarGrid">
+        <!-- Calendar days will be added here dynamically -->
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    const calendarGrid = document.getElementById('calendarGrid');
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        dayCell.textContent = i;
+        calendarGrid.appendChild(dayCell);
+    }
+});
+</script>
+{% endblock %}
+
