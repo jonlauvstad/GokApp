@@ -98,10 +98,23 @@ nav a, nav h1{
 }
 
 #userBottomLabel{
-    position: absolute;
+    position: fixed;
     bottom: 10px;
+    z-index: 2;
+    background: black;
+    color: white;
+    width: 88%;
+    text-align: center;
+    padding: 2px;
+    border-radius: 6px;
     /*margin-left: 32%;*/
 }
+
+/*
+style="z-index: 2; background: black; color: white; width: 88%; text-align: center; padding:2px;border-radius: 6px;"
+
+ */
+
 @media screen and (max-width:550px){
     #userBottomLabel{
         font-size: 0.7em;

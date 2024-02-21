@@ -43,7 +43,7 @@
     <main>
         {% block main %}{% endblock %}
     </main>
-    <div id="userBottomLabel" style="z-index: 2; background: black; color: white; width: 88%; text-align: center; padding:2px;border-radius: 6px;">
+    <div id="userBottomLabel" >
         {% if user %}
             Logget inn som <label style="color: yellow;">{{user.gokstadmail}}</label>
         {% endif %}

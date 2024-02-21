@@ -80,7 +80,7 @@
                         <option selected value="0"></option>
                         {% for venue in venues %}
                         <option value="{{venue.id}}" {% if put and lecture.venueId== venue.id %} selected {% endif %}>
-                            {{venue.id}} {{venue.name}} {{venue.locationName}}
+                            Id:{{venue.id}} Navn:{{venue.name}} {{venue.locationName}} Kapasitet:{{venue.capacity}}
                         </option>
                         {% endfor %}
                     </select>

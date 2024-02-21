@@ -64,7 +64,7 @@ def calendar():
 
 # ------------------------------------------------------------------
 @app.route("/admin_venue")
-@login_required(roles=["admin"])
+@login_required(roles=["teacher", "admin"])
 def admin_venue():
     return ven_routs.get_venues_and_events()
 
