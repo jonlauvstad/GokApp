@@ -9,10 +9,14 @@
     <title>{% block title %}{% endblock %}</title>
     <!--<link rel="icon" type="image/x-icon" href="static/images/sunflower.ico">-->
     <script>
+        const hideWhenShowMore = ["homeA", "logoutA"];
+
         document.addEventListener('DOMContentLoaded', function(){
             var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
             if (screenWidth > 550) {
                 document.getElementById("userBottomLabel").style.display = "none";
+                document.getElementById("moreSelect").style.display = "none";
+                hideWhenShowMore.push("attendanceNav");
             }
             else{
                 document.getElementById('userNavLabel').style.display = "none";
@@ -20,27 +24,113 @@
             }
         });
 
+        function showMore(){
+            hideWhenShowMore.forEach(elm => {
+               document.getElementById(elm).style.display = "none";
+            });
+            document.getElementById("merLabel").style.display = "none";
+            document.getElementById("mindreLabel").style.display = "initial";
+            document.getElementById("moreUl").style.display = "initial";
+
+            const main = document.querySelector("main");
+            main.className = "mainMore";
+            const nav = document.querySelector("nav");
+            nav.className = "navMore";
+            document.getElementById("moreSelect").style.float = "right";
+        }
+        function showLess(){
+            hideWhenShowMore.forEach(elm => {
+               document.getElementById(elm).style.display = "initial";
+            });
+            document.getElementById("merLabel").style.display = "initial";
+            document.getElementById("mindreLabel").style.display = "none";
+            document.getElementById("moreUl").style.display = "none";
+
+            const main = document.querySelector("main");
+            main.className = "mainNormal";
+            const nav = document.querySelector("nav");
+            nav.className = "navNormal";
+            document.getElementById("moreSelect").style.float = "none";
+        }
     </script>
+    <style>
+        #merLabel{
+            text-decoration: underline;
+            color: blue;
+            cursor: pointer;
+        }
+        #mindreLabel{
+            text-decoration: underline;
+            /*color: blue;*/
+            cursor: pointer;
+            display: none;
+        }
+        #moreUl{
+            display: none;
+            flex-direction: column;
+            z-index: 9;
+        }
+        #moreUl li {
+            list-style: none;
+            background: white;
+            z-index: 9;
+            padding-left: 5px;
+            padding-top: 3px;
+            /*background: #ffffe6;*/
+            width: 70%;
+        }
+        nav{
+            z-index: 9;
+        }
+        .navNormal{
+            position: relative;
+            width: auto;
+        }
+        .navMore{
+            position: absolute;
+            width: 100%;
+        }
+        .mainNormal{
+            position: relative;
+        }
+        .mainMore{
+            position: absolute;
+            top: 30px;
+            left: 32px;
+        }
+    </style>
 </head>
 <body>
     <nav>
         {% if user %}
-            <!--<a href="/" style="text-decoration: none">-->
-                <h1 style="text-align: center; font-weight: normal;display: inline;" class="logoH1" id="navH1">
-                    <span style="text-decoration: overline underline;text-underline-offset: 10px;font-size: 1em;">GA</span>
-                    <span style="font-size: 0.5em;position: relative; top:-3px;">GOKSTAD AKADEMIET</span>
-                </h1>
-            <!--</a>-->
-            <a href="/">Hjem</a>
-            <a href="/logout">Logg ut</a>   <!--class="right"-->
+            <h1 style="text-align: center; font-weight: normal;display: inline;" class="logoH1" id="navH1">
+                <span style="text-decoration: overline underline;text-underline-offset: 10px;font-size: 1em;">GA</span>
+                <span style="font-size: 0.5em;position: relative; top:-3px;">GOKSTAD AKADEMIET</span>
+            </h1>
+            <a href="/" id="homeA">Hjem</a>
+            <a href="/logout" id="logoutA">Logg ut</a>
             {% if user.role in ["admin", "teacher"] %}
                 <a href="/attendance" id="attendanceNav">Oppmøte</a>
             {% endif %}
+            <div id="moreSelect" style="display: inline-block">
+                <label id="merLabel" onclick="showMore()">Mer▼</label>      <!-- ▾▽▴△  ▼▲-->
+                <label id="mindreLabel" onclick="showLess()">Vis mindre▲</label>
+                <ul id="moreUl">
+                    {% if user.role in ["admin", "teacher"] %}
+                        <li><a href="/attendance" id="attendanceOption">Oppmøte</a></li>
+                    {% endif %}
+                    <!-- BARE FOR Å VISE HVORDAN DET BLIR PÅ MOBILEN -->
+                    <li><a href="/balle">Balle</a></li>
+                    <li><a href="/kuk">Kuk</a></li>
+                    <li><a href="/pung">Pung</a></li>
+                    <li><a href="/osv">Osv</a></li>
+                </ul>
+            </div>
             <label id="userNavLabel" style="float: right;padding-right: 100px;">Bruker: <label style="color: limegreen">{{user.gokstadmail}}</label></label>
         {% endif %}
         <br>
     </nav>
-    <main>
+    <main style="z-index: 1;">
         {% block main %}{% endblock %}
     </main>
     <div id="userBottomLabel" >
