@@ -54,7 +54,6 @@
     function getVenuesFromApi(from, to){
         const url = `http://${hostname}:${portNumber}/api/venue?from=${from}&to=${to}`;
         // const url = "http://127.0.0.1:5000/api/venue"
-        // alert(url);
         fetch(url,
             {
                 method: "GET"

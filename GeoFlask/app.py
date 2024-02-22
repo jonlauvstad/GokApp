@@ -123,7 +123,7 @@ def conf_lecture_one():
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
-# @login_required(roles=None)
+@login_required(roles=None)
 def api_get_venues():
     return api_1.api_get_venues_func()
 
