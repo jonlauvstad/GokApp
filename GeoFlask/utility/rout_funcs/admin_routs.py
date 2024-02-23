@@ -59,7 +59,8 @@ def add_lecture_one_function(put=None):
                                   as_dic['startTime'], as_dic['endTime'], as_dic['courseImplementationLink'],
                                   as_dic['link'], as_dic['duration'], as_dic['courseImplementationName'],
                                   as_dic['courseImplementationCode'],
-                                  as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'])
+                                  as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'], as_dic['teacherUserIds'],
+                                as_dic['programTeacherUserIds'])
                 return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2,
                                        put=put, lecture=lecture)
             # Håndtere response.ok
@@ -85,11 +86,6 @@ def conf_lecture_one_function():
         "EndTime": end,
         "VenueIds":  [venueId]      #json.dumps([venueId])
     }
-    # for key in data:
-    #     print(f"{key}: {data[key]}")
-    # now = datetime.datetime.now().isoformat()
-    # print(now)
-
 
     url_ext = f"lecture"
     url = URLpre + url_ext
@@ -98,14 +94,12 @@ def conf_lecture_one_function():
     response = requests.post(url, verify=False, headers=headers, json=data)
     if response.ok:
         dic = response.json()
-        print("SUCCESS:", dic['success'])
         lectBook = \
             LectureBooking(dic['lectureId'], dic['courseImplementationCode'],dic['numStudents'], dic['venueCapacity'], dic['venueName'],
                            dic['links'], dic['success'], dic['message'], dic['startTime'], dic['endTime'], dic['room'], dic['roomString'],
                            dic['lectureLink'])
-    # lectBook = LectureBooking(20, 50, 90, "Fjorden", {"NewLecture": ""}, "true", "Vellykket osv")
+
         return render_template("admin/lecture/conf_lecture_one.html", user=user, lectBook=lectBook)
 
-    # print(response.text, response.headers)
     msg = f"Statuskode: {response.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))

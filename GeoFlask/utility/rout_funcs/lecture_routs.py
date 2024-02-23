@@ -16,7 +16,8 @@ def lecture_id_function(id):
 
     headers = {"Authorization": f"Bearer {session['token']}"}
     to_do = None
-    # print("REQUEST:", request)
+
+    deleted = False
 
     if (request.method == "GET"):
         response = requests.get(url, verify=False, headers=headers)
@@ -25,6 +26,7 @@ def lecture_id_function(id):
         to_do = request.form.get("to_do")
         if to_do == "DELETE":
             to_do = "SLETTET "
+            deleted = True
             response = requests.delete(url, verify=False, headers=headers)
             # Håndtere response.ok
         elif to_do == "PUT_EXECUTE":
@@ -45,7 +47,7 @@ def lecture_id_function(id):
                 "EndTime": end,
                 "VenueIds": [venueId]  # json.dumps([venueId])
             }
-            print("DATA:", data)
+
             response = requests.put(url, verify=False, headers=headers, json=data)
             # Håndtere response.ok
         else:
@@ -57,11 +59,18 @@ def lecture_id_function(id):
         lecture = Lecture(as_dic['id'], as_dic['courseImplementationId'], as_dic['theme'], as_dic['description'],
                                 as_dic['startTime'], as_dic['endTime'], as_dic['courseImplementationLink'],
                                 as_dic['link'], as_dic['duration'], as_dic['courseImplementationName'], as_dic['courseImplementationCode'],
-                                as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'])
+                                as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'], as_dic['teacherUserIds'],
+                                as_dic['programTeacherUserIds'])
 
-        return render_template("lecture.html", lecture=lecture, user=user, to_do=to_do)
+        if deleted:
+            showUpdateDeleteButtons = False
+        else:
+            if user.role == "admin" or int(user.id) in lecture.teacherUserIds or int(user.id) in lecture.programTeacherUserIds:
+                showUpdateDeleteButtons = True
+            else:
+                showUpdateDeleteButtons = False
+
+        return render_template("lecture.html", lecture=lecture, user=user, to_do=to_do, showButtons=showUpdateDeleteButtons)
     msg = f"Statuskode: {response.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
 
-def lecture_id_post_function(id):
-    pass

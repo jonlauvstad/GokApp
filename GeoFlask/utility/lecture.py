@@ -1,8 +1,9 @@
 from dateutil import parser
 
 class Lecture:
-    def __init__(self, id, courseImplementationId, theme, description, startTime, endTime,
-                 courseImplementationLink, link, duration, courseImplementationName, courseImplementationCode, teacherNames, venueNames, venueIds):
+    def __init__(self, id, courseImplementationId, theme, description, startTime, endTime, courseImplementationLink, link, duration,
+                 courseImplementationName, courseImplementationCode, teacherNames, venueNames, venueIds, teacherUserIds,
+                 programTeacherUserIds):
         self.id = id
         self.courseImplementationId = courseImplementationId
         self.theme = theme
@@ -21,5 +22,6 @@ class Lecture:
         self.teacherNames = teacherNames
         self.venueNames = venueNames
         self.venueId = None if len(venueIds) == 0 else venueIds[0]
-
+        self.teacherUserIds = teacherUserIds
+        self.programTeacherUserIds = programTeacherUserIds
 
