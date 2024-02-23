@@ -121,6 +121,11 @@ def add_lecture_one():
 def conf_lecture_one():
     return adm_routs.conf_lecture_one_function()
 
+@app.route("/search_lecture")
+@login_required(roles=None)
+def search_lecture():
+    return adm_routs.search_lecture_function()
+
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
 @login_required(roles=None)
