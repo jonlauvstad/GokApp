@@ -200,7 +200,7 @@ style="z-index: 2; background: black; color: white; width: 88%; text-align: cent
 }
 @media screen and (min-width: 550px){
     .singleTable{
-        font-size: 1.8em;
+        font-size: 1.75em;
     }
     .singleDiv input, .singleDiv textarea, .singleDiv select {
         font-size: large;

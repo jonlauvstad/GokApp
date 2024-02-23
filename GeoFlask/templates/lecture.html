@@ -4,13 +4,45 @@
 
 {% block main %}
 
-<!--id, courseImplementationId, theme, description, startTime, endTime,-->
-<!--courseImplementationLink, link, duration, courseImplementationName, courseImplementationCode-->
+<style>
+    #lectureSingleDiv{
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1em;
+    }
+    #lectureSingleDiv input, #lectureSingleDiv textarea, #lectureSingleDiv select{
+        width: 400px;
+    }
+    #lectureSingleDiv input, #lectureSingleDiv textarea{
+        padding-left: 6px;
+    }
 
-<h1 id="singleH1" style="text-align: center; {% if to_do %} color:red; {% endif %}">
-    {% if to_do %}{{to_do}}{% endif %}FORELESNING
-</h1>
-<div class="singleDiv">
+    @media screen and (max-width:550px) {
+        #lectureSingleDiv {
+            width: 96%;
+            font-size: medium;
+        }
+    }
+
+    @media screen and (min-width: 550px){
+        #lectureSingleDiv input, #lectureSingleDiv textarea, #lectureSingleDiv select {
+            font-size: large;
+        }
+    }
+
+    .lectureButt{
+        width: 49%;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+
+<div id="lectureSingleDiv">     <!-- class="singleDiv" -->
+    <h1 id="singleH1" style="text-align: center; margin-bottom: 4px;{% if to_do %} color:red; {% endif %}">
+        {% if to_do %}{{to_do}}{% endif %}FORELESNING
+    </h1>
     <table class="singleTable">
         <tr>
             <td class="singleBoldTd">Id:</td><td>{{lecture.id}}</td>
@@ -47,6 +79,20 @@
         <tr>
             <td class="singleBoldTd">Kursgjennom-føringsnavn:</td><td>{{lecture.courseImplementationName}}</td>
         </tr>
+        {% if showButtons %}
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <form action="{{lecture.link}}" method="post" style="display: inline">
+                        <input style="display: none" value="DELETE" name="to_do">
+                        <button class="lectureButt" style="background: red">✖ Slette</button>
+                    </form>
+                    <form action="{{lecture.link}}" method="post" style="display: inline">
+                        <input style="display: none" value="{{lecture.id}}" name="to_do">
+                        <button class="lectureButt" style="background: orange">✎ Endre</button>
+                    </form>
+                </td>
+            </tr>
+        {% endif %}
     </table>
 </div>
 
