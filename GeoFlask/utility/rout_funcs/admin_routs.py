@@ -103,3 +103,39 @@ def conf_lecture_one_function():
 
     msg = f"Statuskode: {response.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+
+def search_lecture_function():
+    user = session["user"]
+    headers = {"Authorization": f"Bearer {session['token']}"}
+
+    # CourseImplementation-context:
+    url_ext_course = "CourseImplementation"
+    url_course = URLpre + url_ext_course
+    now = datetime.datetime.now().isoformat()
+    response = requests.get(url_course, verify=False, headers=headers, params={"startDate": now})
+    if not response.ok:
+        msg = f"Statuskode: {response.status_code}"
+        return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+    courseImps = response.json()
+    courseImps.sort(key=lambda x: x['name'])
+
+    # Venue-context:
+    url_ext_venue = "Venue"
+    url_venue = URLpre + url_ext_venue
+    response = requests.get(url_venue, verify=False, headers=headers)
+    if not response.ok:
+        msg = f"Statuskode: {response.status_code}"
+        return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+    venues = response.json()
+
+    # Teacher-context:
+    url_ext_teacher = "User"
+    url_teacher = URLpre + url_ext_teacher
+    # response = requests.get(url_teacher, verify=False, headers=headers, params={"role": "teacher"})
+    if not response.ok:
+        msg = f"Statuskode: {response.status_code}"
+        return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+    # users = response.json()
+    users = [{"id": 1, "firstName": "Anders", "lastName": "Lauvstad"}]
+
+    return render_template("admin/lecture/search_lecture.html", user=user, courseImps=courseImps, venues=venues, users=users)

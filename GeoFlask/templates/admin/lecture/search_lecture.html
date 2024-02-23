@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block title %}LectureAdmin{% endblock %}
+
+{% block main %}
+<script>
+
+</script>
+<style>
+    #lectureSearchSingleDiv{
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        font-family: "Times New Roman";
+        /*font-size: 1em;*/
+        /*font-size: x-large;*/
+    }
+    td, input{
+        font-size: x-large;
+    }
+    td{
+        padding-bottom: 6px;
+    }
+    button{
+        font-family: "Times New Roman";
+        font-size: x-large;
+        border-radius: 6px;
+        color: white;
+        background: green;
+    }
+
+    table{
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    input, button, select{
+        /*width: 100%;*/
+        width: 300px;
+    }
+
+    @media screen and (max-width:550px) {
+        #lectureSearchSingleDiv {
+            width: 96%;
+            font-size: medium;
+        }
+        td, button, input {
+            font-size: medium;
+        }
+        table{
+            margin: initial;
+        }
+        button, input, select{
+            width: 170px;
+        }
+    }
+    /*
+    @media screen and (max-width: 550px){
+        input{
+            max-width: 400px;
+        }
+    }*/
+
+
+</style>
+
+<div id="lectureSearchSingleDiv">
+    <h1 class="bigHeadlineH1">
+        SØK FORLESNINGER
+    </h1>
+
+    <table>
+        <form>
+            <tr>
+                <td>ForelesningsId:</td>
+                <td>
+                    <input type="number" name="lectureId">
+                </td>
+            </tr>
+            <tr>
+                <td></td><td><button>Finn forelesning</button></td>
+            </tr>
+        </form>
+        <tr><td><br></td><td></td></tr>
+        <form>
+            <tr>
+                <td>Start etter:</td>
+                <td>
+                    <input type="datetime-local" name="startAfter">
+                </td>
+            </tr>
+            <tr>
+                <td>Slutt før:</td>
+                <td>
+                    <input type="datetime-local" name="endBy">
+                </td>
+            </tr>
+            <tr>
+                <td>Kursgjennomføring:</td>
+                <td>
+                    <select name="courseImpId">
+                        <option selected></option>
+                        {% for ci in courseImps %}
+                            <option value="{{ci.id}}">{{ci.name}} {{ci.code}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Rom:</td>
+                <td>
+                    <select name="venueId">
+                        <option selected></option>
+                        {% for v in venues %}
+                            <option value="{{v.id}}">{{v.name}} {{v.locationName}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Lærer:</td>
+                <td>
+                    <select name="teacherId">
+                        <option selected></option>
+                        {% for u in users %}
+                            <option value="{{u.id}}">{{u.firstName}} {{u.lastName}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td></td><td><button>Søk forelesning</button></td>
+            </tr>
+        </form>
+    </table>
+
+</div>
+
+{% endblock %}
