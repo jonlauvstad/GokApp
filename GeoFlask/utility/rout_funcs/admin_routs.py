@@ -131,11 +131,10 @@ def search_lecture_function():
     # Teacher-context:
     url_ext_teacher = "User"
     url_teacher = URLpre + url_ext_teacher
-    # response = requests.get(url_teacher, verify=False, headers=headers, params={"role": "teacher"})
+    response = requests.get(url_teacher, verify=False, headers=headers, params={"role": "teacher"})
     if not response.ok:
         msg = f"Statuskode: {response.status_code}"
         return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
-    # users = response.json()
-    users = [{"id": 1, "firstName": "Anders", "lastName": "Lauvstad"}]
+    users = response.json()
 
     return render_template("admin/lecture/search_lecture.html", user=user, courseImps=courseImps, venues=venues, users=users)
