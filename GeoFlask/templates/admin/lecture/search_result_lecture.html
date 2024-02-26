@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block title %}LectureAdmin{% endblock %}
+
+{% block main %}
+<script>
+    function choseChecked(){
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        ids = [];
+        checkboxes.forEach(elm => {
+            if (elm.checked){
+                ids.push(elm.value)
+            }
+        });
+        // console.log(ids.length, ids);
+        var ids_str = ids.join(",");
+        // console.log(ids_str);
+
+        const anchor = document.createElement("a");
+        anchor.href = `/lecture/multiple?ids=${ids_str}`;
+        anchor.click();
+    }
+
+    function choseAll(){
+        var button = document.getElementById("chooseAllButt");
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        if (button.innerHTML == "✔ Velg alle"){
+            checkboxes.forEach(elm => elm.checked = true);
+            button.innerHTML = "⏹ Avvelg alle"; // ⬜
+            button.style.background = "green";
+        }
+        else{
+            checkboxes.forEach(elm => elm.checked = false);
+            button.innerHTML = "✔ Velg alle";
+            button.style.background = "orange";
+        }
+    }
+</script>
+<style>
+    #lectureSearchSingleDiv{
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        font-family: "Times New Roman";
+        /*font-size: 1em;*/
+        /*font-size: x-large;*/
+    }
+    td, input{
+        font-size: x-large;
+    }
+    td{
+        padding-bottom: 6px;
+    }
+    button{
+        font-family: "Times New Roman";
+        font-size: x-large;
+        border-radius: 6px;
+        color: white;
+        background: green;
+    }
+
+    table{
+        /*margin-left: auto;*/
+        /*margin-right: auto;*/
+        border: 1px solid black;
+        width: 100%;
+    }
+
+    input, button, select{
+        /*width: 100%;*/
+        width: 300px;
+    }
+
+    @media screen and (max-width:550px) {
+        #lectureSearchSingleDiv {
+            width: 96%;
+            font-size: medium;
+        }
+        td, button, input {
+            font-size: medium;
+        }
+        table{
+            margin: initial;
+        }
+        button, input, select{
+            width: 170px;
+        }
+    }
+    table:nth-child(even) {
+        background: #e0e0d1;
+    }
+    input[type="checkbox"] {
+        margin-right: 5px;
+        float: right;
+        width: auto;
+        position: relative;
+    }
+    @media screen and (min-width:550px){
+        input[type="checkbox"] {
+            position: relative;
+            top: 11px;
+            transform: scale(1.5);
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    }
+</style>
+
+<div id="lectureSearchSingleDiv">
+    <h1 class="bigHeadlineH1">
+        SØKERESULTAT
+    </h1>
+
+    {% if found_none %}
+
+    {% else %}
+        <div id="searchResTab">
+        {% for lecture in lectures %}
+        <table>
+            <tr><td>Id: {{lecture.id}}</td>
+                <td><a href="{{lecture.link}}">Link</a>
+                    <label style="float: right; color: orange;">
+                        <input type="checkbox" value="{{lecture.id}}" id="cb{{lecture.id}}">
+                            velg:
+                    </label>
+                </td>
+            </tr>
+            <tr><td>Kurs-gjennomføring:</td><td>{{lecture.courseImplementationName}}</td></tr>
+            <tr><td>Start-slutt:</td><td>{{lecture.start_string}} - {{lecture.end_string}}</td></tr>
+        </table>
+        {% endfor %}
+            <button class="orangeButt" style="margin-top: 15px; width: 48%" id="chooseAllButt" onclick="choseAll()">✔ Velg alle</button>
+            <button class="redButt" style="float: right;margin-top: 15px; width: 48%" onclick="choseChecked()">✖ Slett valgte</button>
+        </div>
+        <br><br>
+    {% endif %}
+</div>
+
+{% endblock %}

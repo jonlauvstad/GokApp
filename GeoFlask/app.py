@@ -122,9 +122,19 @@ def conf_lecture_one():
     return adm_routs.conf_lecture_one_function()
 
 @app.route("/search_lecture")
-@login_required(roles=None)
+@login_required(roles=["teacher", "admin"])
 def search_lecture():
     return adm_routs.search_lecture_function()
+
+@app.route("/search_lecture_result", methods=["POST"])
+@login_required(roles=None)
+def search_lecture_result():
+    return lec_routs.lecture_search_result_function()
+
+@app.route("/lecture/multiple", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def lecture_multiple():
+    return lec_routs.lecture_multiple_function()
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])

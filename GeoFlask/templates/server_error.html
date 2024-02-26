@@ -6,8 +6,16 @@
 <h1 style="text-align: center">{{code}}</h1>
 <div id="errorDiv">
     <h1 class="errEmoji">😳</h1><br>
-    <h1 class="errText">SORRY, DETTE VAR PINLIG.</h1>
+    {% if sorry %}
+        <h1 class="errText">SORRY, DETTE VAR PINLIG</h1>
+    {% else %}
+        <h1 class="errText">BRUKERFEIL!</h1>
+    {% endif %}
     <br>
-    <h1 class="errMsg">{{error}}</h1>
+    <h1 class="errMsg">
+        {% for line in error %}
+           {% if line!= "not_sorry" %} {{line}}<br> {% endif %}
+        {% endfor %}
+    </h1>
 </div>
 {% endblock %}
