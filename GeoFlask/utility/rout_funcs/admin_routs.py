@@ -1,7 +1,7 @@
 import datetime
 from dateutil import parser
 
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, abort
 from ..config import configuration
 from ..lectureBooking import LectureBooking
 from ..lecture import Lecture
@@ -77,6 +77,12 @@ def conf_lecture_one_function():
     start = request.form.get("start")
     end = request.form.get("end")
     venueId = request.form.get("venueId")
+
+    des = description.replace(" ", "")
+    if des == "\r\n":
+        description = ""
+    else:
+        description = description.replace("\r\n", " ")
 
     data = {
         "CourseImplementationId": courseId,

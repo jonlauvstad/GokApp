@@ -117,9 +117,8 @@
             </tr>
             <tr>
                 <td>Beskrivelse:</td>
-                <td><textarea name="description" placeholder="valgfri">
-                        {% if put %} {{lecture.description}} {% endif %}
-                    </textarea>
+                <td>
+                    <textarea name="description" placeholder="valgfri">{% if put %}{{lecture.description}}{% endif %}</textarea>
                 </td>
             </tr>
             <tr>
