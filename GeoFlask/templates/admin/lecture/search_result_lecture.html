@@ -108,29 +108,34 @@
 
 <div id="lectureSearchSingleDiv">
     <h1 class="bigHeadlineH1">
-        SØKERESULTAT
+        {% if not deleted %}SØKERESULTAT{% else %}SLETTINGER{% endif %}
     </h1>
 
     {% if found_none %}
-
+        <p style="text-align: center;">
+            Kunne ikke finne noen forelesninger med oppgitte karakteristika.<br>
+            <a href="/search_lecture">Tilbake til forelesningssøk</a>
+        </p>
     {% else %}
         <div id="searchResTab">
         {% for lecture in lectures %}
         <table>
             <tr><td>Id: {{lecture.id}}</td>
-                <td><a href="{{lecture.link}}">Link</a>
+                <td>{% if not deleted %}<a href="{{lecture.link}}">Link</a>
                     <label style="float: right; color: orange;">
                         <input type="checkbox" value="{{lecture.id}}" id="cb{{lecture.id}}">
                             velg:
-                    </label>
+                    </label>{% endif %}
                 </td>
             </tr>
             <tr><td>Kurs-gjennomføring:</td><td>{{lecture.courseImplementationName}}</td></tr>
             <tr><td>Start-slutt:</td><td>{{lecture.start_string}} - {{lecture.end_string}}</td></tr>
         </table>
         {% endfor %}
+            {% if not deleted %}
             <button class="orangeButt" style="margin-top: 15px; width: 48%" id="chooseAllButt" onclick="choseAll()">✔ Velg alle</button>
             <button class="redButt" style="float: right;margin-top: 15px; width: 48%" onclick="choseChecked()">✖ Slett valgte</button>
+            {% endif %}
         </div>
         <br><br>
     {% endif %}

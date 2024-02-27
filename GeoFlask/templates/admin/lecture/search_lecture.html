@@ -81,18 +81,17 @@
     </h1>
 
     <table>
-        <!--<form>-->
-            <tr>
-                <td>ForelesningsId:</td>
-                <td>
-                    <input type="number" name="lectureId" id="lectureIdInput">
-                </td>
-            </tr>
-            <tr>
-                <td></td><td><button onclick="searchById()">Finn forelesning</button></td>
-            </tr>
-            <a id="lecIdAnchor" style="display: none"></a>
-        <!--</form>-->
+        <tr>
+            <td>ForelesningsId:</td>
+            <td>
+                <input type="number" name="lectureId" id="lectureIdInput">
+            </td>
+        </tr>
+        <tr>
+            <td></td><td><button onclick="searchById()">Finn forelesning</button></td>
+        </tr>
+        <a id="lecIdAnchor" style="display: none"></a>
+
         <tr><td><br></td><td></td></tr>
         <form action="/search_lecture_result" method="post">
             <tr>
