@@ -3,6 +3,8 @@ from dateutil import parser
 
 from flask import Flask, redirect, render_template, request, session
 from ..config import configuration
+from ..event import Event
+from ..event_day import EventDay
 from ..lectureBooking import LectureBooking
 from ..lecture import Lecture
 
@@ -109,3 +111,4 @@ def conf_lecture_one_function():
     # print(response.text, response.headers)
     msg = f"Statuskode: {response.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+

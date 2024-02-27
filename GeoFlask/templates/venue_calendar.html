@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<link href="/static/styles.css" rel="stylesheet">
+<link href="/static/styles_venues.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Venue-Calendar{% endblock %}
+
+{% block main %}
+<div>
+    <h2>Venue Calendar</h2>
+    <table class="admin-venue-table">
+        <thead>
+        <tr>
+            <th>Event name</th>
+            <th>Date</th>
+            <th>Start-Time</th>
+            <th>End-Time</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for lecture in lectures %}
+            <tr>
+                <td>{{ lecture.theme }}</td>
+                <td>{{ lecture.startTime }}</td>
+                <td>{{ lecture.endTime }}</td>
+                <td>{{ lecture.courseImplementationName }}</td>
+                <td>{{ lecture.teacherNames }}</td>
+                <td>{{ lecture.teacherNames }}</td>
+                <td>{{ lecture.venueNames }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
