@@ -12,6 +12,7 @@ import utility.rout_funcs.lecture_routs as lec_routs
 import utility.rout_funcs.examImp_routs as exImp_routs
 import utility.rout_funcs.a_venue_calendar_routs as ven_routs
 import utility.rout_funcs.a_student_resources_routs as stud_rescr
+import utility.api_funcs.api_1 as api_1
 
 urllib3.disable_warnings()
 
@@ -125,6 +126,29 @@ def add_lecture_one():
 def conf_lecture_one():
     return adm_routs.conf_lecture_one_function()
 
+@app.route("/search_lecture")
+@login_required(roles=["teacher", "admin"])
+def search_lecture():
+    return adm_routs.search_lecture_function()
+
+@app.route("/search_lecture_result", methods=["POST"])
+@login_required(roles=None)
+def search_lecture_result():
+    return lec_routs.lecture_search_result_function()
+
+@app.route("/lecture/multiple", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def lecture_multiple():
+    return lec_routs.lecture_multiple_function()
+
+# API ROUTS HERE!
+@app.route("/api/venue", methods=["GET"])
+@login_required(roles=None)
+def api_get_venues():
+    return api_1.api_get_venues_func()
+
+
+# ERROR-HANDELERS HERE!
 @app.errorhandler(404)
 def page_not_found(error):
     return err_handl.page_not_found_function(error)

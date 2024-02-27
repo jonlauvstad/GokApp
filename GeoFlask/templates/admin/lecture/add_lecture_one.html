@@ -4,7 +4,11 @@
 
 {% block main %}
 <script>
-    // document.addEventListener('DOMContentLoaded', function(){
+    var hostname = window.location.hostname;
+    var portNumber = window.location.port;
+
+
+    document.addEventListener('DOMContentLoaded', function(){
     //     var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     //     if (screenWidth > 550) {
     //         document.getElementById("indexAttendanceA").style.display = "none";
@@ -12,8 +16,28 @@
     //     else{
     //
     //     }
-    //
-    // });
+        document.querySelectorAll('input[type="datetime-local"]').forEach(elm =>{
+            elm.addEventListener('change', enableCheckBoxAndUpdateVenues);
+        });
+    });
+
+    function enableCheckBoxAndUpdateVenues(){
+        const start = document.getElementById("startInput").value;
+        const end =  document.getElementById("endInput").value;
+        const bookLabel = document.getElementById("bookLabel");
+        const roomLabel = document.getElementById("roomLabel");
+        if (start !== '' && end !== ''){
+            document.getElementById('roomCheckBox').disabled = false;
+            bookLabel.style.display = "none";
+            roomLabel.style.opacity = "100%";
+            getVenuesFromApi(start, end);
+        }
+        else{
+            bookLabel.style.display = "initial";
+            roomLabel.style.opacity = "50%";
+        }
+    }
+
     function showBookRoom(){
         const roomSelect = document.getElementById("venueSelect");
         const visible = roomSelect.style.visibility;
@@ -26,7 +50,47 @@
             optionToSelect.selected = true;
         }
     }
+
+    function getVenuesFromApi(from, to){
+        const url = `http://${hostname}:${portNumber}/api/venue?from=${from}&to=${to}`;
+        // const url = "http://127.0.0.1:5000/api/venue"
+        fetch(url,
+            {
+                method: "GET"
+            })
+            .then(response =>{
+                if(!response.ok){
+                    throw new Error("Network response was not ok.");
+                }
+                return response.json();
+            })
+            .then(data =>{
+                console.log(data);
+                const select = document.getElementById("venueSelect");
+                select.innerHTML = "<option selected value='0'></option>"
+                data.forEach(elm =>{
+                    const option = document.createElement('option');
+                    option.value = elm.id;
+                    option.innerHTML = `Id:${elm.id} Navn:${elm.name} ${elm.locationName} Kapaistet:${elm.capacity}`;
+                    select.append(option);
+                })
+            })
+            .catch(error =>{
+                console.error("There was a problem with the fetch operation:", error);
+            })
+    }
 </script>
+<style>
+    #bookLabel{
+        font-size: x-small;
+        color: orangered;
+        position: relative;
+        /*top: -3px;*/
+    }
+    #roomLabel{
+        opacity: 50%;
+    }
+</style>
 <h1 class="bigHeadlineH1">
     {% if put %} ENDRE FORELESNING #{{put}} {% else %} NY FORLESNING {% endif %}
 </h1>
@@ -53,27 +117,28 @@
             </tr>
             <tr>
                 <td>Beskrivelse:</td>
-                <td><textarea name="description" placeholder="valgfri">
-                        {% if put %} {{lecture.description}} {% endif %}
-                    </textarea>
+                <td>
+                    <textarea name="description" placeholder="valgfri">{% if put %}{{lecture.description}}{% endif %}</textarea>
                 </td>
             </tr>
             <tr>
                 <td>Start-tidspunkt:</td>
-                <td><input type="datetime-local" name="start" required
+                <td><input type="datetime-local" name="start" required id="startInput"
                     {% if put %} value="{{lecture.startTime}}" {% endif %}>
                 </td>
             </tr>
             <tr>
                 <td>Slutt-tidspunkt:</td>
-                <td><input type="datetime-local" name="end" required
+                <td><input type="datetime-local" name="end" required id="endInput"
                     {% if put %} value="{{lecture.endTime}}" {% endif %}>
                 </td>
             </tr>
             <tr>
                 <td>
-                    Book rom:
-                    <input type="checkbox" onchange="showBookRoom()" id="roomCheckBox"></td>
+                    <label id="roomLabel">Book rom:</label>
+                    <input type="checkbox" onchange="showBookRoom()" id="roomCheckBox" disabled>
+                    <br><label id="bookLabel">(Når start/slutt utfylt)</label>
+                </td>
                 <td>
                     <select name="venueId" id="venueSelect"
                         {% if put and lecture.venueId %} style="visibility: visible" {% else %} style="visibility: hidden" {% endif %}>
