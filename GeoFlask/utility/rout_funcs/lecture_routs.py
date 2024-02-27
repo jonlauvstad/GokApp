@@ -118,9 +118,32 @@ def lecture_search_result_function():
                 as_dic['programTeacherUserIds'])
         for as_dic in lectures
     ]
+    found_none = len(lectures) == 0
 
-    return render_template("admin/lecture/search_result_lecture.html", user=user, lectures=lectures)
+    return render_template("admin/lecture/search_result_lecture.html", user=user, lectures=lectures, found_none=found_none)
 
 def lecture_multiple_function():
-    id_string = request.args.get("ids");
-    return id_string
+    user = session['user']
+    params = {"id_string": request.args.get("ids")}
+
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    url_ext = f"Lecture"
+    url = URLpre + url_ext
+
+    if request.method == "GET":
+        response = requests.delete(url, verify=False, headers=headers, params=params)
+
+    if not response.ok:
+        abort(int(response.status_code))
+
+    lectures = response.json()
+    lectures = [
+        Lecture(as_dic['id'], as_dic['courseImplementationId'], as_dic['theme'], as_dic['description'],
+                as_dic['startTime'], as_dic['endTime'], as_dic['courseImplementationLink'],
+                as_dic['link'], as_dic['duration'], as_dic['courseImplementationName'],
+                as_dic['courseImplementationCode'],
+                as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'], as_dic['teacherUserIds'],
+                as_dic['programTeacherUserIds'])
+        for as_dic in lectures
+    ]
+    return render_template("admin/lecture/search_result_lecture.html", user=user, lectures=lectures, deleted=True)
