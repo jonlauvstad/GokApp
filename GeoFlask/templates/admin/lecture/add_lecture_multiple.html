@@ -1,0 +1,237 @@
+{% extends "layout.html" %}
+
+{% block title %}NewLectures{% endblock %}
+
+{% block main %}
+<style>
+    #mainDiv{
+        width: 40%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    /*table{*/
+    /*    margin-left: auto;*/
+    /*    margin-right: auto;*/
+    /*}*/
+
+    input, button, select{
+        width: 300px;
+    }
+
+    .durationInput{
+        width:45px;
+        margin-right: 5px;
+    }
+
+    .labelTd{
+        padding-right: 10px;
+        min-width: 180px;
+    }
+
+    .addMultButt{
+        font-size: medium;
+        width: auto;
+        font-family: "Times New Roman";
+        /*border-radius: 4px;*/
+    }
+
+    .button-like-link {
+        background: none;
+        border: none;
+        color: blue; /* Change color to match link color */
+        text-decoration: underline; /* Underline text */
+        cursor: pointer; /* Change cursor to pointer on hover */
+        padding: 0; /* Remove padding */
+        font: inherit; /* Inherit font */
+        /* Add any additional styles as needed */
+        margin-left: 0px;
+    }
+
+     .smallNumInput{
+         font-size: smaller;
+         width:70px;
+     }
+
+    @media screen and (max-width:550px){
+        #mainDiv{
+            width: 96%;
+        }
+        td, button, input {
+            font-size: medium;
+        }
+        table{
+            margin: initial;
+        }
+        button, input, select{
+            width: 170px;
+        }
+        .labelTd{
+            min-width: 0px;
+        }
+        .durationTd{
+            font-size: smaller;
+        }
+        .smallNumInput{
+            font-size: x-small;
+            width: 50px;
+         }
+    }
+
+</style>
+<script>
+    {% if err_msg %}
+        alert("{{err_msg}}");
+    {% endif %}
+
+    var venues = {{venues|tojson}};
+    let numLectures = 1;
+    console.log(venues);
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        const listOfElements = document.getElementsByName("firstDate");
+        setMinimumTodayPlus(listOfElements, 0);
+        const listOfElements1 = document.getElementsByName("lastDate");
+        setMinimumTodayPlus(listOfElements1, 0);
+    });
+
+
+    function setMinimumTodayPlus(listOfElements, plusDays){
+        var today = new Date();
+        var dd = String(today.getDate() + plusDays).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+        var yyyy = today.getFullYear();
+        today = yyyy + '-' + mm + '-' + dd;
+        listOfElements.forEach(elm =>{
+            elm.setAttribute("min", today);
+        });
+    }
+
+    function showRoom(event){
+        event.preventDefault();
+        // numLectures += 1;
+        // const id = `roomSelect${numLectures}`;
+        const id = event.target.dataset.selectid;
+        const select = document.getElementById(id);
+        select.style.display = "initial";
+    }
+
+    function showOneMoreLecture(event){
+        event.preventDefault();
+
+        numLectures += 1;
+        let component =
+        `<tr>
+            <td class="labelTd" style="border-top: 1px solid black; padding-top: 10px;">Ukedag:</td>
+            <td  style="border-top: 1px solid black; padding-top: 5px;">
+                <select name="weekday" required>
+                    {% for wd in weekdays %}
+                    <option value="{{wd.int}}">{{wd.string}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelTd">Starttidspunkt:</td>
+            <td><input type="time" name="start" required></td>
+        </tr>
+        <tr>
+            <td class="labelTd">Varighet:</td>
+            <td class="durationTd">
+                <input type="number" class="durationInput" name="hours" min="0" required>timer
+                <input type="number" class="durationInput" name="minutes" min="0" max="60" required>minutter
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="addMultButt" data-selectid="roomSelect${numLectures}" onclick="showRoom(event)">Legg til rom</button>
+            </td>
+            <td>
+                <select name="room" style="display: none" id="roomSelect${numLectures}">
+                    <option selected></option>
+                    {% for v in venues %}
+                        <option value="{{v.id}}">{{v.name}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>`
+        const tab = document.getElementById("addMultTable");
+        tab.innerHTML += component;
+    }
+</script>
+<div id="mainDiv">
+    <h1 class="bigHeadlineH1">
+        NYE FORLESNINGER
+    </h1>
+
+    <form id="addMultForm" action="/lecture/multiple" method="post">
+    <table>
+        <tr>
+            <td class="labelTd">Kursgjennomføring:</td>
+                <td>
+                    <select name="courseImpId" required>
+                        <option selected disabled></option>
+                        {% for ci in courseImps %}
+                            <option value="{{ci.id}}">{{ci.name}} {{ci.code}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+        </tr>
+        <tr>
+            <td class="labelTd">Første mulige dato:</td>
+            <td><input type="date" name="firstDate" required></td>
+        </tr>
+        <tr>
+            <td class="labelTd">Siste mulige dato:</td>
+            <td><input type="date" name="lastDate" required></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                Maks tid (timer):<input type="number" name="maxTime" value="10000" style="margin-left: 5px;" class="smallNumInput" required>
+                Maks antall:<input type="number" name="maxLectures" value="1000" style="margin-left: 5px;" class="smallNumInput" required>
+            </td>
+        </tr>
+    </table>
+
+    <h3>Ukentlige forelesninger</h3>
+    <table id="addMultTable">
+        <tr>
+            <td class="labelTd">Ukedag:</td>
+            <td>
+                <select name="weekday" required>
+                    {% for wd in weekdays %}
+                    <option value="{{wd.int}}">{{wd.string}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelTd">Starttidspunkt:</td>
+            <td><input type="time" name="start" required></td>
+        </tr>
+        <tr>
+            <td class="labelTd">Varighet:</td>
+            <td class="durationTd">
+                <input type="number" class="durationInput" name="hours" min="0" required>timer
+                <input type="number" class="durationInput" name="minutes" min="0" max="60" required>minutter
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="addMultButt" onclick="showRoom(event)" data-selectid="roomSelect1">Legg til rom</button>
+            </td>
+            <td>
+                <select name="room" style="display: none" id="roomSelect1">
+                    <option selected></option>
+                    {% for v in venues %}
+                        <option value="{{v.id}}">{{v.name}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+    </table>
+    <button class="button-like-link" style="width:auto;margin-right: 10px;" onclick="showOneMoreLecture(event)">Legg til flere forelesninger</button>
+    <button style="width: 33%;">Registrér</button>
+    </form>
+</div>
+
+{% endblock %}

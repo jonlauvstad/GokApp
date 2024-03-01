@@ -136,6 +136,11 @@ def search_lecture_result():
 def lecture_multiple():
     return lec_routs.lecture_multiple_function()
 
+@app.route("/add_lecture_multiple")
+@login_required(roles=["teacher", "admin"])
+def lecture_add_multiple():
+    return lec_routs.lecture_add_multiple_function()
+
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
 @login_required(roles=None)
