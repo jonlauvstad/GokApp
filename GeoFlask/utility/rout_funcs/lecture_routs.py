@@ -1,9 +1,12 @@
 from flask import Flask, redirect, render_template, request, session, abort
 from ..config import configuration
+from ..global_vars import weekdays
 import requests
 from ..lecture import Lecture
 from . import admin_routs
 from dateutil import parser
+import datetime
+from ..util_funcs import *
 
 URLpre = configuration["URLpre"]
 
@@ -130,6 +133,42 @@ def lecture_multiple_function():
     url_ext = f"Lecture"
     url = URLpre + url_ext
 
+    # NYTT FOR ADD_MULTIPLE
+    if request.method == "POST":
+        courseImpId = int(request.form.get("courseImpId"))
+        firstDate = request.form.get("firstDate")
+        lastDate = request.form.get("lastDate")
+        max_lectures = int(request.form.get("maxLectures"))
+        max_time = int(request.form.get("maxTime"))
+
+        weekdays = request.form.getlist("weekday")
+        starts = request.form.getlist("start")
+        hours = request.form.getlist("hours")
+        minutes = request.form.getlist("minutes")
+        rooms = request.form.getlist("room")
+
+        partial_lectures = [
+            {
+                "wd": int(weekdays[i]),
+                "start_int": int(starts[i].split(":")[0]) + int(starts[i].split(":")[1])/60,
+                "time": int(hours[i]) + int(minutes[i])/60,
+                "end_int": int(starts[i].split(":")[0]) + int(starts[i].split(":")[1])/60 + int(hours[i]) + int(minutes[i])/60,
+                "room": rooms[i]
+            }
+            for i in range(len(starts))
+        ]
+        no_overlap = consistent_lectures(partial_lectures)
+        if not no_overlap:
+            return lecture_add_multiple_function(err_msg="Forelesningene du prøver å legge inn overlapper!")
+
+        add_lectures = make_multiple_lectures(courseImpId, firstDate, lastDate, partial_lectures, max_lectures=max_lectures, max_time=max_time)
+
+        # Skal nå calle api'et - uncomment linjen under, og comment return add_lectures
+        # response = requests.put(url, verify=False, headers=headers, data=add_lectures)
+
+        return add_lectures
+
+    # FRA FØR - RESTEN!
     if request.method == "GET":
         response = requests.delete(url, verify=False, headers=headers, params=params)
 
@@ -147,3 +186,32 @@ def lecture_multiple_function():
         for as_dic in lectures
     ]
     return render_template("admin/lecture/search_result_lecture.html", user=user, lectures=lectures, deleted=True)
+
+def lecture_add_multiple_function(err_msg=None):
+    user = session['user']
+
+    headers = {"Authorization": f"Bearer {session['token']}"}
+
+    # CourseImplementation-context:
+    url_ext_course = "CourseImplementation"
+    url_course = URLpre + url_ext_course
+    now = datetime.datetime.now().isoformat()
+    url_course += f"?endDate={now}&userRole=Balle"
+    response = requests.get(url_course, verify=False, headers=headers)
+    if not response.ok:
+        msg = f"Statuskode: {response.status_code}"
+        return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+    courseImps = response.json()
+    courseImps.sort(key=lambda x: x['name'])
+
+    # Venue-context:
+    url_ext_venue = "Venue"
+    url_venue = URLpre + url_ext_venue
+    response = requests.get(url_venue, verify=False, headers=headers)
+    if not response.ok:
+        msg = f"Statuskode: {response.status_code}"
+        return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+    venues = response.json()
+
+    return render_template("admin/lecture/add_lecture_multiple.html", user=user, courseImps=courseImps, venues=venues,
+                           weekdays=weekdays, err_msg=err_msg)
