@@ -133,6 +133,9 @@ def lecture_multiple_function():
     url_ext = f"Lecture"
     url = URLpre + url_ext
 
+    deleted = True
+    added = False
+
     # NYTT FOR ADD_MULTIPLE
     if request.method == "POST":
         courseImpId = int(request.form.get("courseImpId"))
@@ -163,10 +166,16 @@ def lecture_multiple_function():
 
         add_lectures = make_multiple_lectures(courseImpId, firstDate, lastDate, partial_lectures, max_lectures=max_lectures, max_time=max_time)
 
-        # Skal nå calle api'et - uncomment linjen under, og comment return add_lectures
-        # response = requests.put(url, verify=False, headers=headers, data=add_lectures)
+        deleted = False
+        added = True
+        url += "/multiple"
+        response = requests.post(url, verify=False, headers=headers, json=add_lectures) # ikke data=add_lectures
 
-        return add_lectures
+        # Velger å re-rendre siden med en melding dersom response not ok, som med no_overlap
+        if not response.ok:
+            e_msg = "Kunne ikke legge inn forelesningene. Sannsynligvis er læreren eller lokalet opptatt, eller det er" \
+                    " noe inkonsistent i dataene du la inn"
+            return lecture_add_multiple_function(err_msg=e_msg)
 
     # FRA FØR - RESTEN!
     if request.method == "GET":
@@ -185,7 +194,7 @@ def lecture_multiple_function():
                 as_dic['programTeacherUserIds'])
         for as_dic in lectures
     ]
-    return render_template("admin/lecture/search_result_lecture.html", user=user, lectures=lectures, deleted=True)
+    return render_template("admin/lecture/search_result_lecture.html", user=user, lectures=lectures, deleted=deleted, added=added)
 
 def lecture_add_multiple_function(err_msg=None):
     user = session['user']
