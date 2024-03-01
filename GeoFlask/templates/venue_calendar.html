@@ -13,24 +13,36 @@
     <table class="admin-venue-table">
         <thead>
         <tr>
-            <th>Event name</th>
-            <th>Date</th>
-            <th>Start-Time</th>
-            <th>End-Time</th>
+            <th>Kurs</th>
+            <th>StartTid</th>
+            <th>SluttTid</th>
+
         </tr>
         </thead>
         <tbody>
-            {% for lecture in lectures %}
+            {% for event in events %}
             <tr>
-                <td>{{ lecture.theme }}</td>
-                <td>{{ lecture.startTime }}</td>
-                <td>{{ lecture.endTime }}</td>
-                <td>{{ lecture.courseImplementationName }}</td>
-                <td>{{ lecture.teacherNames }}</td>
-                <td>{{ lecture.teacherNames }}</td>
-                <td>{{ lecture.venueNames }}</td>
+                <td>{{ event['courseImpName'] }}</td>
+                <td>{{ event['time'] }}</td>
+                <td>{{ event['timeEnd'] }}</td>
             </tr>
             {% endfor %}
+        </tbody>
+    </table>
+    <table class="admin-venue-table">
+        <thead>
+        <tr>
+            <th>Rom</th>
+            <th>Kapasitet</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for venue in venues %}
+        <tr>
+            <td>{{ venue['name'] }}</td>
+            <td>{{ venue['capacity'] }}</td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>

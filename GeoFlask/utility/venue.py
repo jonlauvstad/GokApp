@@ -10,8 +10,8 @@ class Venue:
         self.city = city
         self.capacity = capacity
         self.locationName = locationName
-        self.link = link  # Assuming you want to keep this property
-        self.links = links or {}  # Providing a default empty dictionary if links is None
+        self.link = link
+        self.links = links or {}
 
         # Example of an additional convenience property
         self.address = f"{streetAddress}, {postCode} {city}"

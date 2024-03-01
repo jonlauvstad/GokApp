@@ -9,6 +9,7 @@ from ..config import configuration
 from collections import defaultdict
 
 from ..lecture import Lecture
+from ..venue import Venue
 
 URLpre = configuration["URLpre"]
 
@@ -21,48 +22,32 @@ def venue_calendar_function():
         return render_template("error.html", message="You are not logged in.")
 
     headers = {"Authorization": f"Bearer {session['token']}"}
-
     start_date = request.args.get('start')
-    start = datetime.now().date()
-
-    if start_date:
-        start = parser.parse(start_date).date()
+    start = datetime.now().date() if not start_date else parser.parse(start_date).date()
     today = start.strftime("%Y-%m-%d")
-    num_days = request.args.get('num_days', default=14, type=int)
+    num_days = int(request.args.get('num_days', 14))
 
     # endpoints
-    lectures_url = f"{URLpre}Lecture/GetLectures"
+    events_url = f"{URLpre}Event/User/{user.id}"
     venues_url = f"{URLpre}Venue/GetAllVenues"
 
-    print(f"Requesting URL: {lectures_url}")
-    print(f"Requesting URL: {venues_url}")
+    # Fetch events and venues
+    events_response = requests.get(events_url, headers=headers, verify=False)
+    venues_response = requests.get(venues_url, headers=headers, verify=False)
+    events = [Event(item['time'], item['underlyingId'], item['type'], item['typeEng'], item['courseImplementationId'],
+                    item['courseImpCode'], item['courseImpName'], item['courseImplementationLink'], item['link'], item['timeEnd'])
+              for item in events_response.json()] if events_response.ok else []
+    venues = [Venue(item['name'], item['capacity']) for item in venues_response.json()] if venues_response.ok else []
+    print("Venues Data:", venues)  # Add this line to debug
 
-    try:
-        # events
-        lectures_response = requests.get(lectures_url, verify=False, headers=headers)
-        if lectures_response.ok:
-            lectures = lectures_response.json()
-            # lectures = [Lecture(item['theme'], item['startTime'], item['endTime'], item['courseImplementationName'], item['teacherNames'], item['venueNames']) for item in response]
-            # days = EventDay.make_days(start, num_days, lectures)
-            print(lectures)
-            return render_template("venue_calendar.html", user=user, lectures=lectures, num_days=num_days, today=today)
+    # Organize events by days if needed
+    days = EventDay.make_days(start, num_days, events)
 
-        msg = f"Statuskode: {lectures_response.status_code}"
-        return render_template("error.html", message="An unexpected error occurred.", status=lectures_response.status_code)
-
-    except requests.exceptions.RequestException as e:
-        print(f'An error occurred: {e}')
+    # Pass both events and venues to the template
+    return render_template("venue_calendar.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today)
 
 
-"""        # venues
-        venues_response = requests.get(venues_url, verify=False, headers=headers)
-        if venues_response.ok:
-            venues_data = [Venue(**data) for data in venues_response.json()]
-        else:
-            venues_data = []
 
-        # print(lectures_data)
-        print(venues_data)"""
 
 def get_venues_and_events():
     user = session["user"]
@@ -87,6 +72,8 @@ def fetch_venues(headers):
     response = requests.get(URLpre + "Venue/GetAllVenues", headers=headers, verify=False)
     if response.ok:
         return response.json()
+        return render_template("venue_calendar.html", user=user, venues=venues)
+
     else:
         print(f"Error fetching venue data: {response.status_code}")
         return []
