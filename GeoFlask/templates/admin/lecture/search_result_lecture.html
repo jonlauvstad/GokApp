@@ -108,7 +108,7 @@
 
 <div id="lectureSearchSingleDiv">
     <h1 class="bigHeadlineH1">
-        {% if not deleted %}SØKERESULTAT{% else %}SLETTINGER{% endif %}
+        {% if not deleted %}{%if added %}LAGT TIL{% else %}SØKERESULTAT{% endif %}{% else%}SLETTINGER{% endif %}
     </h1>
 
     {% if found_none %}
