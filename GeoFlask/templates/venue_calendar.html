@@ -5,44 +5,40 @@
 <link href="/static/styles_venues.css" rel="stylesheet">
 {% endblock %}
 
-{% block title %}Venue-Calendar{% endblock %}
+{% block title %}Integrated Venue Calendar{% endblock %}
 
 {% block main %}
 <div>
-    <h2>Venue Calendar</h2>
+    <h2>Klasserom-kalender</h2>
     <table class="admin-venue-table">
         <thead>
-        <tr>
-            <th>Kurs</th>
-            <th>StartTid</th>
-            <th>SluttTid</th>
-
-        </tr>
+            <tr>
+                <!-- First cell empty for layout purposes -->
+                <th>Dato</th> <!-- Added a header for the date column -->
+                {% for venue in venues %}
+                <th>{{ venue.name }}</th>
+                {% endfor %}
+            </tr>
         </thead>
         <tbody>
-            {% for event in events %}
+            {% for day in days %}
             <tr>
-                <td>{{ event['courseImpName'] }}</td>
-                <td>{{ event['time'] }}</td>
-                <td>{{ event['timeEnd'] }}</td>
+                <td>{{ day.datestring }}</td>
+                {% for venue in venues %}
+                <td>
+                    {% set events_at_venue = day.events|selectattr("venueName", "equalto", venue.name)|list %}
+                    {% if events_at_venue %}
+                        {% for event in events_at_venue %}
+                            {{ event.courseImpName }}<br> <!-- Displaying event details -->
+                            {{ event.time }} - {{ event.timeEnd }}<br>
+                        {% endfor %}
+                    {% else %}
+                        Available
+                    {% endif %}
+                </td>
+                {% endfor %}
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
-    <table class="admin-venue-table">
-        <thead>
-        <tr>
-            <th>Rom</th>
-            <th>Kapasitet</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for venue in venues %}
-        <tr>
-            <td>{{ venue['name'] }}</td>
-            <td>{{ venue['capacity'] }}</td>
-        </tr>
-        {% endfor %}
         </tbody>
     </table>
 </div>

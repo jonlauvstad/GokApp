@@ -13,101 +13,127 @@ from ..venue import Venue
 
 URLpre = configuration["URLpre"]
 
+def fetch_test_events():
+    test_events = [
+        Event(
+            time=datetime(2024, 1, 8, 9, 0),
+            underlyingId=1,
+            type="Lecture",
+            typeEng="Lecture",
+            courseImplementationId=8,
+            courseImpCode="CWAKV24SA",
+            courseImpName="Cloud-Web Architecture",
+            courseImplementationLink="/CourseImplementation/8",
+            link="/Lecture/1",
+            timeEnd=datetime(2024, 1, 8, 14, 0)
+        ),
+        # Add more test events as needed
+    ]
+    return test_events
+
 
 def venue_calendar_function():
     user = session["user"]
     token = session["token"]
-
     if not token:
         return render_template("error.html", message="You are not logged in.")
 
-    headers = {"Authorization": f"Bearer {session['token']}"}
-    start_date = request.args.get('start')
-    start = datetime.now().date() if not start_date else parser.parse(start_date).date()
-    today = start.strftime("%Y-%m-%d")
+    #date_input = input(datetime.date())
+
+    headers = {"Authorization": f"Bearer {token}"}
+    venues = fetch_venues(headers)
+
+    # for testing ..
+    from_date = datetime(2024, 1, 8)
+    to_date = datetime(2024, 2, 14)
+
+    # tester med hardkodet tidsramme
+    events = fetch_events(headers, user_id=user.id, from_date=from_date, to_date=to_date)
+
+    # tidsramme ..
+    start_date_param = request.args.get('start')
+    start_date = datetime.now().date() if not start_date_param else parser.parse(start_date_param).date()
     num_days = int(request.args.get('num_days', 14))
 
-    # endpoints
-    events_url = f"{URLpre}Event/User/{user.id}"
-    venues_url = f"{URLpre}Venue/GetAllVenues"
+    days = []
 
-    # Fetch events and venues
-    events_response = requests.get(events_url, headers=headers, verify=False)
-    venues_response = requests.get(venues_url, headers=headers, verify=False)
-    events = [Event(item['time'], item['underlyingId'], item['type'], item['typeEng'], item['courseImplementationId'],
-                    item['courseImpCode'], item['courseImpName'], item['courseImplementationLink'], item['link'], item['timeEnd'])
-              for item in events_response.json()] if events_response.ok else []
-    venues = [Venue(item['name'], item['capacity']) for item in venues_response.json()] if venues_response.ok else []
-    print("Venues Data:", venues)  # Add this line to debug
+    for i in range(num_days):
+        day_date = start_date + timedelta(days=i)
 
-    # Organize events by days if needed
-    days = EventDay.make_days(start, num_days, events)
+        print(f"Day Date: {day_date}, Type: {type(day_date)}")
+        for event in events:
+            print(
+                f"Event Date: {event.date}, Type: {type(event.date)}")
 
-    # Pass both events and venues to the template
-    return render_template("venue_calendar.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today)
+        day_events = [event for event in events if event.date == day_date]
+        print(f"Day: {day_date}, Events: {day_events}")
+        days.append(EventDay(day_date, day_events))
 
+    today = start_date.strftime("%Y-%m-%d")
 
+    # debugging.. printer dager og eventer for hver dag
+    for day in days:
+        print(day.datestring, [event.courseImpName for event in day.events])
 
-
-def get_venues_and_events():
-    user = session["user"]
-    token = session["token"]
-
-    if not token:
-        return render_template("error.html", message="You are not logged in.")
-
-    headers = {'Authorization': f'Bearer {token}'}
-
-    user_id = user.id if hasattr(user, 'id') else None
-
-    venues_data = fetch_venues(headers)
-    events_data = fetch_events(headers, user_id=user_id, event_type=None, from_date=None, to_date=None)
-    days = organize_events(events_data)
-
-    return render_template("admin_venue.html", venues=venues_data, days=days, user=user)
+    return render_template("venue_calendar_test.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today)
 
 
 def fetch_venues(headers):
-    # Implement fetching of venues
-    response = requests.get(URLpre + "Venue/GetAllVenues", headers=headers, verify=False)
+    venues_url = f"{URLpre}Venue/"
+    response = requests.get(venues_url, headers=headers, verify=False)
     if response.ok:
-        return response.json()
-        return render_template("venue_calendar.html", user=user, venues=venues)
-
+        print("Venues JSON Data:", response.json())
+        venues = [
+            Venue(
+                id=item['id'],
+                name=item['name'],
+                description=item['description'],
+                locationId=item['locationId'],
+                streetAddress=item['streetAddress'],
+                postCode=item['postCode'],
+                city=item['city'],
+                capacity=item['capacity'],
+                locationName=item['locationName'],
+                link=item.get('link'),  # bruker .get() i tilfelle 'link' key ikke finnes..
+                links=item.get('links')  # samme for 'links'
+            ) for item in response.json()
+        ]
     else:
-        print(f"Error fetching venue data: {response.status_code}")
-        return []
+        print(f"Error fetching venue data: {response.status_code}, {response.text}")
+        venues = []
+    return venues
 
 
-def fetch_events(headers, user_id, event_type=None, from_date=None, to_date=None):
-    # Construct the URL with the user ID
-    url = f"{URLpre}Event/User/{user_id}"
+def fetch_events(headers, event_type=None, from_date=None, to_date=None):
+    events_url = f"{URLpre}Event/"
+    params = {
+        'type': event_type if event_type else '',
+        'from': from_date.strftime('%Y-%m-%d') if from_date else '',
+        'to': to_date.strftime('%Y-%m-%d') if to_date else ''
+    }
 
-    # Prepare query parameters for filtering, if provided
-    params = {}
-    if event_type:
-        params['type'] = event_type
-    if from_date:
-        params['from'] = from_date.strftime('%Y-%m-%d')
-    if to_date:
-        params['to'] = to_date.strftime('%Y-%m-%d')
-
-    # Make the GET request with headers and query parameters
-    response = requests.get(url, headers=headers, params=params, verify=False)
-
+    response = requests.get(events_url, headers=headers, params=params, verify=False)
     if response.ok:
-        events = response.json()
-        print("Sample event data:", events[0] if events else "No events found")
-        return events
-
+        print("Events JSON Data:", response.json())
+        events = [
+            Event(
+                item['time'],
+                item['underlyingId'],
+                item['type'],
+                item['typeEng'],
+                item['courseImplementationId'],
+                item['courseImpCode'],
+                item['courseImpName'],
+                item['courseImplementationLink'],
+                item['link'],
+                item['timeEnd'] if item['timeEnd'] != '0001-01-01T00:00:00' else None  # Keep 'timeEnd' as a string or handle None
+            ) for item in response.json()
+        ]
     else:
         print(f"Error fetching event data: {response.status_code}, {response.text}")
-        return []
+        events = []
 
-
-def sort_events(events):
-    organized_events = organize_events(events)
-    return organized_events
+    return events
 
 
 def process_venue_availability(venues, events):
@@ -124,7 +150,7 @@ def process_venue_availability(venues, events):
     return venue_availability
 
 
-def organize_events(events):
+"""def organize_events(events):
     # Initialiserer en struktur for å holde eventer organisert etter Venue og dag
     events_by_venue_and_day = defaultdict(lambda: defaultdict(list))
 
@@ -140,5 +166,5 @@ def organize_events(events):
         events_by_venue_and_day[venue_name][weekday].append(event)
 
     return events_by_venue_and_day
-
+"""
 

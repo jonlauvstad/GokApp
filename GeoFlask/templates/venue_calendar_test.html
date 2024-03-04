@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Venue calendar json test</title>
+</head>
+<body>
+{#    {% for venue in venues %}#}
+{#        <p>{{ venue.name }}</p>#}
+{#    {% endfor %}#}
+{##}
+{#    {% for day in days %}#}
+{#        <h3>{{ day.datestring }}</h3>#}
+{#        {% for event in day.events %}#}
+{#         <p>{{ event.courseImpName }} - {{ event.time }}</p>#}
+{#    {% endfor %}#}
+{#{% endfor %}#}
+    <form>
+        <label for="startDateTime">Start:</label>
+        <input type="datetime-local" id="startDateTime" name="startDateTime">
+
+        <label for="endDateTime">End:</label>
+        <input type="datetime-local" id="endDateTime" name="endDateTime">
+
+        <button type="submit">Submit</button>
+    </form>
+    <table>
+        <tr>
+            {% for venue in venues %}
+                <td>{{ venue.name }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+
+</body>
+</html>
