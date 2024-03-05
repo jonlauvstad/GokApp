@@ -3,6 +3,8 @@ from dateutil import parser
 
 from flask import Flask, redirect, render_template, request, session, abort
 from ..config import configuration
+from ..event import Event
+from ..event_day import EventDay
 from ..lectureBooking import LectureBooking
 from ..lecture import Lecture
 
@@ -110,6 +112,7 @@ def conf_lecture_one_function():
     msg = f"Statuskode: {response.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
 
+
 def search_lecture_function():
     user = session["user"]
     headers = {"Authorization": f"Bearer {session['token']}"}
@@ -144,3 +147,4 @@ def search_lecture_function():
     users = response.json()
 
     return render_template("admin/lecture/search_lecture.html", user=user, courseImps=courseImps, venues=venues, users=users)
+

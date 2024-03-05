@@ -10,9 +10,10 @@ import utility.rout_funcs.admin_routs as adm_routs
 import utility.rout_funcs.assignment_routs as ass_routs
 import utility.rout_funcs.lecture_routs as lec_routs
 import utility.rout_funcs.examImp_routs as exImp_routs
-import utility.rout_funcs.a_admin_venue_routs as ven_routs
+import utility.rout_funcs.a_venue_calendar_routs as ven_routs
 import utility.rout_funcs.a_student_resources_routs as stud_rescr
 import utility.api_funcs.api_1 as api_1
+from utility.util_funcs import format_datetime
 
 urllib3.disable_warnings()
 
@@ -26,6 +27,8 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+app.jinja_env.filters['date'] = format_datetime
 
 # MY GLOBAL VARIABLES
 URLpre = configuration["URLpre"]                   # "https://localhost:7042/api/v1/"
@@ -63,18 +66,15 @@ def logout():
 def calendar():
     return cal_routs.calendar_function()
 
-# ------------------------------------------------------------------
-@app.route("/admin_venue")
+@app.route("/venue_calendar")
 @login_required(roles=["teacher", "admin"])
-def admin_venue():
-    return ven_routs.get_venues_and_events()
+def venue_calendar():
+    return ven_routs.venue_calendar_function()
 
 @app.route("/StudentResources")
 @login_required(roles=None)
 def student_resources():
     return stud_rescr.get_resources()
-# ------------------------------------------------------------------
-
 
 @app.route("/Assignment/<int:id>")
 @login_required(roles=None)
