@@ -13,14 +13,17 @@
             <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪</b></label>
         </div>
 
-        <form>
+        <form action="/set_date" method="post">
             <label for="startDateTime">Start:</label>
             <input type="datetime-local" id="startDateTime" name="startDateTime">
 
             <label for="endDateTime">End:</label>
             <input type="datetime-local" id="endDateTime" name="endDateTime">
 
-            <button style="width: 120px; font-size: 15px;" type="submit">Submit</button>
+            <button style="width: 120px; font-size: 15px;" type="submit">Sett dato</button>
+
+            <a href="/add_lecture_one" class="venues_button-add">Ny forelesning</a>
+
         </form>
     </div>
 
@@ -39,8 +42,9 @@
         <!-- Dates & Events-->
         {% for ed in days %}
             <tr style="height: 100px;">
-                <td style="height: 100px; white-space: nowrap; background-color: yellowgreen; border: 1px solid #ddd; padding: 8px">
+                <td style="height: 100px; white-space: nowrap; background-color: {{ 'greenyellow' if ed.datestring == current_day else 'yellowgreen' }}; border: 1px solid #ddd; padding: 8px">
                     <b>{{ ed.datestring }}</b>
+                    <a href="/add_lecture?date={{ ed.datestring }}" class="venues_button-add">Ny Forelesning</a>
                 </td>
                 <div class="venues_day-grid"></div>
                 <!-- Events -->
@@ -53,10 +57,11 @@
                                     {{ event.courseImpName }}
                                     <br>
                                         <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
-                                    </br>
+
                                     {% if event.link %}
-                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Info</a>
+                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
                                     {% endif %}
+                                    </br>
                                 </div>
                             {% endif %}
                         {% endfor %}

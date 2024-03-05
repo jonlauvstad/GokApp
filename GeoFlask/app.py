@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
+
+from utility.rout_funcs import a_venue_calendar_routs
 from flask_session import Session
 import urllib3
 from utility.config import configuration
@@ -66,15 +68,36 @@ def logout():
 def calendar():
     return cal_routs.calendar_function()
 
+# ----------------------------------------------------
+
 @app.route("/venue_calendar")
 @login_required(roles=["teacher", "admin"])
 def venue_calendar():
     return ven_routs.venue_calendar_function()
 
+@app.route('/venue_add_lecture')
+def venue_add_lecture():
+    # Retrieve the date from the query parameter, default to today if not provided
+    date = request.args.get('date', default=datetime.now().strftime('%Y-%m-%d'))
+
+    # Pass the date to your template
+    return render_template('admin/lecture/add_lecture_one.html', default_date=date)
+
+@app.route('/set_date', methods=['POST'])
+def set_date():
+    start_date = request.form.get('startDateTime')
+    end_date = request.form.get('endDateTime')
+    num_days = a_venue_calendar_routs.calculate_num_days(start_date, end_date)
+
+    return redirect(f'/venue_calendar?start={start_date}&num_days={num_days}')
+
 @app.route("/StudentResources")
 @login_required(roles=None)
 def student_resources():
     return stud_rescr.get_resources()
+
+# ----------------------------------------------------
+
 
 @app.route("/Assignment/<int:id>")
 @login_required(roles=None)
