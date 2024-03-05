@@ -60,6 +60,17 @@
     float: right;
 }
 
+.venues_button-add {
+    background-color: lightgrey;
+    color: black;
+    padding: 4px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+
 
 .venues_event {
     grid-column-start: auto; /* start tid */
