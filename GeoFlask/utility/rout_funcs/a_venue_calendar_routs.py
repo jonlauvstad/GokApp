@@ -1,36 +1,13 @@
 from flask import render_template, session, request, flash
 import requests
-# from ..a_event import organize_events
 from datetime import datetime, timedelta
 from dateutil import parser
 from ..event import Event
 from ..event_day import EventDay
 from ..config import configuration
-from collections import defaultdict
-
-from ..lecture import Lecture
 from ..venue import Venue
 
 URLpre = configuration["URLpre"]
-
-def fetch_test_events():
-    test_events = [
-        Event(
-            time=datetime(2024, 1, 8, 9, 0),
-            underlyingId=1,
-            type="Lecture",
-            typeEng="Lecture",
-            courseImplementationId=8,
-            courseImpCode="CWAKV24SA",
-            courseImpName="Cloud-Web Architecture",
-            courseImplementationLink="/CourseImplementation/8",
-            link="/Lecture/1",
-            timeEnd=datetime(2024, 1, 8, 14, 0)
-        ),
-        # Add more test events as needed
-    ]
-    return test_events
-
 
 def venue_calendar_function():
     user = session["user"]
@@ -38,17 +15,23 @@ def venue_calendar_function():
     if not token:
         return render_template("error.html", message="You are not logged in.")
 
-    #date_input = input(datetime.date())
+    # 1. lage html design først
+    # 3 loops
+    # Ytre loop event day (x aksen) (for event in event days)
+    # indre loop : (for venue in venues)
+    # hvs id matcher, trejde loop
+    # hvordan få tabell-rows til å bli relative i str
+    # S - 8 / 16
+    # s - 8 / 16 - 8
 
     headers = {"Authorization": f"Bearer {token}"}
     venues = fetch_venues(headers)
 
     # for testing ..
-    from_date = datetime(2024, 1, 8)
-    to_date = datetime(2024, 2, 14)
+    from_date = datetime.now()
+    to_date = from_date+timedelta(days=14)
 
-    # tester med hardkodet tidsramme
-    events = fetch_events(headers, user_id=user.id, from_date=from_date, to_date=to_date)
+    events = fetch_events(headers, from_date=from_date.isoformat(), to_date=to_date.isoformat())
 
     # tidsramme ..
     start_date_param = request.args.get('start')
@@ -73,9 +56,10 @@ def venue_calendar_function():
 
     # debugging.. printer dager og eventer for hver dag
     for day in days:
-        print(day.datestring, [event.courseImpName for event in day.events])
-
-    return render_template("venue_calendar_test.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today)
+        print(day.datestring, [f"{event.courseImpName}-{event.venueId}" for event in day.events])
+    for day in days:
+        print([event.venueId for event in day.events])
+    return render_template("venue_calendar.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today)
 
 
 def fetch_venues(headers):
@@ -98,18 +82,19 @@ def fetch_venues(headers):
                 links=item.get('links')  # samme for 'links'
             ) for item in response.json()
         ]
+
     else:
         print(f"Error fetching venue data: {response.status_code}, {response.text}")
         venues = []
     return venues
 
 
-def fetch_events(headers, event_type=None, from_date=None, to_date=None):
+def fetch_events(headers, from_date=None, to_date=None):
     events_url = f"{URLpre}Event/"
+
     params = {
-        'type': event_type if event_type else '',
-        'from': from_date.strftime('%Y-%m-%d') if from_date else '',
-        'to': to_date.strftime('%Y-%m-%d') if to_date else ''
+        'from': from_date,
+        'to_date': to_date
     }
 
     response = requests.get(events_url, headers=headers, params=params, verify=False)
@@ -126,9 +111,21 @@ def fetch_events(headers, event_type=None, from_date=None, to_date=None):
                 item['courseImpName'],
                 item['courseImplementationLink'],
                 item['link'],
-                item['timeEnd'] if item['timeEnd'] != '0001-01-01T00:00:00' else None  # Keep 'timeEnd' as a string or handle None
+                item['timeEnd'] if item['timeEnd'] != '0001-01-01T00:00:00' else None,
+                item['venueId'],
+                item['venueName'],
+                item['venueCapacity']
             ) for item in response.json()
         ]
+        for event in events:
+            event.datetime = parser.parse(event.time)
+            event.datetimeFormatted = event.datetime.strftime("%Y-%m-%d %H:%M")
+            if event.timeEnd and event.timeEnd != '0001-01-01T00:00:00':
+                event.datetimeEnd = parser.parse(event.timeEnd)
+                event.datetimeEndFormatted = event.datetimeEnd.strftime("%Y-%m-%d %H:%M")
+            else:
+                event.datetimeEnd = None
+                event.datetimeEndFormatted = None
     else:
         print(f"Error fetching event data: {response.status_code}, {response.text}")
         events = []

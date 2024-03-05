@@ -1,45 +1,68 @@
 {% extends "layout.html" %}
-
 {% block head %}
-<link href="/static/styles.css" rel="stylesheet">
-<link href="/static/styles_venues.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/styles_venues.css">
 {% endblock %}
 
-{% block title %}Integrated Venue Calendar{% endblock %}
+
+{% block title %}Rom-kalender{% endblock %}
 
 {% block main %}
-<div>
-    <h2>Klasserom-kalender</h2>
-    <table class="admin-venue-table">
-        <thead>
-            <tr>
-                <!-- First cell empty for layout purposes -->
-                <th>Dato</th> <!-- Added a header for the date column -->
-                {% for venue in venues %}
-                <th>{{ venue.name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for day in days %}
-            <tr>
-                <td>{{ day.datestring }}</td>
-                {% for venue in venues %}
-                <td>
-                    {% set events_at_venue = day.events|selectattr("venueName", "equalto", venue.name)|list %}
-                    {% if events_at_venue %}
-                        {% for event in events_at_venue %}
-                            {{ event.courseImpName }}<br> <!-- Displaying event details -->
-                            {{ event.time }} - {{ event.timeEnd }}<br>
-                        {% endfor %}
-                    {% else %}
-                        Available
-                    {% endif %}
+    <div style="padding-left: 100px;">
+
+        <div style="text-align: center">
+            <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪</b></label>
+        </div>
+
+        <form>
+            <label for="startDateTime">Start:</label>
+            <input type="datetime-local" id="startDateTime" name="startDateTime">
+
+            <label for="endDateTime">End:</label>
+            <input type="datetime-local" id="endDateTime" name="endDateTime">
+
+            <button style="width: 120px; font-size: 15px;" type="submit">Submit</button>
+        </form>
+    </div>
+
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <!-- Venues -->
+        <tr>
+            <td style="width: 100px"></td>
+            {% for venue in venues %}
+                <td style="border: 1px solid #ddd; padding: 8px; background-color: yellowgreen">
+                    <b>{{ venue.name }}</b>
+                        <p>Kapasitet: {{ venue.capacity }}</p>
                 </td>
+            {% endfor %}
+        </tr>
+        <!-- Dates & Events-->
+        {% for ed in days %}
+            <tr style="height: 100px;">
+                <td style="height: 100px; white-space: nowrap; background-color: yellowgreen; border: 1px solid #ddd; padding: 8px">
+                    <b>{{ ed.datestring }}</b>
+                </td>
+                <div class="venues_day-grid"></div>
+                <!-- Events -->
+                {% for venue in venues %}
+                    <td style="width: calc(100% - 100px / {{ venues|length }}); background: whitesmoke; border: 1px solid #ddd; padding: 8px; ">
+                        {% for event in ed.events %}
+                            {% if event.venueId == venue.id %}
+                                <!--<div style="height: 100px; background: lightgray; overflow: hidden; text-overflow: ellipsis;  padding: 4px;">-->
+                                <div class="event" style="grid-column-start: {{ event.gridStart }}; grid-column-end: span {{ event.gridSpan }};">
+                                    {{ event.courseImpName }}
+                                    <br>
+                                        <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
+                                    </br>
+                                    {% if event.link %}
+                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Info</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
                 {% endfor %}
             </tr>
-            {% endfor %}
-        </tbody>
+        {% endfor %}
     </table>
-</div>
 {% endblock %}

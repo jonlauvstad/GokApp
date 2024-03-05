@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<link href="/static/styles.css" rel="stylesheet">
+<link href="/static/styles_venues.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Integrated Venue Calendar{% endblock %}
+
+{% block main %}
+<div>
+    <h2>Klasserom-kalender</h2>
+    <table class="admin-venue-table">
+        <thead>
+            <tr>
+                <!-- First cell empty for layout purposes -->
+                <th>Dato</th> <!-- Added a header for the date column -->
+                {% for venue in venues %}
+                <th>{{ venue.name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in days %}
+            <tr>
+                <td>{{ day.datestring }}</td>
+                {% for venue in venues %}
+                <td>
+                    {% set events_at_venue = day.events|selectattr("venueName", "equalto", venue.name)|list %}
+                    {% if events_at_venue %}
+                        {% for event in events_at_venue %}
+                            {{ event.courseImpName }}<br> <!-- Displaying event details -->
+                            {{ event.time }} - {{ event.timeEnd }}<br>
+                        {% endfor %}
+                    {% else %}
+                        Available
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
