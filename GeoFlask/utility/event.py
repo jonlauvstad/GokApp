@@ -19,3 +19,4 @@ class Event:
         self.venueId = venueId
         self.venueName = venueName
         self.venueCapacity = venueCapacity
+

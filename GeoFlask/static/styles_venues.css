@@ -43,6 +43,53 @@
 }
 
 
+.venues_button-link {
+    display: inline-block;
+    background-color: lightgrey;
+    color: dimgray;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 5px; /* runde hjørner */
+    width: 60px;
+    height: 15px;
+    line-height: 20px;
+    border: none; /* uten border */
+    cursor: pointer; /* endre pil til peker */
+    float: right;
+}
+
+.venues_button-add {
+    background-color: lightgrey;
+    color: black;
+    padding: 4px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+
+
+.venues_event {
+    grid-column-start: auto; /* start tid */
+    grid-column-end: span 1; /* event-duration */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: lightgray;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.venues_day-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); /* 12 like kolloner, 1 for hver time */
+    gap: 2px;
+}
 
 
 
@@ -117,11 +164,10 @@
 
 
 .event {
-    background-color: #f0f0f0; /* Light grey background */
-    border: 1px solid #ddd; /* Light grey border */
-    padding: 10px; /* Padding inside each event box */
-    margin-bottom: 5px; /* Space between events */
-    border-radius: 5px; /* Rounded corners for the event boxes */
-    font-size: 0.9em; /* Smaller font size for event text */
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
 }
 

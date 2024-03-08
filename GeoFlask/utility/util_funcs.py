@@ -33,3 +33,9 @@ def make_multiple_lectures(courseImpId, firstDate, lastDate, partial_lectures, m
                     num_lectures += 1
         date += datetime.timedelta(days=1)
     return lectures
+
+
+def format_datetime(value, format='%H:%M'):
+    if value is None:
+        return ""
+    return value.strftime(format)
