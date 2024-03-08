@@ -169,10 +169,12 @@ def lecture_multiple_function():
         deleted = False
         added = True
         url += "/multiple"
+        print(add_lectures)
         response = requests.post(url, verify=False, headers=headers, json=add_lectures) # ikke data=add_lectures
 
         # Velger å re-rendre siden med en melding dersom response not ok, som med no_overlap
         if not response.ok:
+            print(response.text)
             e_msg = "Kunne ikke legge inn forelesningene. Sannsynligvis er læreren eller lokalet opptatt, eller det er" \
                     " noe inkonsistent i dataene du la inn"
             return lecture_add_multiple_function(err_msg=e_msg)
