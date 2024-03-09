@@ -55,18 +55,18 @@ def venue_calendar_function():
     current_day = datetime.now().date().strftime("%a %d.%b")
 
     # debugging.. printer dager og eventer for hver dag
-    for day in days:
-        print(day.datestring, [f"{event.courseImpName}-{event.venueId}" for event in day.events])
-    for day in days:
-        print([event.venueId for event in day.events])
-    return render_template("venue_calendar.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today, current_day=current_day)
+    # for day in days:
+    #    print(day.datestring, [f"{event.courseImpName}-{event.venueId}" for event in day.events])
+    # for day in days:
+    #    print([event.venueId for event in day.events])
+    return render_template("venue_calendar_2.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today, current_day=current_day)
 
 
 def fetch_venues(headers):
     venues_url = f"{URLpre}Venue/"
     response = requests.get(venues_url, headers=headers, verify=False)
     if response.ok:
-        print("Venues JSON Data:", response.json())
+        # print("Venues JSON Data:", response.json())
         venues = [
             Venue(
                 id=item['id'],
@@ -99,7 +99,7 @@ def fetch_events(headers, from_date=None, to_date=None):
 
     response = requests.get(events_url, headers=headers, params=params, verify=False)
     if response.ok:
-        print("Events JSON Data:", response.json())
+        # print("Events JSON Data:", response.json())
         events = [
             Event(
                 item['time'],

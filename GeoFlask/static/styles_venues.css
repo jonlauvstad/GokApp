@@ -1,5 +1,148 @@
 /* admin_venue_styles.css */
 
+.venues
+{
+    max-width: 1700px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.date_current
+{
+    background-color: greenyellow;
+    height: 100px;
+    white-space: nowrap;
+    border: 1px solid #dddddd;
+    padding: 8px;
+
+}
+
+.date
+{
+    background-color: yellowgreen;
+    height: 100px;
+    white-space: nowrap;
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.venue-selector
+{
+    margin: 20px 0;
+    text-align: center;
+}
+
+#venueDropdown
+{
+    padding: 10px;
+    width: 100%;
+    max-width: 300px; /* Adjust based on your design */
+}
+
+
+
+.calendar-title
+{
+    text-align: center;
+    /* Other styles */
+}
+
+/*---------------------------------------*/
+/* scrollable table */
+
+@media screen and (max-width: 768px) {
+    .venues {
+        padding-left: 10px;
+    }
+
+    .venues > div,
+    .venue-selector,
+    form,
+    .venues_button-add,
+    .venues_button-link {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    .venue-selector select,
+    input[type="datetime-local"],
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .event,
+    td,
+    th {
+        font-size: 14px; /* Adjust font size for better readability */
+    }
+
+    .calendar-title {
+        text-align: left;
+        padding-left: 20px;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .venues table{
+        padding: 10px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .venues {
+        padding: 5px;
+    }
+    .calendar-title{
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+}
+
+@media screen and (max-width: 768px){
+    .venues > div {
+        padding-left: 20px;
+    }
+}
+/* font sizes */
+@media screen and (max-width: 768px){
+    .venue-selector .venues_button-add, venues_button-link{
+        font-size: 14px;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    input[type="datetime-local"], button, .venues_button-add {
+        padding: 10px; /* Increase padding */
+        font-size: 16px; /* Increase font size for better readability */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .venue-selector select {
+        width: 100%; /* Make the select box full width */
+        max-width: 300px; /* Prevent it from being too wide */
+        margin: 0 auto; /* Center it */
+    }
+}
+
+
+
+
+
+/*---------------------------------------*/
+
 .admin-venue-container {
     width: 100%;
     margin: auto;
