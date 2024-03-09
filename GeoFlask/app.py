@@ -170,6 +170,17 @@ def lecture_add_multiple():
 def api_get_venues():
     return api_1.api_get_venues_func()
 
+@app.route("/api/alert/user")
+@login_required(roles=None)
+def api_update_unseen_alerts_user():
+    pass
+    # return api_1.api_update_unseen_alerts_user_func()
+
+@app.route("/api/alert/user/<int:userId>")
+@login_required(roles=None)
+def api_get_alerts_user(userId):
+    pass
+    return api_1.api_get_alerts_user_func(userId)
 
 # ERROR-HANDELERS HERE!
 @app.errorhandler(404)

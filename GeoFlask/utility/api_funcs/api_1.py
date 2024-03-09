@@ -22,3 +22,25 @@ def api_get_venues_func():
         as_lOfdics = response.json()
         return as_lOfdics
     abort(401)
+
+def api_get_alerts_user_func(userId):
+    seen = request.args.get("seen")
+    number = request.args.get("number")
+    print(f"\nGET ALERTS.. CALLED from {userId}, seen={seen}\n")
+
+    url_ext = f"alert/user/{userId}"
+    url = URLpre + url_ext
+
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    params = {
+        "seen": True if seen else False
+    }
+    response = requests.get(url, verify=False, headers=headers, params=params)
+    if response.ok:
+        as_lOfdics = response.json()
+        if number:
+            dic = {"number": len(as_lOfdics)}
+            print(dic)
+            return dic
+        return as_lOfdics
+    abort(401)
