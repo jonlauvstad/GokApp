@@ -219,7 +219,7 @@
             </h1>
             <a href="/" id="homeA">Hjem</a>
             <a href="/logout" id="logoutA">Logg ut</a>
-            <a href="/WHATEVER" id="msgA"><label id="msgLabel">Meldinger: </label><label id="countLabel" style="color: red;"></label></a>
+            <a href="/alert_see_unseen" id="msgA"><label id="msgLabel">Meldinger: </label><label id="countLabel" style="color: red;"></label></a>
             {% if user.role in ["admin", "teacher"] %}
                 <a href="/attendance" id="attendanceNav">Oppmøte</a>
             {% endif %}

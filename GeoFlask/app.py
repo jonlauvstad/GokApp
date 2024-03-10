@@ -15,6 +15,7 @@ import utility.rout_funcs.examImp_routs as exImp_routs
 import utility.rout_funcs.a_venue_calendar_routs as ven_routs
 import utility.rout_funcs.a_student_resources_routs as stud_rescr
 import utility.api_funcs.api_1 as api_1
+import utility.rout_funcs.alert_routs as alert_routs
 from utility.util_funcs import format_datetime
 
 urllib3.disable_warnings()
@@ -164,6 +165,12 @@ def lecture_multiple():
 def lecture_add_multiple():
     return lec_routs.lecture_add_multiple_function()
 
+@app.route("/alert_see_unseen")
+@login_required(roles=None)
+def alert_see_unseen():
+    return alert_routs.alert_see_unseen_function()
+
+
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
 @login_required(roles=None)
@@ -179,8 +186,12 @@ def api_update_unseen_alerts_user():
 @app.route("/api/alert/user/<int:userId>")
 @login_required(roles=None)
 def api_get_alerts_user(userId):
-    pass
     return api_1.api_get_alerts_user_func(userId)
+
+@app.route("/api/alert/<int:alertId>")
+@login_required(roles=None)
+def api_update_alert_id(alertId):
+    return api_1.api_update_alert_id_func(alertId)
 
 # ERROR-HANDELERS HERE!
 @app.errorhandler(404)

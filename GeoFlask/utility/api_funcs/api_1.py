@@ -26,7 +26,7 @@ def api_get_venues_func():
 def api_get_alerts_user_func(userId):
     seen = request.args.get("seen")
     number = request.args.get("number")
-    print(f"\nGET ALERTS.. CALLED from {userId}, seen={seen}\n")
+    # print(f"\nGET ALERTS.. CALLED from {userId}, seen={seen}\n")
 
     url_ext = f"alert/user/{userId}"
     url = URLpre + url_ext
@@ -40,7 +40,19 @@ def api_get_alerts_user_func(userId):
         as_lOfdics = response.json()
         if number:
             dic = {"number": len(as_lOfdics)}
-            print(dic)
+            # print(dic)
             return dic
         return as_lOfdics
     abort(401)
+
+def api_update_alert_id_func(alertId):
+    url_ext = f"alert/{alertId}"
+    url = URLpre + url_ext
+
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    response = requests.put(url, verify=False, headers=headers)
+    if response.ok:
+        dic = response.json()
+        return dic
+    print(response.text)
+    return {"error_msg": f"Kunne ikke oppdatere varsel med id {alertId}"}
