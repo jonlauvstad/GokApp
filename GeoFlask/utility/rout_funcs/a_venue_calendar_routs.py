@@ -7,7 +7,9 @@ from ..event_day import EventDay
 from ..config import configuration
 from ..venue import Venue
 
+
 URLpre = configuration["URLpre"]
+
 
 def venue_calendar_function():
     user = session["user"]
@@ -15,58 +17,58 @@ def venue_calendar_function():
     if not token:
         return render_template("error.html", message="You are not logged in.")
     headers = {"Authorization": f"Bearer {token}"}
-    # 1. lage html design først
-    # 3 loops
-    # Ytre loop event day (x aksen) (for event in event days)
-    # indre loop : (for venue in venues)
-    # hvs id matcher, trejde loop
-    # hvordan få tabell-rows til å bli relative i str
-    # S - 8 / 16
-    # s - 8 / 16 - 8
 
-    # tidsramme ..
-    # start_date_param = request.args.get('start')
-    # start_date = datetime.now().date() if not start_date_param else parser.parse(start_date_param).date()
-    # num_days = int(request.args.get('num_days', 14))
-
-    # tidsramme v2
+    # DATES-LOGIC
     start_date_str = request.args.get('start')
     if start_date_str:
         start_date = parser.parse(start_date_str).date()
     else:
         start_date = datetime.now().date()
 
-    num_days = request.args.get('num_days', default=14, type=int)
+    num_days = request.args.get('num_days', default=7, type=int)
     from_date = start_date
     to_date = from_date+timedelta(days=num_days)
-    # to_date = start_date + timedelta(days=num_days)
 
     # get venues and events
     venues = fetch_venues(headers)
     events = fetch_events(headers, from_date=from_date.isoformat(), to_date=to_date.isoformat())
-    days = []
 
+    # Genererer "days" med "events" + weekend logic
+    days = []
     for i in range(num_days):
         day_date = start_date + timedelta(days=i)
         day_events = [event for event in events if event.date == day_date]
-        days.append(EventDay(day_date, day_events))
+        day = EventDay(day_date, day_events)
+        day.is_weekend = day_date.weekday() >= 5
+        days.append(day)
 
+    # Date-formater ..
     today = start_date.strftime("%Y-%m-%d")
     current_day = datetime.now().date().strftime("%a %d.%b")
 
     # debugging.. printer dager og eventer for hver dag
-    for day in days:
-        print(day.datestring, [f"{event.courseImpName}-{event.venueId}" for event in day.events])
-    for day in days:
-        print([event.venueId for event in day.events])
-    return render_template("venue_calendar.html", user=user, events=events, venues=venues, days=days, num_days=num_days, today=today, current_day=current_day)
+    # for day in days:
+    #    print(day.datestring, [f"{event.courseImpName}-{event.venueId}" for event in day.events])
+    # for day in days:
+    #    print([event.venueId for event in day.events])
+
+    return render_template("venue_calendar.html",
+                           user=user,
+                           events=events,
+                           venues=venues,
+                           days=days,
+                           num_days=num_days,
+                           today=today,
+                           current_day=current_day,
+                           start_date=start_date.strftime("%Y-%m-%dT%H:%M"),
+                           end_date=to_date.strftime("%Y-%m-%dT%H:%M"))
 
 
 def fetch_venues(headers):
     venues_url = f"{URLpre}Venue/"
     response = requests.get(venues_url, headers=headers, verify=False)
     if response.ok:
-        print("Venues JSON Data:", response.json())
+        # print("Venues JSON Data:", response.json())
         venues = [
             Venue(
                 id=item['id'],
@@ -99,7 +101,7 @@ def fetch_events(headers, from_date=None, to_date=None):
 
     response = requests.get(events_url, headers=headers, params=params, verify=False)
     if response.ok:
-        print("Events JSON Data:", response.json())
+        # print("Events JSON Data:", response.json())
         events = [
             Event(
                 item['time'],
@@ -134,21 +136,21 @@ def fetch_events(headers, from_date=None, to_date=None):
 
 
 def calculate_num_days(start_date, end_date):
-    try:
-        start = parser.parse(start_date)
-        end = parser.parse(end_date)
-    except ValueError:
-        # Handle the error, e.g., by logging and returning a default value or re-raising a more descriptive exception
-        print("Error parsing dates. Please ensure they are in the correct format.")
-        return None  # Or consider raising an exception or returning 0
-
-    # Check if either date is None after parsing attempt
-    if start is None or end is None:
+    if not start_date or not end_date:
         print("One of the dates is None. Please provide valid dates.")
         return None
 
-    delta = end - start
-    return delta.days
+    try:
+        start = parser.parse(start_date)
+        end = parser.parse(end_date)
+        delta = end - start
+        return delta.days
+
+    except ValueError:
+        print("Error parsing dates. Please ensure they are in the correct format.")
+        return None
+
+
 
 """def process_venue_availability(venues, events):
     venue_availability = {venue['id']: {'name': venue['name'], 'availability': {}} for venue in venues}

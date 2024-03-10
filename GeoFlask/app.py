@@ -76,6 +76,7 @@ def calendar():
 def venue_calendar():
     return ven_routs.venue_calendar_function()
 
+
 @app.route('/venue_add_lecture')
 def venue_add_lecture():
     # Retrieve the date from the query parameter, default to today if not provided
@@ -84,13 +85,16 @@ def venue_add_lecture():
     # Pass the date to your template
     return render_template('admin/lecture/add_lecture_one.html', default_date=date)
 
+
 @app.route('/set_date', methods=['POST'])
 def set_date():
     start_date = request.form.get('startDateTime')
     end_date = request.form.get('endDateTime')
     num_days = a_venue_calendar_routs.calculate_num_days(start_date, end_date)
 
-    return redirect(f'/venue_calendar?start={start_date}&num_days={num_days}')
+    return redirect(url_for('venue_calendar', start_date=start_date, end_date=end_date, num_days=num_days))
+    # return redirect(f'/venue_calendar?start={start_date}&num_days={num_days}')
+
 
 @app.route("/StudentResources")
 @login_required(roles=None)
