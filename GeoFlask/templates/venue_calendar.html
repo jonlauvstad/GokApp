@@ -1,38 +1,34 @@
 {% extends "layout.html" %}
 {% block head %}
     <link rel="stylesheet" href="../static/styles_venues.css">
-
-
-
-
 {% endblock %}
 
 
 {% block title %}Rom-kalender{% endblock %}
 
 {% block main %}
-    <script src="../static/JS/toVenue_Calendar.js"></script>
+    <script src="../static/JS/toVenue_Calendar_2.js"></script>
 
-    <!--BROWSER VIEW-->
-    <div id="venue_cal_PcDiv" class="venues_content-container">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪</b></label>
-            </div>
+    <!--_______________________________________BROWSER VIEW_____________________________________________-->
+    <div id="venue_cal_PcDiv" class="venues">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪</b></label>
+        </div>
 
-            <form action="/set_date" method="post">
-                <label for="startDateTime">Start:</label>
-                <input type="datetime-local" id="startDateTime" name="startDateTime">
+        <form action="/set_date" method="post">
+            <label for="startDateTime">Start:</label>
+            <input type="datetime-local" id="startDateTime" name="startDateTime" value="{{ start_date|default('', true) }}">
 
-                <label for="endDateTime">End:</label>
-                <input type="datetime-local" id="endDateTime" name="endDateTime">
+            <label for="endDateTime">End:</label>
+            <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ end_date|default('', true) }}">
 
-                <button style="width: 120px; font-size: 15px;" type="submit">Sett dato</button>
+            <button style="width: 120px; font-size: 15px;" type="submit">Sett dato</button>
 
-                <a href="/add_lecture_one" class="venues_button-add">Ny forelesning</a>
-            </form>
+            <a href="/add_lecture_one" class="venues_button-add">Ny forelesning</a>
+        </form>
 
         <table style="width: 100%; border-collapse: collapse;">
-            <!-- Venues -->
+            <!-- VENUES -->
             <tr>
                 <td style="width: 100px"></td>
                 {% for venue in venues %}
@@ -42,31 +38,36 @@
                     </td>
                 {% endfor %}
             </tr>
-            <!-- Dates & Events-->
+            <!-- DATES -->
             {% for ed in days %}
                 <tr style="height: 100px;">
-                    <td style="height: 100px; white-space: nowrap; background-color: {{ 'greenyellow' if ed.datestring == current_day else 'yellowgreen' }}; border: 1px solid #ddd; padding: 8px">
+                    <td class="{{ 'date_current' if ed.datestring == current_day else ('date_weekend' if ed.date.weekday() >= 5 else 'date') }}">
                         <b>{{ ed.datestring }}</b>
-                        <a href="/add_lecture?date={{ ed.datestring }}" class="venues_button-add">Ny Forelesning</a>
+                        <!-- <a href="/add_lecture?date={{ ed.datestring }}" class="venues_button-add">Ny Forelesning</a> -->
                     </td>
-                    <div class="venues_day-grid"></div>
-                    <!-- Events -->
+                    <!--<div class="venues_day-grid"></div> -->
+                    <!-- EVENTS -->
                     {% for venue in venues %}
                         <td style="width: calc(100% - 100px / {{ venues|length }}); background: whitesmoke; border: 1px solid #ddd; padding: 8px; ">
+                            {% set venue_has_event = false %}
                             {% for event in ed.events %}
                                 {% if event.venueId == venue.id %}
-                                    <!--<div style="height: 100px; background: lightgray; overflow: hidden; text-overflow: ellipsis;  padding: 4px;">-->
+                                    {% set venue_has_event = true %}
                                     <div class="event" style="grid-column-start: {{ event.gridStart }}; grid-column-end: span {{ event.gridSpan }};">
                                         {{ event.courseImpName }}
                                         <br>
-                                            <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
+                                        <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
                                         {% if event.link %}
-                                            <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
+                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
                                         {% endif %}
-                                        </br>
                                     </div>
                                 {% endif %}
                             {% endfor %}
+                            {% if not venue_has_event %}
+                            <div>
+                                <button class="book_rom_button">Book rom</button>
+                            </div>
+                            {% endif %}
                         </td>
                     {% endfor %}
                 </tr>
@@ -74,35 +75,30 @@
         </table>
     </div>
 
-    <!--MOBILE VIEW-->
+    <!--_______________________________________MOBILE VIEW_____________________________________________-->
     <div id="venue_cal_MobDiv">
 
         <div style="text-align: center; margin-bottom: 20px;">
             <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪</b></label>
         </div>
 
-        <!-- date picker form from the browser view, might remove this.. -->
+        <!-- DATE PICKER -->
         <form action="/set_date" method="post">
             <label for="startDateTime">Start:</label>
-            <input type="datetime-local" id="startDateTime" name="startDateTime">
+            <input type="datetime-local" id="startDateTime" name="startDateTime" value="{{ start_date|default('', true) }}">
 
             <label for="endDateTime">End:</label>
-            <input type="datetime-local" id="endDateTime" name="endDateTime">
+            <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ end_date|default('', true) }}">
+
+            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
 
             <button style="width: 120px; font-size: 15px;" type="submit">Sett dato</button>
 
             <a href="/add_lecture_one" class="venues_button-add">Ny forelesning</a>
         </form>
 
-        <!-- Date Picker -->
-        <div>
-            <label for="filterDate">Filter Date:</label>
-            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()">
-        </div>
-
-
+        <!-- VENUE DROPDOWN MENY -->
          <div style="align-items: center">
-                <!-- Venue selector dropdown -->
             <div class="venue-selector">
                 <label for="venueDropdown">Choose a venue:</label>
                 <select id="venueDropdown" onchange="filterVenue()">
@@ -112,44 +108,32 @@
                     {% endfor %}
                 </select>
             </div>
+         </div>
 
-            <!-- VENUES -->
-            <div>
-                {% for venue in venues %}
-                <div id="venue-info-{{ venue.id }}" style="background-color: yellowgreen;">
-                    <div style="width: calc(100% - 100px / {{ venues|length }}); background: whitesmoke; border: 1px solid #ddd; padding: 8px; ">
-                        <b>Rom: {{ venue.name }}</b>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- DAYS / ed = EventDay -->
+        <!-- VENUES, DATES, EVENTS -->
+        {% for venue in venues %}
+        <div class="venues" style="display: none;" id="venue-info-{{ venue.id }}">
+            <h2>{{ venue.name }}</h2>
             {% for ed in days %}
-             <div style="height: 100px; white-space: nowrap; background-color: {{ 'greenyellow' if ed.datestring == current_day else 'yellowgreen' }}; border: 1px solid #ddd; padding: 8px">
-                 <b>{{ ed.datestring }}</b>
-                 <a href="/add_lecture?date={{ ed.datestring }}" class="venues_button-add">Ny Forelesning</a>
-                 <!-- EVENTS -->
-                {% for venue in venues %}
-                    {% for event in ed.events %}
+                <div class="{{ 'date_current' if ed.datestring == current_day else ('date_weekend' if ed.date.weekday() >= 5 else 'date') }}" id="date-{{ ed.date.strftime('%Y-%m-%d') }}" >
+                    <h3>{{  ed.datestring }}</h3>
+                    <button>Book rom</button>
+
+                    {% for event in ed.events  %}
                         {% if event.venueId == venue.id %}
-                        <div class="event" data-venue-id="{{ venue.id }}" data-date="{{ event.date.isoformat() }}" style="grid-column-start: {{ event.gridStart }}; grid-column-end: span {{ event.gridSpan }}; ">
-                            {{ event.courseImpName }}
-                            {{ event.time }}
+                        <div class="event" data-venue-id="{{ event.venueId }}" data-date="{{ event.date.strftime('%Y-%m-%d') }}">
+                            <p>{{ event.courseImpName }}</p>
                             <br>
-                                <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
+                            <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
                             {% if event.link %}
                                 <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
                             {% endif %}
                         </div>
                         {% endif %}
                     {% endfor %}
-             </div>
+                </div>
             {% endfor %}
-             <div class="venues_day-grid"></div>
-
-
-            {% endfor %}
-         </div>
+        </div>
+        {% endfor %}
     </div>
 {% endblock %}

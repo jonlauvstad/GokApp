@@ -4,22 +4,33 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function mobScreen() {
-    var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    if (screenWidth < 550) {
+    let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    if (screenWidth < 550)
+    {
         document.getElementById("venue_cal_PcDiv").style.display = "none";
-    } else {
-        document.getElementById("venue_cal_MobDiv").style.display = "block"; // Ensure this is visible on mobile initially, if that's your intention
+        document.getElementById("venue_cal_MobDiv").style.display = "block";
+    }
+    else
+    {
+        document.getElementById("venue_cal_PcDiv").style.display = "block";
+        document.getElementById("venue_cal_MobDiv").style.display = "none";
     }
 }
 
 function filterVenue() {
-    // Get all properties by ID
-    const selectedVenue = document.getElementById("venueDropdown").value;
-    console.log("Selected Venue:", selectedVenue);
-    const selectedDate = document.getElementById("filterDate").value;
-    console.log("Dates Found:", selectedDate);
+    let selectedVenue = null;
+    let selectedDate = null;
 
-    // Select all properties
+    // Get all properties by ID
+    const venueDropdown = document.getElementById("venueDropdown");
+    if (venueDropdown) {selectedVenue = venueDropdown.value; }
+    const filterDate = document.getElementById("filterDate");
+    if (filterDate) {selectedDate = filterDate.value;}
+
+    console.log("Selected Venue:", selectedVenue)
+    console.log("Selected Date:", selectedDate)
+
+    // Select all properties (venues, events)
     const venues = document.querySelectorAll('[id^="venue-info-"]');
     console.log("Total Venues Found:", venues.length);
     const events = document.querySelectorAll('[id^="event-info-"]');
