@@ -63,6 +63,7 @@
                 counter2++;
                 if (counter2 === numHide){
                     clearInterval(intvIdHide);
+                    element.remove();               // NY NEW !!!!!
                 }
             }, freqMs);
         }, msFade-1000);
@@ -78,6 +79,13 @@
                     clearInterval(intvIdHide);
                 }
             }, 250);
+
+            const anchor = document.createElement("a");
+            anchor.href = "/";
+            setTimeout(() => {
+                anchor.click();
+            }, elms.length*250 + 2000);
+
 
     }
     function callApi(alertId, rowToHide){
@@ -103,13 +111,6 @@
                 }
                 fadeAndHide(rowToHide, 2000, 1000, 50);
                 updateAlertCount();
-            })
-            .then(() =>{
-                const anchor = document.createElement("a");
-                anchor.href = "/";
-                setTimeout(() => {
-                    anchor.click();
-                }, 3000);
             })
             .catch(error =>{
                 console.error("There was a problem with the fetch operation:", error);
