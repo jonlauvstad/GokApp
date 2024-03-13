@@ -32,6 +32,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 app.jinja_env.filters['date'] = format_datetime
+app.jinja_env.add_extension('jinja2.ext.do')
+
 
 # MY GLOBAL VARIABLES
 URLpre = configuration["URLpre"]                   # "https://localhost:7042/api/v1/"
@@ -71,10 +73,25 @@ def calendar():
 
 # ----------------------------------------------------
 
+
 @app.route("/venue_calendar")
 @login_required(roles=["teacher", "admin"])
 def venue_calendar():
     return ven_routs.venue_calendar_function()
+
+@app.route("/book_from_venue")
+@login_required(roles=["teacher", "admin"])
+def book_from_venue():
+    user = request.args.get('user')
+    day = request.args.get('day')
+    date = request.args.get('date')
+    venue_id = request.args.get('venue')
+    return ven_routs.venue_booking_function(user, day, date, venue_id)
+
+@app.route('/venue_cal_single_day/<date>')
+@login_required(roles=["teacher", "admin"])
+def venue_cal_single_view(date):
+    return ven_routs.venue_cal_single_day(date)
 
 
 @app.route('/venue_add_lecture')

@@ -46,11 +46,7 @@ def venue_calendar_function():
     today = start_date.strftime("%Y-%m-%d")
     current_day = datetime.now().date().strftime("%a %d.%b")
 
-    # debugging.. printer dager og eventer for hver dag
-    # for day in days:
-    #    print(day.datestring, [f"{event.courseImpName}-{event.venueId}" for event in day.events])
-    # for day in days:
-    #    print([event.venueId for event in day.events])
+
 
     return render_template("venue_calendar.html",
                            user=user,
@@ -62,6 +58,37 @@ def venue_calendar_function():
                            current_day=current_day,
                            start_date=start_date.strftime("%Y-%m-%dT%H:%M"),
                            end_date=to_date.strftime("%Y-%m-%dT%H:%M"))
+
+
+def venue_cal_single_day(date_str):
+    user = session.get("user")
+    token = session.get("token")
+    if not token:
+        return render_template("error.html", message="You are not logged in.")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Parse the date from the URL parameter
+    try:
+        date = parser.parse(date_str).date()
+    except ValueError:
+        return render_template("error.html", message="Invalid date format.")
+
+    # Assuming you have a similar setup for fetching venues and events
+    venues = fetch_venues(headers)
+    events = fetch_events(headers, from_date=date.isoformat(), to_date=(date + timedelta(days=1)).isoformat())
+
+    # Filter events for the specific day
+    day_events = [event for event in events if event.datetime.date() == date]
+    day = EventDay(date, day_events)
+    day.generate_time_blocks_with_rowspan()
+
+    # Render the SingleDayView template with the day's data
+    return render_template("venue_cal_single_day.html",
+                           user=user,
+                           events=day_events,
+                           venues=venues,
+                           day=day)
+
 
 
 def fetch_venues(headers):
@@ -150,6 +177,17 @@ def calculate_num_days(start_date, end_date):
         print("Error parsing dates. Please ensure they are in the correct format.")
         return None
 
+
+
+def venue_booking_function(user, day, date, venue_id):
+    user = request.args.get('user')
+    date = request.args.get('date')
+    time = request.args.get('time')
+    venue_id = request.args.get('venue_id')
+
+    venue_details = fetch_venues(venue_id)
+
+    return render_template('venue_booking.html', user=user, date=date, time=time, venue_details=venue_details)
 
 
 """def process_venue_availability(venues, events):
