@@ -6,29 +6,108 @@
 <script>
     document.addEventListener('DOMContentLoaded', function(){
         var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        const big = document.getElementById("forBigDiv");
+        const small = document.getElementById("forSmallDiv");
         if (screenWidth > 550) {
-            document.getElementById("indexAttendanceA").style.display = "none";
+            //document.getElementById("indexAttendanceA").style.display = "none";     // Må kommes ut, ellers stopper funken her!!
+            small.style.display = "none";
         }
         else{
-
+            big.style.display = "none";
         }
-
-});
+    });
 </script>
+<style>
+    .adminMenuLabel{
+        font-size: 130px;
+}
+
+    .menuBigTable{
+        margin: auto;
+    }
+    .menuAasButt{
+        color: white;
+        font-weight: bold;
+        margin-left: auto;
+        margin-right: auto;
+        width: 400px;
+        text-align: center;
+        font-size: 2.5em;
+        border-radius: 10px;
+        padding: 14px;
+        display: block;
+        text-decoration: none;
+    }
+
+    @media screen and (max-width: 550px){
+        .menuAasButt{
+            width: 80%;
+            font-size: 24px; /*34*/
+            border: 1px solid black;
+            border-radius: 5px;
+            margin-bottom: 3px;
+        }
+        .adminMenuLabel{
+            font-size: 50px;
+        }
+    }
+
+</style>
 <h1 class="bigHeadlineH1">
     ADMINISTRASJON
 </h1>
 
-<div>
-    <a class="menuDiv" style="background: orangered; display: block;text-decoration: none" href="/admin_lecture">
-        <div><!--style="margin-bottom: -20px;"-->FORELESNING<!--<BR>--></div>
-        <label class="menuLabel">🧑‍🏫</label>
+<div id="forSmallDiv">
+    <a class="menuAasButt" style="background: #ffbf80;" href="/admin_lecture">
+        <div>FORELESNING</div>
+        <label class="adminMenuLabel">🧑‍🏫</label>
     </a>
+    <a class="menuAasButt" style="background: #90ee90;" href="/venue_calendar">
+        <div>ROM</div>
+        <label class="adminMenuLabel">🚪</label>
+    </a>
+    <a class="menuAasButt" style="background: #ffbf80;" href="/admin_exam">
+        <div>EKSAMEN</div>
+        <label class="adminMenuLabel">🙇🏽‍♂</label>
+    </a>
+    <a class="menuAasButt" style="background: #90ee90;" href="/admin_assignment">
+        <div>OPPGAVER</div>
+        <label class="adminMenuLabel">✍</label>
+    </a>
+</div>
 
-    <a class="menuDiv" style="background: green;" href="/venue_calendar">
-        <div><!-- style="margin-bottom: -20px;"-->ROM<!--<BR>--></div>
-        <label class="menuLabel">🚪</label>
-    </a>
+<div id="forBigDiv">
+    <table class="menuBigTable">
+        <tr>
+            <td>
+                <a class="menuAasButt" style="background: #ff9933;" href="/admin_lecture">
+                    <div>FORELESNING</div>
+                    <label class="menuLabel">🧑‍🏫</label>
+                </a>
+            </td>
+            <td>
+                <a class="menuAasButt" style="background: #00cc44;" href="/venue_calendar">
+                    <div>ROM</div>
+                    <label class="menuLabel">🚪</label>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a class="menuAasButt" style="background: #00cc44;" href="/admin_assignment">
+                    <div>OPPGAVER</div>
+                    <label class="menuLabel">✍</label>
+                </a>
+            </td>
+            <td>
+                <a class="menuAasButt" style="background: #ff9933;" href="/admin_exam">
+                    <div>EKSAMEN</div>
+                    <label class="menuLabel">🙇🏽‍♂</label>
+                </a>
+            </td>
+        </tr>
+    </table>
+
 </div>
 
 {% endblock %}
