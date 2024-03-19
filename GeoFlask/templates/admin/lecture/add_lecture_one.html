@@ -7,19 +7,20 @@
     var hostname = window.location.hostname;
     var portNumber = window.location.port;
 
+    {% if prefill %} {{prefill|tojson}} {% endif %}
 
     document.addEventListener('DOMContentLoaded', function(){
-    //     var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    //     if (screenWidth > 550) {
-    //         document.getElementById("indexAttendanceA").style.display = "none";
-    //     }
-    //     else{
-    //
-    //     }
         document.querySelectorAll('input[type="datetime-local"]').forEach(elm =>{
             elm.addEventListener('change', enableCheckBoxAndUpdateVenues);
         });
+        {% if prefill %}
+            fillPrefill();
+        {% endif %}
     });
+
+    function fillPrefill(){
+
+    }
 
     function enableCheckBoxAndUpdateVenues(){
         const start = document.getElementById("startInput").value;

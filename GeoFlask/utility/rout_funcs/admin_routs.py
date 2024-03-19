@@ -27,7 +27,7 @@ def add_lecture_function():
     user = session["user"]
     return render_template("admin/lecture/add_lecture.html", user=user)
 
-def add_lecture_one_function(put=None):
+def add_lecture_one_function(put=None, prefill=None):
     user = session["user"]
 
     url_ext = f"courseImplementation"
@@ -64,7 +64,7 @@ def add_lecture_one_function(put=None):
                                   as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'], as_dic['teacherUserIds'],
                                 as_dic['programTeacherUserIds'])
                 return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2,
-                                       put=put, lecture=lecture)
+                                       put=put, lecture=lecture, prefill=prefill)
             # Håndtere response.ok
 
     msg = f"Statuskode: {response.status_code if not response.ok else response2.status_code}"
