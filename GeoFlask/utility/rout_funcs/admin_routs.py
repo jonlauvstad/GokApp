@@ -27,8 +27,11 @@ def add_lecture_function():
     user = session["user"]
     return render_template("admin/lecture/add_lecture.html", user=user)
 
-def add_lecture_one_function(put=None):
+def add_lecture_one_function(put=None, prefill=None):
     user = session["user"]
+
+    prefill = prefill.serialize()
+    print("PREFILL\n", prefill)
 
     url_ext = f"courseImplementation"
     url = URLpre + url_ext
@@ -47,7 +50,8 @@ def add_lecture_one_function(put=None):
         if response2.ok:
             as_lOfDicts_2 = response2.json()
             if not put:
-                return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2)
+                return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2,
+                                       prefill=prefill)
 
             # Make Api call to get the lecture to fill in values
             put_ext = f"lecture/{put}"
@@ -64,7 +68,7 @@ def add_lecture_one_function(put=None):
                                   as_dic['teacherNames'], as_dic['venueNames'], as_dic['venueIds'], as_dic['teacherUserIds'],
                                 as_dic['programTeacherUserIds'])
                 return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2,
-                                       put=put, lecture=lecture)
+                                       put=put, lecture=lecture, prefill=prefill)
             # Håndtere response.ok
 
     msg = f"Statuskode: {response.status_code if not response.ok else response2.status_code}"

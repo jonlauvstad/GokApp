@@ -7,19 +7,35 @@
     var hostname = window.location.hostname;
     var portNumber = window.location.port;
 
+    {% if prefill %} const prefill= {{prefill|tojson}} {% endif %}
 
     document.addEventListener('DOMContentLoaded', function(){
-    //     var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    //     if (screenWidth > 550) {
-    //         document.getElementById("indexAttendanceA").style.display = "none";
-    //     }
-    //     else{
-    //
-    //     }
         document.querySelectorAll('input[type="datetime-local"]').forEach(elm =>{
             elm.addEventListener('change', enableCheckBoxAndUpdateVenues);
         });
+
+        {% if prefill %} fillPrefill(); {% endif %}
     });
+
+    function fillPrefill(){
+        document.getElementById("startInput").value = prefill.start_date_iso;
+        if (prefill.end_date){
+            document.getElementById("endInput").value = prefill.end_date_iso;
+        }
+        setTimeout(()=>{
+            const cb = document.getElementById("roomCheckBox");
+            cb.disabled = false;
+            cb.click();
+            const opts = document.getElementById("venueSelect").options;
+            Array.from(opts).forEach(elm =>{
+               if (elm.value == prefill.venue_id){
+                   elm.selected = true;
+               }
+            });
+            console.log("BALLE");
+        }, 250);
+
+    }
 
     function enableCheckBoxAndUpdateVenues(){
         const start = document.getElementById("startInput").value;

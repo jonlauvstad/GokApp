@@ -225,7 +225,18 @@ def venue_booking_data(day, date, time, venue_id):
     print("Venue Details (fra routs func):", venue_details)
     print("Time (fra routs func)", time)
     print("Date (fra routs func):", date)
-    return render_template('venue_booking.html', user=user, day=day, date=date, time=time, venue_details=venue_details, venue_id=venue_id)
+
+    time_list = time.split(":")
+    time_str0 = time.split(":")[0]
+    time_str1 = time.split(":")[1]
+    if time_str0[0] == "0":
+        time_str0 = time_str0[-1]
+    if time_str1[0] == "0":
+        time_str1 = time_str1[-1]
+    time_float = int(time_str0) + int(time_str1)/60
+
+    return render_template('venue_booking.html', user=user, day=day, date=date, time=time, time_float=time_float,
+                           venue_details=venue_details, venue_id=venue_id)
 
 
 """def process_venue_availability(venues, events):
