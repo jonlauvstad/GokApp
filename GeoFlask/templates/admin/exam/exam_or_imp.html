@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}Startside{% endblock %}
+
+{% block main %}
+<script>
+    // document.addEventListener('DOMContentLoaded', function(){
+    //     var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    //     if (screenWidth > 550) {
+    //         document.getElementById("indexAttendanceA").style.display = "none";
+    //     }
+    //     else{
+    //
+    //     }
+
+// });
+</script>
+<style>
+    table{
+        margin: auto;
+        width: 36%;
+    }
+    .menuAasButt{
+        color: white;
+        font-weight: bold;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        text-align: center;
+        font-size: 2.5em;
+        border-radius: 10px;
+        padding: 14px;
+        display: block;
+        text-decoration: none;
+    }
+    #aOrange{
+        background: orangered;
+    }
+    #aGreen{
+        background: green;
+    }
+    .normalFontWeight{
+        font-weight: normal;
+    }
+    @media screen and (max-width: 550px){
+        .menuAasButt{
+            font-size: 1.5em;
+        }
+        #aOrange{
+            background: #ffbf80;
+        }
+        #aGreen{
+            background: #90ee90;
+        }
+    }
+</style>
+
+<h1 class="bigHeadlineH1">
+    EKSAMEN
+</h1>
+
+<table>
+    <tr>
+        <td>
+            <a class="menuAasButt" style="display: block;text-decoration: none" href="/template_exam" id="aOrange">
+                <div>EKSAMEN</div>
+                <label class="menuLabel">📃</label>
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a class="menuAasButt" style="display: block;text-decoration: none" href="/implementation_exam" id="aGreen">
+                <div>GJENNOMFØRING</div>
+                <label class="menuLabel normalFontWeight">🏗</label>
+            </a>
+        </td>
+    </tr>
+
+
+</table>
+
+
+{% endblock %}
