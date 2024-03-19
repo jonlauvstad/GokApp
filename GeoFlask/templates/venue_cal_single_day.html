@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+{% block head %}
+    <link rel="stylesheet" href="../static/styles_venues.css">
+    <link rel="stylesheet" href="../static/styles_venues_timeblocks.css">
+{% endblock %}
+
+
+{% block title %}Rom-kalender{% endblock %}
+
+{% block main %}
+    <script src="../static/JS/toVenue_Calendar_2.js"></script>
+
+    <!--_______________________________________BROWSER VIEW_____________________________________________-->
+    <div id="venue_cal_PcDiv" class="venues">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪 - {{ day.datestring }}</b></label>
+        </div>
+
+
+                <!-- SINGLE DAY DATE PICKER -->
+        <div class="form-container">
+            <form action="/single_day_view" method="get">
+                <label for="singleDay"></label>
+                <input class="datePickerBrowser" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
+                <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
+                <button class="submit-button" type="submit">Vis dag</button>
+
+            </form>
+
+            <a style="width: 100px;" class="submit-button" href="/venue_calendar">Vis flere dager</a>
+        </div>
+
+
+
+
+
+        <table style="table-layout: fixed; width: 100%; border-collapse: collapse;">
+            <!-- VENUES -->
+            <tr>
+                <td style="width: 100px"></td>
+                {% for venue in venues %}
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: yellowgreen">
+                        <b>{{ venue.name }}</b>
+                        <p>Kapasitet: {{ venue.capacity }}</p>
+                    </td>
+                {% endfor %}
+            </tr>
+            <!-- TIME BLOCKS FOR THE SINGLE DAY -->
+            {% for block in day.time_blocks %}
+                <tr style="height: 100px;">
+                    <td class="time-block">
+                        <b>{{ block.start|date('%H:%M') }}</b>
+                    </td>
+                    <!-- EVENTS PER VENUE FOR EACH TIME BLOCK -->
+                    {% for venue in venues %}
+                        <td style="width: 100px; background: whitesmoke; border: 1px solid #ddd; padding: 8px; ">
+                            {% set venue_has_event = false %}
+                            {% for event in block.events %}
+                                {% if event.venueId == venue.id %}
+                                    {% set venue_has_event = true %}
+                                    <div class="event" style="padding: 4px;">
+                                        {{ event.courseImpName }}
+                                        <br>
+                                        <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
+                                        {% if event.link %}
+                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not venue_has_event %}
+                            <div class="parent-container">
+                                <a class="book_rom_button" href="{{ url_for('book_from_venue', day=day.date.strftime('%Y-%m-%d'), date=day.date.strftime('%Y-%m-%d'), time=block.start.strftime('%H:%M'), venue_id=venue.id) }}">➕</a>
+                            </div>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!--_______________________________________MOBILE VIEW_____________________________________________-->
+    <div id="venue_cal_MobDiv">
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER</b></label>
+        </div>
+
+            <!-- SINGLE DAY DATE PICKER -->
+        <form action="/single_day_view" method="get">
+            <label for="singleDay"></label>
+            <input class="datePicker" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
+            <br>
+            <br>
+            <button style="width: 70%; font-size: 15px;" type="submit">Vis dag</button>
+
+            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
+        </form>
+
+
+        <!-- VENUE DROPDOWN MENY -->
+        <div style="text-align: center; max-width: 70%; margin: auto;">
+            <div class="venue-selector">
+                <!-- <label for="venueDropdown">Velg et rom:</label> -->
+                <select id="venueDropdown" onchange="filterVenue()">
+                    <option value="all">Alle rom</option>
+                    {% for venue in venues %}
+                    <option value="{{ venue.id }}">{{ venue.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+         </div>
+
+         <!-- VENUES, DATES, EVENTS -->
+        {% for venue in venues %}
+        <div class="venues" style="display: none;" id="venue-info-{{ venue.id }}">
+            <h2>{{ venue.name }}</h2>
+            {% for ed in days %}
+                <!-- Here, instead of directly listing events, we iterate through time blocks -->
+                {% for block in ed.time_blocks %}
+                    <div class="time-block" id="block-{{ block.start|date('%Y-%m-%d-%H-%M') }}">
+                        <h3>{{ block.start|date('%H:%M') }} - {{ block.end|date('%H:%M') }}</h3>
+                        {% for event in block.events %}
+                            {% if event.venueId == venue.id %}
+                                <div class="event" data-venue-id="{{ event.venueId }}" data-date="{{ event.date.strftime('%Y-%m-%d') }}">
+                                    <p>{{ event.courseImpName }}</p>
+                                    <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
+                                    {% if event.link %}
+                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <!-- If no events in this block for this venue, show a "Book rom" button -->
+                        {% if block.events|length == 0 or not block.events %}
+                            <button>Book rom</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
