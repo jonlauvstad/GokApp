@@ -241,7 +241,6 @@ def venue_booking_data(day, date, time, venue_id):
 
     return venue_availability"""
 
-
 """def organize_events(events):
     # Initialiserer en struktur for å holde eventer organisert etter Venue og dag
     events_by_venue_and_day = defaultdict(lambda: defaultdict(list))
