@@ -203,10 +203,10 @@
 
 .form-container {
     display: flex;
-    flex-direction: column; /* Stack children vertically */
+    flex-direction: row; /* Stack children vertically */
     align-items: center; /* Center children horizontally */
     justify-content: start; /* Align children to the start of the container */
-    gap: 10px; /* Adds space between children */
+    padding-left: 100px;
 }
 
 
@@ -215,17 +215,20 @@
     display: inline-block;
     background-color: whitesmoke;
     color: dimgray;
-    padding: 5px 10px;
     text-align: center;
     text-decoration: none;
     font-size: 14px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    height: 45px;
+    height: 25px;
     line-height: 20px;
     cursor: pointer;
 }
 
+.book_rom_button:hover {
+    background-color: greenyellow; /* Lighter shade for hover */
+    color: black; /* Change text color on hover */
+}
 
 
 .venues_button-link

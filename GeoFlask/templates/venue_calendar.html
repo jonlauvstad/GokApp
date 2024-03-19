@@ -16,7 +16,7 @@
             <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER 🚪</b></label>
         </div>
 
-        <form action="/set_date" method="post">
+        <form action="/set_date" method="post" style="padding-left: 100px">
             <label for="startDateTime">Start:</label>
             <input type="datetime-local" id="startDateTime" name="startDateTime" value="{{ start_date|default('', true) }}">
 
@@ -64,12 +64,6 @@
                                     </div>
                                 {% endif %}
                             {% endfor %}
-                            {% if not venue_has_event %}
-                            <div class="parent-container">
-                                <a href="/book_from_venue" class="book_rom_button">Registrere📝</a>
-                            </div>
-
-                            {% endif %}
                         </td>
                     {% endfor %}
                 </tr>

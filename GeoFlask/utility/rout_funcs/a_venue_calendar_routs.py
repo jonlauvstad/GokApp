@@ -46,8 +46,6 @@ def venue_calendar_function():
     today = start_date.strftime("%Y-%m-%d")
     current_day = datetime.now().date().strftime("%a %d.%b")
 
-
-
     return render_template("venue_calendar.html",
                            user=user,
                            events=events,
@@ -90,7 +88,6 @@ def venue_cal_single_day(date_str):
                            day=day)
 
 
-
 def fetch_venues(headers):
     venues_url = f"{URLpre}Venue/"
     response = requests.get(venues_url, headers=headers, verify=False)
@@ -116,6 +113,44 @@ def fetch_venues(headers):
         print(f"Error fetching venue data: {response.status_code}, {response.text}")
         venues = []
     return venues
+
+
+def fetch_venue_by_id(headers, venue_id):
+    user = session["user"]
+    token = session["token"]
+    if not token:
+        return render_template("error.html", message="You are not logged in.")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    print(f"Attempting to fetch details for venue ID: {venue_id}")
+    venue_url = f"{URLpre}Venue/{venue_id}"
+    print(f"Fetching venue details from: {venue_url}")
+
+    try:
+        response = requests.get(venue_url, headers=headers, verify=False)
+        print(f"Response status code: {response.status_code}")  # Print the status code of the response
+        if response.ok:
+            item = response.json()
+            print("Venue data received:", item)  # Print the JSON data received
+            venue = Venue(
+                    id=item['id'],
+                    name=item['name'],
+                    description=item['description'],
+                    locationId=item['locationId'],
+                    streetAddress=item['streetAddress'],
+                    postCode=item['postCode'],
+                    city=item['city'],
+                    capacity=item['capacity'],
+                    locationName=item['locationName'],
+                    link=item.get('link'),  # Using .get() in case 'link' key doesn't exist
+                    links=item.get('links')  # Same for 'links'
+                )
+            return venue
+        else:
+            print(f"Error fetching venue data: {response.status_code}, {response.text}")  # Print the error status code and text
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")  # Print the exception if the request failed
+    return None
 
 
 def fetch_events(headers, from_date=None, to_date=None):
@@ -178,16 +213,19 @@ def calculate_num_days(start_date, end_date):
         return None
 
 
+def venue_booking_data(day, date, time, venue_id):
+    user = session["user"]
+    token = session["token"]
+    if not token:
+        return render_template("error.html", message="You are not logged in.")
+    headers = {"Authorization": f"Bearer {token}"}
 
-def venue_booking_function(user, day, date, venue_id):
-    user = request.args.get('user')
-    date = request.args.get('date')
-    time = request.args.get('time')
-    venue_id = request.args.get('venue_id')
-
-    venue_details = fetch_venues(venue_id)
-
-    return render_template('venue_booking.html', user=user, date=date, time=time, venue_details=venue_details)
+    venue_details = fetch_venue_by_id(headers, venue_id)
+    print("Venue ID (fra routs func):", venue_id)
+    print("Venue Details (fra routs func):", venue_details)
+    print("Time (fra routs func)", time)
+    print("Date (fra routs func):", date)
+    return render_template('venue_booking.html', user=user, day=day, date=date, time=time, venue_details=venue_details, venue_id=venue_id)
 
 
 """def process_venue_availability(venues, events):

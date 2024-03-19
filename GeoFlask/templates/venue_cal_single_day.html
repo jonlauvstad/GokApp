@@ -22,9 +22,11 @@
             <form action="/single_day_view" method="get">
                 <label for="singleDay"></label>
                 <input class="datePickerBrowser" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
-                <button class="submit-button" type="submit">Vis dag</button>
                 <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
+                <button class="submit-button" type="submit">Vis dag</button>
+
             </form>
+
             <a style="width: 100px;" class="submit-button" href="/venue_calendar">Vis flere dager</a>
         </div>
 
@@ -68,10 +70,7 @@
                             {% endfor %}
                             {% if not venue_has_event %}
                             <div class="parent-container">
-                                <a href="/book_from_venue?date={{ day.date|date('%Y-%m-%d') }}&time={{ block.start|date('%H:%M') }}&venue_id={{ venue.id }}" class="book_rom_button">Book</a>
-                                <!-- <button class="book_rom_button">
-                                   <span style="font-size: 15px; font-family: monospace">Registrere📝</span>
-                                </button>-->
+                                <a class="book_rom_button" href="{{ url_for('book_from_venue', day=day.date.strftime('%Y-%m-%d'), date=day.date.strftime('%Y-%m-%d'), time=block.start.strftime('%H:%M'), venue_id=venue.id) }}">➕</a>
                             </div>
                             {% endif %}
                         </td>

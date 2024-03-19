@@ -13,6 +13,7 @@ import utility.rout_funcs.assignment_routs as ass_routs
 import utility.rout_funcs.lecture_routs as lec_routs
 import utility.rout_funcs.examImp_routs as exImp_routs
 import utility.rout_funcs.a_venue_calendar_routs as ven_routs
+import utility.rout_funcs.a_venue_booking_routs as ven_book_routs
 import utility.rout_funcs.a_student_resources_routs as stud_rescr
 import utility.api_funcs.api_1 as api_1
 import utility.rout_funcs.alert_routs as alert_routs
@@ -79,14 +80,40 @@ def calendar():
 def venue_calendar():
     return ven_routs.venue_calendar_function()
 
-@app.route("/book_from_venue")
+
+@app.route("/book_from_venue", methods=['GET'])
 @login_required(roles=["teacher", "admin"])
 def book_from_venue():
-    user = request.args.get('user')
-    day = request.args.get('day')
     date = request.args.get('date')
-    venue_id = request.args.get('venue')
-    return ven_routs.venue_booking_function(user, day, date, venue_id)
+    print("DATE! (fra app.route('/book_from_venue'):", date)
+    day = request.args.get('day')
+    print("DAY! (fra app.route('/book_from_venue'):", day)
+    time = request.args.get('time')
+    print("TIME!(fra app.route('/book_from_venue'):", time)
+    venue_id = request.args.get('venue_id')
+    print("VENUE ID!(fra app.route('/book_from_venue'):" + venue_id)
+    return ven_routs.venue_booking_data(date, day, time, venue_id)
+
+
+@app.route("/book_from_venue_lecture", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def venue_booking_lecture():
+    date = request.args.get('date')
+    day = request.args.get('day')
+    time = request.args.get('time')
+    venue_id = request.args.get('venue_id')
+    return ven_book_routs.venue_booking_lecture_function(date, day, time, venue_id)
+
+
+@app.route("/book_from_venue_exam", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def venue_booking_exam():
+    date = request.args.get('date')
+    day = request.args.get('day')
+    time = request.args.get('time')
+    venue_id = request.args.get('venue_id')
+    return ven_book_routs.venue_booking_exam_function(date, day, time, venue_id,)
+
 
 @app.route('/venue_cal_single_day/<date>')
 @login_required(roles=["teacher", "admin"])
@@ -94,12 +121,11 @@ def venue_cal_single_view(date):
     return ven_routs.venue_cal_single_day(date)
 
 
-@app.route('/venue_add_lecture')
+@app.route('/venue_add_lecture') # generell og ikke spesifisert booking
 def venue_add_lecture():
     # Retrieve the date from the query parameter, default to today if not provided
     date = request.args.get('date', default=datetime.now().strftime('%Y-%m-%d'))
 
-    # Pass the date to your template
     return render_template('admin/lecture/add_lecture_one.html', default_date=date)
 
 
@@ -110,7 +136,6 @@ def set_date():
     num_days = a_venue_calendar_routs.calculate_num_days(start_date, end_date)
 
     return redirect(url_for('venue_calendar', start_date=start_date, end_date=end_date, num_days=num_days))
-    # return redirect(f'/venue_calendar?start={start_date}&num_days={num_days}')
 
 
 @app.route("/StudentResources")

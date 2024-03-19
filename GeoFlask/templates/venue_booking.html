@@ -1,37 +1,92 @@
 {% extends "layout.html" %}
 {% block head %}
     <link rel="stylesheet" href="../static/styles_venues.css">
+    <link rel="stylesheet" href="../static/styles.css">
     <link rel="stylesheet" href="../static/styles_venues_timeblocks.css">
+
+    <style>
+        .center-container
+        {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px; /* This makes sure that the container takes at least the full height of the viewport */
+
+        }
+
+        .menu-container
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .menuDiv
+        {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            padding: 10px;
+            color: white;
+            border-radius: 5px;
+            margin: 0 5px;
+
+        }
+        .menuLabel{
+            font-size: 130px;
+        }
+
+        .event
+        {
+            display: flex;
+            flex-direction: column;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+    </style>
+
 {% endblock %}
 
 {% block title %}Booking{% endblock %}
 
 {% block main %}
-
-    <h1>Her kommer booking av Lectures og Exam basert på venue</h1>
-    <a style="width: 100px;" class="submit-button" href="/venue_calendar">Tilbake</a>
-
-    <!-- Check for and display the day, date, and venue_id -->
-    <div>
-    {% for day in ed %}
-        {% if day %}
-            <p>Day: {{ day }}</p>
-        {% else %}
-            <p>Day information is missing.</p>
-        {% endif %}
-
-        {% if date %}
-            <p>Date: {{ date }}</p>
-        {% else %}
-            <p>Date information is missing.</p>
-        {% endif %}
-
-        {% if venue_id %}
-            <p>Venue ID: {{ venue_id }}</p>
-        {% else %}
-            <p>Venue information is missing.</p>
-        {% endif %}
-    {% endfor %}
+    <div class="center-container">
+        <h1>Booking</h1>
     </div>
+
+
+    <div class="menu-container">
+
+        <div class="event">
+            <p>Date: {{ date }}</p>
+            <p>Time: {{ time }}</p>
+            <p>Venue ID: {{ venue_id }}</p>
+            <p>Venue Name: {{ venue_details.name }}</p>
+            <p>Capacity: {{ venue_details.capacity }}</p>
+        </div>
+
+        <a class="menuDiv" style="background: green;" href="/book_from_venue_lecture?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
+            <div>Forelesning</div>
+            <label class="menuLabel">📃</label>
+        </a>
+
+        <a class="menuDiv" style="background: blue;" href="/book_from_venue_exam?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
+            <div>Eksamen</div>
+            <label class="menuLabel">📃</label>
+        </a>
+
+    </div>
+
+    <div style="display: flex; justify-content: center; padding-top: 10px">
+        <a style=" font-size: 18px" class="venues_button-add" href="/venue_calendar">Tilbake⬅️</a>
+    </div>
+
+
+
 
 {% endblock %}
