@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block head %}
+    <link rel="stylesheet" href="../static/styles_venues.css">
+    <link rel="stylesheet" href="../static/styles_venues_timeblocks.css">
+{% endblock %}
+
+{% block title %}Booking{% endblock %}
+
+{% block main %}
+    <!-- venue_booking.html -->
+    <p>Date: {{ date }}</p>
+    <p>Time: {{ time }}</p>
+    <p>Venue ID: {{ venue_id }}</p>
+    <p>Venue Name: {{ venue_details.name }}</p>
+    <p>Capacity: {{ venue_details.capacity }}</p>
+
+    <a href="/venue_calendar">Tilbake⬅️</a>
+
+
+{% endblock %}
