@@ -14,6 +14,22 @@
     <p>Venue Name: {{ venue_details.name }}</p>
     <p>Capacity: {{ venue_details.capacity }}</p>
 
+    <form action="{{ url_for('venue_booking_lecture_submit') }}" method="post">
+        <input type="hidden" name="venue_id" value="{{ venue_id }}">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="time" value="{{ time }}">
+
+        <label for="lecture_title">Tittel</label>
+        <input type="text" id="lecture_title" name="lecture_title">
+
+        <label for="lecture_desc">Beskrivelse:</label>
+        <input type="text" id="lecture_desc" name="lecture_desc">
+
+
+
+        <button type="submit">Registrere</button>
+    </form>
+
     <a href="/venue_calendar">Tilbake⬅️</a>
 
 
