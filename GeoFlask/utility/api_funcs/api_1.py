@@ -3,6 +3,7 @@ import requests
 from datetime import datetime
 from ..config import configuration
 from ..venue import Venue
+from ..exam import Exam
 
 
 URLpre = configuration["URLpre"]
@@ -56,3 +57,25 @@ def api_update_alert_id_func(alertId):
         return dic
     print(response.text)
     return {"error_msg": f"Kunne ikke oppdatere varsel med id {alertId}"}
+
+def api_exam_id_function(id):
+    url_ext = f"exam/{id}"
+    url = URLpre + url_ext
+
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    response = requests.get(url, verify=False, headers=headers)
+    if response.ok:
+        dic = response.json()
+        exam = Exam(dic['id'], dic['courseImplementationId'], dic['category'], dic['durationHours'], dic['periodStart'],
+                    dic['periodEnd'],
+                    dic['courseImplementationCode'], dic['courseImplementationName'],
+                    dic['examImplementationIds'], dic['examResultIds'],
+                    dic['link'], dic['courseImplementationLink'])
+        if request.args.get("save"):
+            session['exam'] = exam
+        return exam.serialize()
+    print(response.status_code, response.text)
+    return {
+        "err_msg": f"Kunne ikke finne eksamen med id {id}."
+    }
+

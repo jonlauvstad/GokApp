@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+    }
+</style>
+
+<script></script>
+
+<h1 class="bigHeadlineH1">
+    {{head_prefix}}EKSAMEN
+</h1>
+<table>
+    <tr>
+        <td>Id:</td><td>{{exam.id}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomføringsid:</td> <td>{{exam.courseImplementationId}}</td>
+    </tr>
+    <tr>
+        <td>Type:</td><td>{{exam.category}}</td>
+    </tr>
+    <tr>
+        <td>Varighet</td><td>{{exam.durationHours}} timer</td>
+    </tr>
+    <tr>
+        <td>Periodestart:</td><td>{{exam.periodStart_string}}</td>
+    </tr>
+    <tr>
+        <td>Periodeslutt:</td><td>{{exam.periodEnd_string}}</td>
+    </tr>
+    <tr>
+        <td>Link:</td><td><a href="{{exam.link}}">{{exam.link}}</a></td>
+    </tr>
+    <tr>
+        <td>Kursgjennomføringslink:</td><td><a href="{{exam.courseImplementationLink}}">{{exam.courseImplementationLink}}</a></td>
+    </tr>
+</table>
+
+{% endblock %}

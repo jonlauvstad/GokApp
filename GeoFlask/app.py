@@ -17,6 +17,7 @@ import utility.rout_funcs.a_venue_booking_routs as ven_book_routs
 import utility.rout_funcs.a_student_resources_routs as stud_rescr
 import utility.api_funcs.api_1 as api_1
 import utility.rout_funcs.alert_routs as alert_routs
+import utility.rout_funcs.exam_routs as exam_routs
 from utility.util_funcs import format_datetime
 
 urllib3.disable_warnings()
@@ -216,6 +217,25 @@ def lecture_add_multiple():
 def alert_see_unseen():
     return alert_routs.alert_see_unseen_function()
 
+@app.route("/admin_exam")
+@login_required(roles=["teacher", "admin"])
+def admin_exam():
+    return exam_routs.admin_exam_function()
+
+@app.route("/template_exam", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def template_exam():
+    return exam_routs.template_exam_function()
+
+@app.route("/conf_exam", methods={"POST"})
+@login_required(roles=["teacher", "admin"])
+def conf_exam():
+    return exam_routs.conf_exam_function()
+
+@app.route("/Exam/<int:id>", methods=["GET", "POST"])
+@login_required(roles=None)
+def exam_id(id):
+    return exam_routs.exam_id_function(id)
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
@@ -238,6 +258,11 @@ def api_get_alerts_user(userId):
 @login_required(roles=None)
 def api_update_alert_id(alertId):
     return api_1.api_update_alert_id_func(alertId)
+
+@app.route("/api/exam/<int:id>")
+@login_required(roles=None)
+def api_exam_id(id):
+    return api_1.api_exam_id_function(id)
 
 # ERROR-HANDELERS HERE!
 @app.errorhandler(404)
