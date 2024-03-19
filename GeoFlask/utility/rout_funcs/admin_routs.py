@@ -30,6 +30,9 @@ def add_lecture_function():
 def add_lecture_one_function(put=None, prefill=None):
     user = session["user"]
 
+    prefill = prefill.serialize()
+    print("PREFILL\n", prefill)
+
     url_ext = f"courseImplementation"
     url = URLpre + url_ext
     now = datetime.datetime.now().isoformat()
@@ -47,7 +50,8 @@ def add_lecture_one_function(put=None, prefill=None):
         if response2.ok:
             as_lOfDicts_2 = response2.json()
             if not put:
-                return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2)
+                return render_template("admin/lecture/add_lecture_one.html", user=user, courseImps=as_lOfdics, venues=as_lOfDicts_2,
+                                       prefill=prefill)
 
             # Make Api call to get the lecture to fill in values
             put_ext = f"lecture/{put}"
