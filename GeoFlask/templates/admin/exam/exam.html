@@ -7,9 +7,49 @@
     table{
         margin: auto;
     }
+    button{
+        font-size: x-small;
+        border-radius: 4px;
+        width: 40%;
+    }
+    td{
+        vertical-align: top;
+    }
+    @media screen  and (max-width:550px){
+        .smallFontA{
+            font-size: small;
+        }
+    }
+
 </style>
 
-<script></script>
+<script>
+    function getExamById(event){
+        const action = event.target.dataset.action;
+        document.getElementById("actionInput").value = action;
+        const examId = Number("{{exam.id}}");
+        const url = `http://${hostname}:${portNumber}/api/exam/${examId}?save=Balle`;
+        console.log("URL:", url);
+        fetch(url,
+        {
+            method: "GET"
+        })
+        .then(response =>{
+            console.log(response);
+            if(!response.ok){
+                throw new Error("Network response was not ok.");
+            }
+            return response.json();
+        })
+        .then(data =>{
+            console.log(data.category);
+            document.getElementById("formButton").click();
+        })
+        .catch(error =>{
+            console.error("There was a problem with the fetch operation:", error);
+        });
+    }
+</script>
 
 <h1 class="bigHeadlineH1">
     {{head_prefix}}EKSAMEN
@@ -19,7 +59,13 @@
         <td>Id:</td><td>{{exam.id}}</td>
     </tr>
     <tr>
-        <td>Kursgjennomføringsid:</td> <td>{{exam.courseImplementationId}}</td>
+        <td>Kursgjennomførings-id:</td> <td>{{exam.courseImplementationId}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomførings-kode:</td><td>{{exam.courseImplementationCode}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomførings-navn:</td><td>{{exam.courseImplementationName}}</td>
     </tr>
     <tr>
         <td>Type:</td><td>{{exam.category}}</td>
@@ -37,8 +83,21 @@
         <td>Link:</td><td><a href="{{exam.link}}">{{exam.link}}</a></td>
     </tr>
     <tr>
-        <td>Kursgjennomføringslink:</td><td><a href="{{exam.courseImplementationLink}}">{{exam.courseImplementationLink}}</a></td>
+        <td>Kursgjennomførings-link:</td>
+        <td><a href="{{exam.courseImplementationLink}}" class="smallFontA">{{exam.courseImplementationLink}}</a></td>
+    </tr>
+    <tr>
+        <td><a href="/template_exam">Tilbake til eksamen</a></td>
+        <td>
+            <button data-action="slette" onclick="getExamById(event)">Slett!</button>
+            <button data-action="endre" onclick="getExamById(event)">Endr!</button>
+        </td>
     </tr>
 </table>
+
+<form style="display: none" id="form" action="/conf_exam" method="post">
+    <input name="action" id="actionInput">
+    <button id="formButton"></button>
+</form>
 
 {% endblock %}

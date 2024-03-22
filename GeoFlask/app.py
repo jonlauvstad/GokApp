@@ -227,7 +227,7 @@ def admin_exam():
 def template_exam():
     return exam_routs.template_exam_function()
 
-@app.route("/conf_exam", methods={"POST"})
+@app.route("/conf_exam", methods=["POST"])
 @login_required(roles=["teacher", "admin"])
 def conf_exam():
     return exam_routs.conf_exam_function()
@@ -236,6 +236,11 @@ def conf_exam():
 @login_required(roles=None)
 def exam_id(id):
     return exam_routs.exam_id_function(id)
+
+@app.route("/Exam")
+@login_required(roles=None)
+def exam():
+    return exam_routs.exam_getAll_function()
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
