@@ -8,6 +8,7 @@ from ..event_day import EventDay
 from ..lectureBooking import LectureBooking
 from ..lecture import Lecture
 
+
 import requests
 import json
 
@@ -30,8 +31,9 @@ def add_lecture_function():
 def add_lecture_one_function(put=None, prefill=None):
     user = session["user"]
 
-    prefill = prefill.serialize()
-    print("PREFILL\n", prefill)
+    if prefill:
+        prefill = prefill.serialize()
+        print("PREFILL\n", prefill)
 
     url_ext = f"courseImplementation"
     url = URLpre + url_ext

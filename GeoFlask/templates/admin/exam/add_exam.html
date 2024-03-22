@@ -64,27 +64,70 @@
         margin-right: 20px;
     }
     #popupError{
-        /*width: 100%;*/
+        width: 76% !important;
         color: red;
         display: inline-block;
-        width:185px;
+        /*border: 1px solid blue;*/
     }
     #registerButt{
         border-radius: 5px;
         color: white;
         background: cornflowerblue;
     }
+    #hideButtonDiv{
+        width: 100%;
+        display: inline-block;
+        text-align: left;
+    }
+    #hideButton{
+        /*float: right;*/
+    }
 
+
+    @media screen and (max-width:550px){
+        #insidePopup{
+            font-size: x-small;
+            display: table;
+            margin: auto;
+            /*width: fit-content;*/
+            width: 92%;
+        }
+        #insidePopup select, #insidePopup input {
+            font-size: xx-small;
+            width: 130px;
+        }
+        #insidePopup label{
+            width: 115px;
+        }
+        #insidePopup button{
+            margin-left: 5px;
+            float: initial;
+            min-width: 40px;
+            width: auto;
+            font-size: xx-small;
+        }
+
+        #hideButton{
+            /*float: right;*/
+        }
+        #insidePopup div{
+            margin-bottom: 6px;
+        }
+        #hideButtonDiv{
+            width: 100%;
+            text-align: right;
+        }
+        #popupError{
+            text-align: left;
+        }
+    }
 </style>
 
 <script>
     const cimps = {{courseImps|tojson}};
-    // alert(`${cimps[0].startDate}  -  ${new Date().toISOString().slice(0, 16)}` );
 
     let try_delete = false;
     {% if try_delete %} try_delete = true; {% endif %}
-    // {% if try_delete %} try_delete = {{try_delete|tojson}} {% endif %}
-    // if (try_delete){alert(try_delete.err_msg);}
 
     document.addEventListener("DOMContentLoaded", () =>{
         if (try_delete){
@@ -103,12 +146,15 @@
             document.getElementById("registerButt").innerHTML= "Slett!"
         }
 
-        updateCourseStartEnd();
+        {% if put %} history.pushState({}, '', '/template_exam'); {% endif %}
+        {% if not put %} updateCourseStartEnd(); {% endif %}    // Hadde denne en stund inn jinja if not put
+
     });
 
 
     function popUp(event){
-        const choice = event.target.value;
+        choice = event.target.value;
+
         const popupDiv = document.getElementById("popup");
         if (["endre", "slette"].includes(choice)){
             popupDiv.style.display = "block";
@@ -136,6 +182,7 @@
             // sette forms action til /conf_exam
             const theForm = document.getElementById("theForm");
             theForm.setAttribute("action", "/conf_exam");
+            theForm.setAttribute("method", "post");
 
             // sette knappens innerHTML til Registrér!
             document.getElementById("registerButt").innerHTML = 'Registrér!';
@@ -174,6 +221,7 @@
                 console.log(data.category);
                 const theForm = document.getElementById("theForm");
                 theForm.setAttribute("action", "/conf_exam");
+                theForm.setAttribute("method", "post");
                 document.getElementById("registerButt").click();
             }
         })
@@ -183,8 +231,13 @@
 
     }
 
-    function getExamByCourseImpId(){
-
+    function getExamsByCourseImpId(){
+        const action = document.getElementById("regChangeDeleteSelect").value;
+        const courseImpId = document.getElementById("courseIdSelect").value;
+        const anchor = document.getElementById("searchA");
+        console.log(action, courseImpId, anchor.innerHTML);
+        anchor.href = `/Exam?courseImpId=${courseImpId}&action=${action}`;
+        anchor.click();
     }
 
     function hidePopup(){
@@ -220,6 +273,8 @@
         const endElm = document.getElementById("endInput");
         endElm.value = courseImp.endDate;
         endElm.max = courseImp.endDate;
+
+        console.log(endElm.value);
       }
 
       function updateEndByStart(event){
@@ -242,7 +297,7 @@
 
 <div style="position:relative">
 
-<form {% if put %} action="{{exam.link}}" {% else %} action="/conf_exam" {% endif %} method="post" id="theForm">
+<form id="theForm"   method="post"  {% if put %} action="{{exam.link}}" {% else %} action="/conf_exam"{% endif %}>
     <table id="specTable">
         <tr>
             <td class="leftColumn">Handling:</td>
@@ -299,7 +354,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <button id="registerButt">
+                <button id="registerButt" form="theForm" type="submit">
                     {% if put %} Endr! {% else %} Registrér! {% endif %}
                 </button>
             </td>
@@ -327,14 +382,16 @@
                     </option>
                     {% endfor %}
                 </select>
-                <button onclick="getExamByCourseImpId()">Søk</button>
+                <button onclick="getExamsByCourseImpId()">Søk</button>
             </div>
-            <div>
-                <label id="popupError" style="width: initial"></label>
-                <button onclick="hidePopup()">Skjul</button>
+            <div id="hideButtonDiv">
+                <label id="popupError"></label> <!-- style="width: initial"-->
+                <button onclick="hidePopup()" id="hideButton">Skjul</button>
             </div>
         </div>
+        <!--<input style="display: none" name="search_action" id="searchActionInput">-->
     </div>
 </div>
-<div></div>
+<a id="searchA" style="display:none">A</a>
+<a style="display: none" id="reloadAnchor" href="/template_exam"></a>
 {% endblock %}
