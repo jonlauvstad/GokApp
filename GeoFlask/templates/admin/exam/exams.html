@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+    }
+    button{
+        width:auto;
+        font-size: x-small;
+        border-radius: 4px;
+    }
+    td{
+        vertical-align: top;
+    }
+    @media screen  and (max-width:550px){
+        .smallFontA{
+            font-size: small;
+        }
+    }
+
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", ()=>{
+        const width = document.getElementById("examTable").offsetWidth;
+        document.getElementById("linkTable").style.width = width;
+    });
+
+    function getExamById(event){
+        const examId = Number(event.target.dataset.examid);
+        const url = `http://${hostname}:${portNumber}/api/exam/${examId}?save=Balle`;
+        console.log("URL:", url);
+        fetch(url,
+        {
+            method: "GET"
+        })
+        .then(response =>{
+            console.log(response);
+            if(!response.ok){
+                throw new Error("Network response was not ok.");
+            }
+            return response.json();
+        })
+        .then(data =>{
+            console.log(data.category);
+            document.getElementById("formButton").click();
+        })
+        .catch(error =>{
+            console.error("There was a problem with the fetch operation:", error);
+        });
+    }
+</script>
+
+<h1 class="bigHeadlineH1">
+    EKSAMENER
+</h1>
+
+{% for exam in  exams %}
+    <table id="examTable">
+        <tr>
+            <td>Id:</td><td>{{exam.id}}</td>
+        </tr>
+        <tr>
+            <td>Kursgjennomførings-id:</td> <td>{{exam.courseImplementationId}}</td>
+        </tr>
+        <tr>
+            <td>Kursgjennomførings-kode:</td><td>{{exam.courseImplementationCode}}</td>
+        </tr>
+        <tr>
+            <td>Kursgjennomførings-navn:</td><td>{{exam.courseImplementationName}}</td>
+        </tr>
+        <tr>
+            <td>Type:</td><td>{{exam.category}}</td>
+        </tr>
+        <tr>
+            <td>Varighet</td><td>{{exam.durationHours}} timer</td>
+        </tr>
+        <tr>
+            <td>Periodestart:</td><td>{{exam.periodStart_string}}</td>
+        </tr>
+        <tr>
+            <td>Periodeslutt:</td><td>{{exam.periodEnd_string}}</td>
+        </tr>
+        <tr>
+            <td>Link:</td><td><a href="{{exam.link}}">{{exam.link}}</a></td>
+        </tr>
+        <tr>
+            <td>Kursgjennomførings-link:</td>
+            <td><a href="{{exam.courseImplementationLink}}" class="smallFontA">{{exam.courseImplementationLink}}</a></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button data-examid="{{exam.id}}" data-examlink="{{exam.link}}" onclick="getExamById(event)">{{action}}</button>
+            </td>
+        </tr>
+    </table>
+
+    <table id="linkTable">
+        <tr>
+            <td><a href="/template_exam">Tilbake til eksamen</a></td>
+        </tr>
+    </table>
+    <form style="display: none" id="form" action="/conf_exam" method="post">
+        <input name="action" value="{{action}}">
+        <button id="formButton"></button>
+    </form>
+{% endfor%}
+
+{% endblock %}

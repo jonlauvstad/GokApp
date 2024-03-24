@@ -66,7 +66,6 @@ def conf_exam_function():
     start = request.form.get("start")
     end = request.form.get("end")
 
-    # Hvis vi kommer hit, er det en Add
     data = {
         "CourseImplementationId": courseId,
         "Category": category,
@@ -118,11 +117,12 @@ def exam_id_function(id):
                 "CourseImplementationId": courseId,
                 "Category": category,
                 "DurationHours": hours + minutes / 60,
-                "Start": parser.parse(start).isoformat(),
-                "End": parser.parse(end).isoformat()
+                "PeriodStart": parser.parse(start).isoformat(),
+                "PeriodEnd": parser.parse(end).isoformat()
             }
+            print("PeriodStart:", data['PeriodStart'])
             headl_prefix = "ENDRET"
-            response = requests.post(url, verify=False, headers=headers, json=data)
+            response = requests.put(url, verify=False, headers=headers, json=data)
     if not response.ok:
         return redirect(request.referrer)
     dic = response.json()
@@ -131,3 +131,29 @@ def exam_id_function(id):
                 dic['examImplementationIds'], dic['examResultIds'],
                 dic['link'], dic['courseImplementationLink'])
     return render_template("admin/exam/exam.html", user=user, exam=exam, headl_prefix=headl_prefix)
+
+
+def exam_getAll_function():
+    user = session["user"]
+
+    action = request.args.get("action")
+    courseImpId = request.args.get("courseImpId")
+    params = {} if not courseImpId else {"courseImpId": int(courseImpId)}
+
+    url_ext = f"Exam"
+    url = URLpre + url_ext
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    response = requests.get(url, verify=False, headers=headers, params=params)
+    if not response.ok:
+        abort(404)
+    lOfDics = response.json()
+    exams = [
+        Exam(dic['id'], dic['courseImplementationId'], dic['category'], dic['durationHours'], dic['periodStart'],
+             dic['periodEnd'],
+             dic['courseImplementationCode'], dic['courseImplementationName'],
+             dic['examImplementationIds'], dic['examResultIds'],
+             dic['link'], dic['courseImplementationLink'])
+        for dic in lOfDics
+    ]
+
+    return render_template("admin/exam/exams.html", user=user, exams=exams, action=action)
