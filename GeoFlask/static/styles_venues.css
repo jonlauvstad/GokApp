@@ -1,5 +1,20 @@
 /* admin_venue_styles.css */
 
+.venue_name
+{
+    display: block;
+    width: 100%;
+    background-image: radial-gradient(circle 100px at center, white, azure, lightgreen);
+    text-align: center;
+
+}
+
+.venues_label
+{
+    display: block;
+    width: 100%;
+}
+
 .venues
 {
     max-width: 1700px;
@@ -89,21 +104,28 @@
 /*---------------------------------------*/
 /* scrollable table */
 
-@media screen and (max-width: 768px)
+@media screen and (max-width: 550px)
 {
+
     .venues
     {
         padding-left: 10px;
     }
 
-    .venues > div,
-    .venue-selector,
-    form,
-    .venues_button-add,
-    .venues_button-link
+    .venues > div, .venue-selector, form, .venues_button-add, .venues_button-link
     {
         padding-left: 0;
         text-align: center;
+    }
+
+    .venues_label
+    {
+        display: block;
+        width: 100%;
+        background-color: lightgrey;
+        outline: 2px crimson;
+        outline-offset: 5px ;
+
     }
 
     .venue-selector select,
@@ -153,7 +175,8 @@
     .date_current
     {
         padding-bottom: 100px;
-    }'
+    }
+
 }
 
 .datePicker
@@ -263,8 +286,36 @@
     height: 30px;
 }
 
+.venues_button-book {
+    background-color: palegreen;
+    color: black;
+    padding: 2px 5px;
+    text-decoration: none;
+    border-radius: 0px;
+    border-style: outset;
+    border-color: grey;
+    cursor: pointer;
+    font-size: 12px;
+    width: 80px;
+    height: 30px;
+}
 
-@media screen and (max-width: 768px)
+.venues_button-back {
+    background-color: lightgrey;
+    color: black;
+    padding: 7px 3px;
+    text-decoration: none;
+    text-align: center;
+    border-style: outset;
+    border-color: grey;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100px;
+    height: 25px;
+}
+
+
+@media screen and (max-width: 550px)
 {
     .venues_button-add
     {
@@ -296,7 +347,7 @@
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 550px) {
     .venues table{
         padding: 10px;
         display: block;
@@ -305,7 +356,7 @@
     }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 550px) {
     .venues {
         padding: 5px;
     }
@@ -315,21 +366,21 @@
     }
 }
 
-@media screen and (max-width: 768px){
+@media screen and (max-width: 550px){
     .venues > div {
         padding-left: 20px;
     }
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 550px) {
     input[type="datetime-local"], button {
         padding: 10px; /* Increase padding */
         font-size: 19px; /* Increase font size for better readability */
     }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 550px) {
     .venue-selector select {
         width: 100%; /* Make the select box full width */
         max-width: 300px; /* Prevent it from being too wide */
@@ -337,123 +388,3 @@
     }
 }
 
-
-
-/*---------------- UNUSED -----------------------*/
-
-/*
-.admin-venue-container {
-    width: 100%;
-    margin: auto;
-    padding: 20px;
-    font-size: 30px;
-    background-color: white;
-    background-image: conic-gradient(green, whitesmoke);
-}
-
-.admin-calendar-container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-
-}
-
-.admin-calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.admin-calendar-header h3 {
-    margin: 0;
-}
-
-.admin-calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-}
-
-.admin-calendar-day {
-    padding: 10px;
-    background: #f0f0f0;
-    text-align: center;
-    border-radius: 5px;
-}
-
-
-.admin-event {
-    background-color: #eef;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.admin-venue-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background-color: whitesmoke;
-}
-
-
-.admin-venue-table th, .admin-venue-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-}
-
-.admin-venue-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-*/
-
-/*
-.admin-venue-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-
-.admin-venue-table, .calPcDayTab {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.admin-venue-table th, .admin-venue-table td, .calPcDayTab th, .calPcDayTab td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.admin-venue-table th, .calPcDayTab th {
-    background-color: #f2f2f2;
-}
-
-.admin-venue-table tr:nth-child(even), .calPcDayTab tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-
-.admin-venue-event {
-    background-color: #f0f0f0;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
-.admin-venue-event span {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.admin-venue-event span:last-child {
-    margin-bottom: 0;
-}
-*/

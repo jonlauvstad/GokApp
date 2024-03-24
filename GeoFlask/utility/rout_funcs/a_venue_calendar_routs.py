@@ -46,6 +46,9 @@ def venue_calendar_function():
     today = start_date.strftime("%Y-%m-%d")
     current_day = datetime.now().date().strftime("%a %d.%b")
 
+    # debugging
+    # print("EVENTS_______________\n", events)
+
     return render_template("venue_calendar.html",
                            user=user,
                            events=events,

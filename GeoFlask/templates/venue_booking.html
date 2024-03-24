@@ -21,6 +21,21 @@
             justify-content: center;
             align-items: center;
         }
+
+        @media screen and (max-width: 550px) {
+            .menuDiv
+            {
+                flex-direction: column; /* Stack children vertically */
+                text-align: center; /* Center the text for each child */
+            }
+            .menuLabel {
+                font-size: 80px; /* Optional: Adjust the font size for mobile */
+            }
+            .menuDiv > div {
+                padding: 5px 0; /* Add some padding above and below the text */
+            }
+        }
+
         .menuDiv
         {
             display: inline-flex;
@@ -55,12 +70,60 @@
 {% block title %}Booking{% endblock %}
 
 {% block main %}
-    <div class="center-container">
-        <h1>Booking</h1>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <label style="font-size: 30px; font-style: inherit "><b>Hva vil du registrere?</b></label>
+    </div>
+
+    <!-- BROWSER VIEW -->
+    <div id="venue_booking_PcDiv">
+        <div class="center-container">
+            <h1>Booking</h1>
+        </div>
+
+        <div class="menu-container">
+            <div class="event">
+                <p>Date: {{ date }}</p>
+                <p>Time: {{ time }}</p>
+                <p>Venue ID: {{ venue_id }}</p>
+                <p>Venue Name: {{ venue_details.name }}</p>
+                <p>Capacity: {{ venue_details.capacity }}</p>
+            </div>
+
+            <a class="menuDiv" style="background: green;" href="/book_from_venue_lecture?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
+                <div>Forelesning</div>
+                <label class="menuLabel">📃</label>
+            </a>
+
+            <a class="menuDiv" style="background: blue;" href="/book_from_venue_exam?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
+                <div>Eksamen</div>
+                <label class="menuLabel">📃</label>
+            </a>
+        </div>
+
+        <div style="display: flex; justify-content: center; padding-top: 10px">
+            <a style=" font-size: 18px" class="venues_button-back" href="/venue_calendar">Tilbake⬅️</a>
+        </div>
+
     </div>
 
 
-    <div class="menu-container">
+    <!-- MOBILE VIEW -->
+    <div id="venue_booking_MobDiv">
+
+        <div class="menu-container">
+
+            <a class="menuDiv" style="background: green;" href="/book_from_venue_lecture?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
+                <div>Forelesning</div>
+                <label class="menuLabel">📃</label>
+            </a>
+
+            <a class="menuDiv" style="background: blue;" href="/book_from_venue_exam?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
+                <div>Eksamen</div>
+                <label class="menuLabel">📃</label>
+            </a>
+
+        </div>
 
         <div class="event">
             <p>Date: {{ date }}</p>
@@ -70,23 +133,12 @@
             <p>Capacity: {{ venue_details.capacity }}</p>
         </div>
 
-        <a class="menuDiv" style="background: green;" href="/book_from_venue_lecture?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
-            <div>Forelesning</div>
-            <label class="menuLabel">📃</label>
-        </a>
-
-        <a class="menuDiv" style="background: blue;" href="/book_from_venue_exam?day={{ day }}&date={{ date }}&time={{ time }}&venue_id={{ venue_id }}">
-            <div>Eksamen</div>
-            <label class="menuLabel">📃</label>
-        </a>
-
+        <div style="display: flex; justify-content: center; padding-top: 10px">
+            <a style=" font-size: 18px" class="venues_button-back" href="/venue_calendar">Tilbake⬅️</a>
+        </div>
     </div>
 
-    <div style="display: flex; justify-content: center; padding-top: 10px">
-        <a style=" font-size: 18px" class="venues_button-add" href="/venue_calendar">Tilbake⬅️</a>
-    </div>
-
-
+    <script src="../static/JS/toVenue_Calendar.js"></script>
 
 
 {% endblock %}

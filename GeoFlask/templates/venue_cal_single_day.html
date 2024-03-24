@@ -17,7 +17,7 @@
         </div>
 
 
-                <!-- SINGLE DAY DATE PICKER -->
+        <!-- SINGLE DAY DATE PICKER -->
         <div class="form-container">
             <form action="/single_day_view" method="get">
                 <label for="singleDay"></label>
@@ -29,10 +29,6 @@
 
             <a style="width: 100px;" class="submit-button" href="/venue_calendar">Vis flere dager</a>
         </div>
-
-
-
-
 
         <table style="table-layout: fixed; width: 100%; border-collapse: collapse;">
             <!-- VENUES -->
@@ -83,21 +79,27 @@
     <!--_______________________________________MOBILE VIEW_____________________________________________-->
     <div id="venue_cal_MobDiv">
 
-        <div style="text-align: center; margin-bottom: 20px;">
-            <label style="font-size: 30px; font-style: inherit "><b>ROM-KALENDER</b></label>
+        <div class="venues_label" style="text-align: center; margin-bottom: 20px;">
+            <label style="font-size: 30px;"><b>Rom-kalender </b></label>
         </div>
 
-            <!-- SINGLE DAY DATE PICKER -->
+        <!--
         <form action="/single_day_view" method="get">
-            <label for="singleDay"></label>
+            <input class="datePickerBrowser" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
+            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
+            <button class="submit-button" type="submit">Vis dag</button>
+
+        </form>
+        -->
+
+
+            <!-- SINGLE DAY DATE PICKER -->
+        <form method="get" style="margin-bottom: -20px">
             <input class="datePicker" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
-            <br>
-            <br>
+            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
             <button style="width: 70%; font-size: 15px;" type="submit">Vis dag</button>
 
-            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
         </form>
-
 
         <!-- VENUE DROPDOWN MENY -->
         <div style="text-align: center; max-width: 70%; margin: auto;">
@@ -112,34 +114,39 @@
             </div>
          </div>
 
+        <div style="display: flex; justify-content: center; padding-top: -10px">
+            <a style=" font-size: 18px" class="venues_button-back" href="/venue_calendar">Tilbake⬅️</a>
+        </div>
+
          <!-- VENUES, DATES, EVENTS -->
         {% for venue in venues %}
-        <div class="venues" style="display: none;" id="venue-info-{{ venue.id }}">
-            <h2>{{ venue.name }}</h2>
-            {% for ed in days %}
-                <!-- Here, instead of directly listing events, we iterate through time blocks -->
-                {% for block in ed.time_blocks %}
-                    <div class="time-block" id="block-{{ block.start|date('%Y-%m-%d-%H-%M') }}">
-                        <h3>{{ block.start|date('%H:%M') }} - {{ block.end|date('%H:%M') }}</h3>
-                        {% for event in block.events %}
-                            {% if event.venueId == venue.id %}
-                                <div class="event" data-venue-id="{{ event.venueId }}" data-date="{{ event.date.strftime('%Y-%m-%d') }}">
-                                    <p>{{ event.courseImpName }}</p>
-                                    <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
-                                    {% if event.link %}
-                                        <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
-                                    {% endif %}
-                                </div>
+            <div class="venue-info" id="venue-info-{{ venue.id }}">
+                <h2>{{ venue.name }} - {{ day.datestring }}</h2>
+                {% for block in day.time_blocks %}
+                <div class="time-block">
+                    <h4>{{ block.start|date('%H:%M') }}</h4>
+                    {% set venue_has_event = false %}
+                    {% for event in block.events %}
+                        {% if event.venueId == venue.id %}
+                        {% set venue_has_event = true %}
+                        <div class="event" data-venue-id="{{ event.venueId }}" data-date="{{ event.date.strftime('%Y-%m-%d') }}">
+
+                            <p>{{ event.courseImpName }}</p>
+                            <b>{{ event.datetime|date('%H:%M') }} - {{ event.datetimeEnd|date('%H:%M') if event.datetimeEnd }}</b>
+                            {% if event.link %}
+                            <a href="{{ event.link }}" target="_blank" class="venues_button-link">Redigere</a>
                             {% endif %}
-                        {% endfor %}
-                        <!-- If no events in this block for this venue, show a "Book rom" button -->
-                        {% if block.events|length == 0 or not block.events %}
-                            <button>Book rom</button>
+                        </div>
                         {% endif %}
+                    {% endfor %}
+                    {% if not venue_has_event %}
+                    <div class="booking-container">
+                        <a class="book_rom_button" href="{{ url_for('book_from_venue', day=block.start.strftime('%Y-%m-%d'), date=block.start.strftime('%Y-%m-%d'), time=block.start.strftime('%H:%M'), venue_id=venue.id) }}">➕ Book</a>
                     </div>
+                    {% endif %}
+                </div>
                 {% endfor %}
-            {% endfor %}
-        </div>
+            </div>
         {% endfor %}
     </div>
 {% endblock %}

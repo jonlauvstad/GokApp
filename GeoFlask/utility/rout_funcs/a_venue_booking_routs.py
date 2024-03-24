@@ -35,15 +35,9 @@ def venue_booking_exam_function(day, date, time, venue_id):
 
     venue_details = fetch_venue_by_id(headers, venue_id)
 
-    # prefill = Prefill(venue_id, start_date=)
+    prefill = Prefill(venue_id, start_date=date, end_date=None, with_time=time)
 
-    return render_template("venue_booking_exam.html",
-                           user=user,
-                           day=day,
-                           date=date,
-                           time=time,
-                           venue_details=venue_details,
-                           venue_id=venue_id)
+    return None
 
 """def venue_fetch_courses():
     user = session["user"]

@@ -7,9 +7,11 @@ from ..event import Event
 from ..event_day import EventDay
 from ..lectureBooking import LectureBooking
 from ..lecture import Lecture
+from ..prefill import Prefill
 
 import requests
 import json
+
 
 URLpre = configuration["URLpre"]
 
@@ -27,11 +29,13 @@ def add_lecture_function():
     user = session["user"]
     return render_template("admin/lecture/add_lecture.html", user=user)
 
+
 def add_lecture_one_function(put=None, prefill=None):
     user = session["user"]
 
-    prefill = prefill.serialize()
-    print("PREFILL\n", prefill)
+    if prefill:
+        prefill = prefill.serialize()
+        print("PREFILL\n", prefill)
 
     url_ext = f"courseImplementation"
     url = URLpre + url_ext
