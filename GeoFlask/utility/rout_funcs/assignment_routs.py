@@ -22,3 +22,12 @@ def assignment_id_function(id):
         return render_template("assignment.html", assignment=assignment, user=user)
     msg = f"Statuskode: {response.status_code}"
     return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
+
+
+
+def assignment_create_function():
+    # authenticate user and get url
+    user = session["user"]
+    id = int(id)
+    url_ext = f"Assignment/{id}"
+    url = URLpre + url_ext

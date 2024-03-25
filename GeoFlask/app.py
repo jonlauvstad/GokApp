@@ -146,6 +146,12 @@ def student_resources():
 
 # ----------------------------------------------------
 
+@app.route("/admin_assignment", methods=['POST'])
+@login_required(roles=['teacher', 'admin'])
+def assignment_admin():
+    return ass_routs.assignment_create_function()
+
+
 
 @app.route("/Assignment/<int:id>")
 @login_required(roles=None)

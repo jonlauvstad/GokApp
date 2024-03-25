@@ -121,6 +121,22 @@
             text-align: left;
         }
     }
+
+    .button-like
+    {
+        display: inline-block;
+        text-align: center;
+        width: 210px; /* Match the width of your input/select elements or adjust as needed */
+        font-size: 15px; /* Adjust based on your preference */
+        padding: 10px 0;
+        text-decoration: none;
+        color: white;
+        background-color: cornflowerblue; /* Match the color of your other buttons or adjust as needed */
+        border-radius: 5px;
+        cursor: pointer;
+        border: none; /* For button elements to remove default styling */
+    }
+
 </style>
 
 <script>
@@ -390,7 +406,16 @@
             </div>
         </div>
         <!--<input style="display: none" name="search_action" id="searchActionInput">-->
+
     </div>
+
+    <td class="buttonTd" style="text-align: center;">
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <a href="/venue_calendar" class="button-like" >Se ledige rom</a>
+        </div>
+    </td>
+
+
 </div>
 <a id="searchA" style="display:none">A</a>
 <a style="display: none" id="reloadAnchor" href="/template_exam"></a>

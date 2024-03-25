@@ -83,17 +83,7 @@
             <label style="font-size: 30px;"><b>Rom-kalender </b></label>
         </div>
 
-        <!--
-        <form action="/single_day_view" method="get">
-            <input class="datePickerBrowser" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
-            <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
-            <button class="submit-button" type="submit">Vis dag</button>
-
-        </form>
-        -->
-
-
-            <!-- SINGLE DAY DATE PICKER -->
+        <!-- SINGLE DAY DATE PICKER -->
         <form method="get" style="margin-bottom: -20px">
             <input class="datePicker" type="date" id="singleDay" name="singleDay" value="{{ current_day|default('', true) }}">
             <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
