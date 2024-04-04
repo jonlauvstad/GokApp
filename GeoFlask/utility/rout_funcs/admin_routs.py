@@ -7,10 +7,12 @@ from ..event import Event
 from ..event_day import EventDay
 from ..lectureBooking import LectureBooking
 from ..lecture import Lecture
+from ..prefill import Prefill
 
 
 import requests
 import json
+
 
 URLpre = configuration["URLpre"]
 
@@ -27,6 +29,7 @@ def admin_lecture_function():
 def add_lecture_function():
     user = session["user"]
     return render_template("admin/lecture/add_lecture.html", user=user)
+
 
 def add_lecture_one_function(put=None, prefill=None):
     user = session["user"]

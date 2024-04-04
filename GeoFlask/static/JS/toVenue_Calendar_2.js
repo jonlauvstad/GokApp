@@ -1,7 +1,25 @@
 document.addEventListener('DOMContentLoaded', function () {
     mobScreen();
     filterVenue(); // Call it once to apply initial filter based on default or URL parameters
+    datePickerForm()
 });
+
+
+function datePickerForm() {
+    // Adjust the selector to target the specific form by ID
+    const form = document.querySelector('#mobileDatePickerForm');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const datePicker = document.getElementById('singleDay');
+            const date = datePicker.value;
+            const actionURL = `/venue_cal_single_day/${date}`;
+            window.location.href = actionURL;
+        });
+    }
+}
+
+
 
 function mobScreen() {
     let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;

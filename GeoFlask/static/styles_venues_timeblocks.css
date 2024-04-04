@@ -7,11 +7,17 @@
     border: 1px solid #dddddd;
     margin-bottom: 5px;
     background-color: yellowgreen;
-    height: 50px;
-    width: 50px;
-    white-space: nowrap;
+    min-height: 50px;
+    min-width: 50px;
     text-align: center;
     font-size: 20px;
+}
+@media screen and (max-width: 550px){
+    .time-block{
+        width: 90%;
+        padding-left: 30px;
+    }
+
 }
 
 .time-block span {

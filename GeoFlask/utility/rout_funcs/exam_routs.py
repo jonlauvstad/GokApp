@@ -13,9 +13,13 @@ def admin_exam_function():
     return render_template("admin/exam/exam_or_imp.html", user=user)
 
 
-def template_exam_function(put=None, try_delete=None):
+def template_exam_function(put=None, try_delete=None, prefill=None):
     user = session["user"]
     options = ["registrére", "endre", "slette"]
+
+    if prefill:
+        prefill = prefill.serialize()
+        print("PREFILL\n", prefill)
 
     exam = session.pop('exam', None) if put else None
     option = None
