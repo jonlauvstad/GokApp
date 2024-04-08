@@ -1,0 +1,330 @@
+{% extends "layout.html" %}
+
+{% block title %}Startside{% endblock %}
+
+{% block main %}
+
+<!--<script src="/../static/JS/to_examImp_reg.js"></script>-->
+<script>
+    class ExamImp {
+        constructor(examId, venueIndexOrId, start, end){
+            this.examId = examId;
+            this.venueIndexOrId = venueIndexOrId;
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    class IntTime {
+        constructor(startTime, endTime) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+    }
+
+    class Suggestion {
+        constructor(day, startTime, endTime, venueInt) {
+            this.day = day;
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.venueInt = venueInt;
+        }
+    }
+
+    var holidays = JSON.parse({{holidays | tojson}}).map(elm => new Date(elm))
+        .map(elm => `${elm.getFullYear()}-${elm.getMonth()}-${elm.getDate()}`)
+    var exam_id = {{exam.id}};
+    var stud_ids = {{stud_ids}};
+    var num_studs = stud_ids.length;
+    var num_exams = num_studs;
+    {% if grps %}
+        var grps = {{grps}};
+        var num_grps = grps.length;
+        num_exams = num_grps;
+    {% endif %}
+
+
+    var duration = {{exam.duration_hours}};
+    var totalDur;
+    var limitations = [];
+    var starts = [];
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        {% if exam.category == "muntlig" or exam.category == "muntlig gruppe" %}
+            updateLimitationsLunch();
+            updateLimitationsEnd();
+            updateStartsStart();
+            updateStartsAfterLunch();
+            updateTotalDur();
+
+            // let suggestions = calcSuggestion();
+            // suggestions.forEach(elm => {
+            //     console.log(elm.day, elm.startTime, elm.endTime, elm.venueInt);
+            // });
+
+            // alert(holidays[0]);
+
+            // holidays.forEach(elm=>{
+            //     console.log(elm);
+            // })
+
+            // var date_array = make_dateArray(5);
+            // date_array.forEach(elm =>{
+            //    console.log(elm);
+            // });
+
+            // var sugg_xVen = suggestion_xVenues();
+            // sugg_xVen.forEach(elm => {
+            //    console.log(elm.examId, elm.venueIndexOrId, elm.start, elm.end);
+            // });
+
+        {% endif %}
+        // alert(dateFromDateTimeLocal("startTpkt"));
+    });
+
+    function updateLimitationsLunch(){
+        // const start_time = document.getElementById("dayStart").value;
+        // var [hours, minutes] = start_time.split(":");
+        // // var timeObject = new Date();
+        // // timeObject.setHours(parseInt(hours));
+        // // timeObject.setMinutes(parseInt(minutes));
+        // limitations[0] = hours + minutes/60;
+        intFromTime("lunchStart", limitations, 0);
+    }
+    function updateLimitationsEnd(){
+        intFromTime("dayEnd", limitations, 1);
+    }
+    function updateStartsStart(){
+        intFromTime("dayStart", starts, 0);
+    }
+    function updateStartsAfterLunch(){
+        const lunchDur = Number(document.getElementById("lunchDuration").value);
+        intFromTime("lunchStart", starts, 1, lunchDur);
+    }
+    function intFromTime(elementId, array, index, addMinutes){
+        const time = document.getElementById(elementId).value;
+        var [hours, minutes] = time.split(":");
+        if (addMinutes === undefined){
+            addMinutes = 0;
+        }
+        array[index] = Number(hours) + (Number(minutes)+addMinutes)/60;
+        console.log("limitations:", limitations, "\n", "starts:", starts);
+    }
+    function updateTotalDur(){
+        const timeBetween = document.getElementById("timeBetween").value;
+        totalDur = timeBetween/60 + duration;
+
+    }
+    function allUpdates(){
+        updateLimitationsLunch();
+        updateLimitationsEnd();
+        updateStartsStart();
+        updateStartsAfterLunch();
+        updateTotalDur();
+    }
+
+
+    // function hoursMinutesFromDateObj(dateObj){
+    //     return [dateObj.getHours(), dateObj.getMinutes()]
+    // }
+
+    function calcTimesArray(){
+        var timesArray = [];
+        var numBefLunch = Math.floor((limitations[0] - starts[0]) / totalDur);
+        var numAftLunch = Math.floor((limitations[1] - starts[1]) / totalDur);
+        for (var i=0; i<numBefLunch; i++){
+            timesArray.push(new IntTime(starts[0] + i*totalDur, starts[0] + i*totalDur + duration));
+        }
+        for (var j=0; j<numAftLunch; j++){
+            timesArray.push(new IntTime(starts[1] + j*totalDur, starts[1] + j*totalDur + duration));
+        }
+        return timesArray;
+    }
+
+    function calcSuggestion(){
+        let numSimExams = document.getElementById("numSimul").value;
+        let timesArray = calcTimesArray();
+        let breakVar = false;
+        let suggestions = [];
+        for (let d=0; d<100; d++){
+            if (breakVar){ break; }
+            for (let t=0; t<timesArray.length; t++){
+                if (breakVar){ break; }
+                for (let v=0; v<numSimExams; v++){
+                    suggestions.push(new Suggestion(d, timesArray[t].startTime, timesArray[t].endTime, v))
+                    if (suggestions.length >= num_exams){
+                        breakVar = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return suggestions;
+    }
+
+    function suggestion_xVenues(){
+        let suggestions = calcSuggestion();
+        let dateArray = make_dateArray(20);
+        return suggestions.map(elm => {
+                let start_dateTime = new Date(dateArray[elm.day]);
+                start_dateTime.setHours(parseInt(elm.startTime));
+                start_dateTime.setMinutes( (elm.startTime-parseInt(elm.startTime)) * 60 );
+                let end_dateTime = new Date(dateArray[elm.day]);
+                end_dateTime.setHours(parseInt(elm.endTime));
+                end_dateTime.setMinutes( (elm.endTime-parseInt(elm.endTime)) * 60 );
+                return new ExamImp(exam_id, elm.venueInt, start_dateTime, end_dateTime);
+            }
+        );
+
+    }
+
+    function dateFromDateTimeLocal(elementId){
+        dateValue = document.getElementById(elementId).value;
+        return new Date(dateValue);
+    }
+
+    function comparableToHoliday(date){
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    }
+
+    function make_dateArray(numDates){
+        let startDateTime = dateFromDateTimeLocal("startTpkt");
+        let dates = []
+        let date = startDateTime;
+        while (dates.length < numDates){
+            while (date.getDay() === 6 || date.getDay() === 0 || holidays.includes(comparableToHoliday(date))){
+                date.setDate(date.getDate() + 1);
+            }
+            dates.push(new Date(date));
+            date.setDate(date.getDate() + 1);
+        }
+        return dates;
+    }
+
+    function copyStartTpkt(event){
+        const value = event.target.value;
+        const hjemmeInput = document.getElementById("hjemmeStartTime");
+        hjemmeInput.value = value;
+    }
+
+</script>
+
+<style>
+    table{
+        margin: auto;
+    }
+    td{
+        padding-right: 12px;
+    }
+    .boldTd{
+        font-weight: bold;
+    }
+    input[type="number"]{
+        width:70px;
+        text-align: center;
+    }
+    .sendInButt{
+        border-radius: 4px;
+        color: white;
+        background: cornflowerblue;
+        font-weight: bold;
+        border: 1px solid grey;
+        margin-top: 10px;
+    }
+    @media screen and (max-width: 550px){
+    }
+</style>
+
+<h1 class="bigHeadlineH1">
+    NY EKSAMENSGJENNOMFØRING
+</h1>
+
+<!--<form>-->
+    <table>
+        <tr>
+            <td class="boldTd">Ekasmens-id:</td><td>{{exam.id}}</td>
+        </tr>
+        <tr>
+            <td class="boldTd">Kurs-gjennomføring:</td><td>{{exam.id}} {{exam.courseImplementationCode}} {{exam.courseImplementationName}}</td>
+        </tr>
+        <tr>
+            <td class="boldTd">Type:</td><td>{{exam.category}}</td>
+        </tr>
+        <tr>
+            <td class="boldTd">Varighet:</td><td>{{exam.duration_hours}} timer</td>
+        </tr>
+        <tr>
+            <td class="boldTd">Antall studenter:</td><td>{{stud_ids|length}}</td>
+        </tr>
+        {% if groups %}
+            <tr>
+                <td class="boldTd">Antall grupper:</td><td>{{groups|length}}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td class="boldTd">Start-tidspunkt:</td>
+            <td>
+                <input type="datetime-local" value="{{start_tpkt}}" min="{{exam.periodStart_datetime}}" max="{{exam.perStart_dt_max}}" id="startTpkt"
+                    onchange="copyStartTpkt(event)">
+            </td>
+        </tr>
+        {% if exam.category != "hjemme" %}
+            {% if exam.category != "skriftlig" %}
+                <tr>
+                    <td class="boldTd">Antall samtidige eksamener:</td>
+                    <td><input type="number" min="1" max="9" value="1" id="numSimul"></td>
+                </tr>
+                <tr>
+                    <td class="boldTd">Starttidspunkt/dag:</td>
+                    <td>
+                        <input type="time" value="09:00" id="dayStart" onchange="updateStartsStart(); suggestion_xVenues();">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="boldTd">Slutt innen:</td>
+                    <td>
+                        <input type="time" value="14:00" id="dayEnd" onchange="updateLimitationsEnd(); suggestion_xVenues();">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="boldTd">Tid mellom eksamener:</td>
+                    <td>
+                        <input type="number" value="15" min="5" max="60" id="timeBetween" onchange="updateTotalDur(); suggestion_xVenues();"> minutter
+                    </td>
+                </tr>
+                <tr>
+                    <td class="boldTd">Lunsj start:</td>
+                    <td>
+                        <input type="time" value="11:30" id="lunchStart" onchange="updateLimitationsLunch(); updateStartsAfterLunch(); suggestion_xVenues();">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="boldTd">Lunsj varighet:</td>
+                    <td>
+                        <input type="number" value="30" min="0" max="60" id="lunchDuration" onchange="updateStartsAfterLunch(); suggestion_xVenues();">
+                        minutter</td>
+                </tr>
+            {% endif %}
+
+        {% else %}
+            <form id="hjemmeForm" action="/ExamImplementation" method="post">
+                <input style="display: none" name="category" value="{{exam.category}}">
+                <input style="display: none" name="examId" value="{{exam.id}}">
+                <input style="display: none" name="startTime" value="{{start_tpkt}}" id="hjemmeStartTime">
+                <input style="display: none" name="duration" value="{{exam.duration_hours}}">
+                {% for partip in stud_ids %}
+                    <input style="display: none" name="participant" value="{{partip}}">
+                {% endfor %}
+                <tr>
+                    <td colspan="2"><button class="sendInButt" form="hjemmeForm" type="submit">Registrér</button></td>
+                </tr>
+            </form>
+        {% endif %}
+
+        <tr>
+            <td></td>
+        </tr>
+    </table>
+<!--</form>-->
+{% endblock %}

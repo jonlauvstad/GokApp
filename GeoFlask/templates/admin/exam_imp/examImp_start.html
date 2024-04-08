@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+
+<style>
+  .chooseDiv{
+    border: 1px solid grey;
+    border-radius: 6px;
+    padding: 15px;
+    background: antiquewhite;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+  }
+  .divH1{
+    text-align: center;
+    color: green;
+  }
+  table{
+    margin: auto;
+  }
+  td{
+    padding-right: 6px;
+  }
+  table select{
+    width: 400px;
+  }
+  button{
+    font-size: x-small;
+    border-radius: 4px;
+    background: green;
+    color: white;
+    font-weight: bold;
+  }
+  #errorDiv{
+    display: none;
+    width: 100%;
+    position: absolute;
+    top: 185px;
+  }
+  #insidePopup{
+    position: relative;
+    z-index: 9;
+    background: white;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 50px;
+    margin: auto;
+    color: red;
+    font-weight: bold;
+  }
+  #errorOK{
+    background: initial;
+    color: initial;
+    width: initial;
+  }
+  .groupRadio{
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    showGroupRadio();
+  });
+
+  function showGroupRadio(){
+    const options = document.getElementById("examSelect").options;
+    const elmsToShow = document.querySelectorAll(".groupRadio");
+    let display = "none";
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].selected){
+          if(options[i].dataset.category === "muntlig gruppe"){
+            display = "initial";
+          }
+          break;
+        }
+    }
+    elmsToShow.forEach(elm=>{
+      elm.style.display = display;
+    })
+  }
+
+  function showSelectedAction(event){
+    const actionDivs = document.querySelectorAll('.actionDiv');
+    actionDivs.forEach(elm =>{
+      elm.style.display = "none";
+    });
+    const chosenDivId = `${event.target.value}Div`;
+    const chosenDiv = document.getElementById(chosenDivId);
+    chosenDiv.style.display = "initial";
+  }
+
+  function nextStep(){
+    const radioInputs = document.querySelectorAll('input[type="radio"]');
+    let action;
+    radioInputs.forEach(ri =>{
+      if (ri.checked){
+        action = ri.value;
+        return;
+      }
+    });
+    if (!action){
+      popUp();
+      return;
+    }
+    const examId = Number(document.getElementById("examSelect").value);
+    const nextStepA = document.getElementById("nextStepA");
+    nextStepA.href = `/implementation_exam/${action}/${examId}`;
+    nextStepA.click();
+  }
+
+  function popUp(){
+    document.getElementById('errorDiv').style.display = "block";
+  }
+  function popDown(){
+    document.getElementById('errorDiv').style.display = "none";
+  }
+</script>
+
+<h1 id="singleH1"  class="bigHeadlineH1" style="text-align: center">EKSAMENSGJENNOMFØRING</h1>
+
+<div class="chooseDiv">
+  <h1 class="divH1">Hent underliggende eksamen</h1>
+<!--  <form>-->
+    <table>
+      <tr>
+        <td>Handling:</td>
+        <td>
+          <input type="radio" name="action" value="register"> <label>Registrére</label>
+          <input type="radio" name="action" value="delete"> <label>Se/slette</label>
+          <input type="radio" name="action" value="group" class="groupRadio"> <label class="groupRadio">Gruppe</label>
+        </td>
+      </tr>
+      <tr>
+        <td>Eksamens-id:</td>
+        <td>
+          <select id="examSelect" onchange="showGroupRadio()">
+            {% for exam in exams %}
+              <option value="{{exam.id}}" data-category="{{exam.category}}">Id:{{exam.id}} Kursgjf:{{exam.courseImplementationCode}} {{exam.courseImplementationName}}</option>
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td></td><td><button onclick="nextStep()">Hent</button></td>
+      </tr>
+    </table>
+<!--  </form>-->
+</div>
+
+<a style="display: none" id="nextStepA"></a>
+
+<div id="errorDiv">
+  <table id="insidePopup">
+    <tr>
+      <td>Du må velge handling!</td>
+      <td><button id="errorOK" onclick="popDown()">OK</button></td>
+  </table>
+</div>
+
+{% endblock %}

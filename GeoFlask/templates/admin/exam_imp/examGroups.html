@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}Grupper{% endblock %}
+
+{% block main %}
+
+<style>
+    table{
+        margin: auto;
+        border-collapse: collapse;
+    }
+    td{
+        padding-right: 5px;
+    }
+    .noRightPadTd{
+        padding-right: 0;
+    }
+    .bold{
+        font-weight: bold;
+    }
+    .nameTd{
+        color: green;
+        font-weight: bold;
+    }
+    .chooseButton{
+        font-size: x-small;
+        border-radius: 4px;
+        padding-left: 10px;
+        padding-right: 10px;
+        width: fit-content;
+        border: 1px solid grey;
+        float: right;
+    }
+    .aLookLikeText{
+        text-decoration: none;
+        color: black;
+    }
+    /* Style for even rows */
+    tr:nth-child(4n), tr:nth-child(4n - 1) {
+        background: #ffdd99;
+    }
+    /* Style for odd rows */
+        tr:nth-child(4n - 2), tr:nth-child(4n - 3) {
+        background-color: white;
+    }
+</style>
+
+<script>
+
+</script>
+
+<h1 class="bigHeadlineH1">GRUPPER EKSAMEN #{{exam_id}}</h1>
+<table>
+    {% for group in groups %}
+        <tr>
+            <td class="bold">Navn:</td>
+            <td class="nameTd">{{group.name}}</td>
+            <td class="noRightPadTd">
+                <button class="chooseButton">
+                    <a href="/ExamGroup/{{exam_id}}?name={{group.name}}" class="aLookLikeText">Velg</a>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td class="bold">Deltakere:</td>
+            <td colspan="2">{{group.partip_name_string}}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="3" style="padding-top: 25px">
+            <a href="/implementation_exam/group/{{exam_id}}">Tilbake til grupper for eksamen #{{exam_id}}</a>
+        </td>
+    </tr>
+</table>
+
+{% endblock %}

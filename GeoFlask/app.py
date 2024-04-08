@@ -163,16 +163,6 @@ def assignment_id(id):
 def lecture_id(id):
     return lec_routs.lecture_id_function(id)
 
-# @app.route("/Lecture/<int:id>", methods=["post"])
-# @login_required(roles=["teacher, admin"])
-# def lecture_id_post(id):
-#     return lec_routs.lecture_id_post_function(id)
-
-@app.route("/ExamImplementation/<int:id>")
-@login_required(roles=None)
-def examImplementation_id(id):
-    return exImp_routs.examImplementation_id_function(id)
-
 @app.route("/admin")
 @login_required(roles=["teacher", "admin"])
 def admin():
@@ -247,6 +237,41 @@ def exam_id(id):
 @login_required(roles=None)
 def exam():
     return exam_routs.exam_getAll_function()
+
+@app.route("/ExamImplementation/<int:id>")
+@login_required(roles=None)
+def examImplementation_id(id):
+    return exImp_routs.examImplementation_id_function(id)
+
+@app.route("/ExamImplementation", methods=["GET", "POST"])
+@login_required(roles=None)
+def examImplementation():
+    return exImp_routs.examImplementation_function()
+
+@app.route("/implementation_exam")
+@login_required(roles=["teacher", "admin"])
+def implementation_exam():
+    return exImp_routs.examImp_start()
+
+@app.route("/implementation_exam/delete/<int:exam_id>")
+@login_required(roles=["teacher", "admin"])
+def implementation_exam_delete(exam_id):
+    return exImp_routs.examImp_delete(exam_id)
+
+@app.route("/implementation_exam/register/<int:exam_id>")
+@login_required(roles=["teacher", "admin"])
+def implementation_exam_register(exam_id):
+    return exImp_routs.examImp_register(exam_id)
+
+@app.route("/implementation_exam/group/<int:exam_id>")
+@login_required(roles=["teacher", "admin"])
+def implementation_exam_group(exam_id):
+    return exImp_routs.examImp_group(exam_id)
+
+@app.route("/ExamGroup/<int:exam_id>", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def exam_group(exam_id):
+    return exImp_routs.exam_group(exam_id)
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])

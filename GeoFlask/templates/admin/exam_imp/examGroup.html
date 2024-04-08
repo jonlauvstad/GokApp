@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+
+{% block title %}Gruppe{% endblock %}
+
+{% block main %}
+
+<style>
+    table{
+        margin: auto;
+    }
+    .bold{
+        font-weight: bold;
+    }
+    .important{
+        font-weight: bold;
+        color: orangered;
+    }
+    .modifyButton{
+        font-size: x-small;
+        border-radius: 4px;
+        color: white;
+        font-weight: bold;
+    }
+    #deleteButt{
+        background: red;
+    }
+    .addStudButt{
+        font-size: x-small;
+        border-radius: 4px;
+        border: 1px solid grey;
+        width: fit-content;
+    }
+    .inline-block{
+        display: inline-block;
+    }
+    .removeButt{
+        float: right;
+    }
+    .aLookLikeText{
+        text-decoration: none;
+        color: black;
+    }
+
+    #popupOuter{
+        display: none;
+        position: fixed;
+        top: 25%;
+        width: 100%;
+    }
+    #popupInner{
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+        border: 1px solid black;
+        border-radius: 6px;
+        position: relative;
+        padding: 10px;
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    {% if action == 'ADD' %} history.pushState({}, '', '/ExamGroup/{{exGr.examId}}?name={{exGr.name}}'); {% endif %}
+
+    const numParticipants = {{exGr.participants|length}};
+
+    function removeParticipant(event){
+        event.preventDefault();
+        if (numParticipants < 2){
+            popup();
+            return;
+        }
+        // const form = document.getElementById("")
+        // alert(event.target.form.id);
+        event.target.form.submit();
+    }
+
+    function popup(){
+        document.getElementById("popupOuter").style.display = "initial";
+    }
+
+    function popdown(){
+        document.getElementById("popupOuter").style.display = "none";
+    }
+</script>
+
+<h1 class="bigHeadlineH1">
+    {% if action == 'ADD' %}NY GRUPPE
+    {% elif action == 'GET_ONE' %}GRUPPE
+    {% endif %}
+</h1>
+<table>
+    <tr>
+        <td class="bold">Navn:</td><td class="important">{{exGr.name}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Eksamens-id:</td><td>{{exGr.examId}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Kurs-gjennomførings-id:</td><td>{{exGr.courseImplementationId}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Kurs-gjennomførings-kode:</td><td>{{exGr.courseImplementationCode}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Kurs-gjennomførings-navn:</td><td>{{exGr.courseImplementationName}}</td>
+    </tr>
+    <tr>
+        <td colspan="2"><u><b>Deltakere</b></u></td>
+    </tr>
+    {% for exgr in exGr.participants %}
+        <tr>
+            <td>{{exgr.firstName}} {{exgr.lastName}}</td>
+            <td>
+                <a href="{{exgr.userLink}}">{{exgr.userLink}}</a>
+                <form action="/ExamGroup/{{exGr.examId}}" method="post" style="display: inline" id="form{{exgr.id}}">
+                    <input value="REMOVE" name="requestMethod" style="display: none">
+                    <input value="{{exgr.id}}" name="id" style="display: none" type="number">
+                    <button class="addStudButt removeButt" onclick="removeParticipant(event)" form="form{{exgr.id}}">Fjern</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <form action="/ExamGroup/{{exGr.examId}}" method="post">
+            <input value="DELETE" name="requestMethod" style="display: none">
+            <input value="{{exGr.name}}" name="name" style="display: none">
+            <td style="padding-top: 10px" colspan="2"><button class="modifyButton" id="deleteButt">Slette</button></td>
+        </form>
+    </tr>
+    <tr>
+        <form action="/ExamGroup/{{exGr.examId}}" method="post">
+            <input value="ADD_ONE" name="requestMethod" style="display: none">
+            <input value="{{exGr.name}}" name="name" style="display: none">
+            <td>Legge til deltager:</td>
+            <td>
+                <select class="inline-block" name="userId">
+                    {% for stud in qual_studs %}
+                        <option value="{{stud.id}}">{{stud.id}} {{stud.firstname}} {{stud.lastname}}</option>
+                    {% endfor %}
+                </select>
+                <button class="addStudButt inline-block">Legg til</button>
+            </td>
+        </form>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding-top: 25px">
+            <a href="/implementation_exam/group/{{exGr.examId}}">Tilbake til grupper for eksamen #{{exGr.examId}}</a>
+        </td>
+    </tr>
+</table>
+
+<div id="popupOuter">
+    <div id="popupInner">
+        Du får ikke fjerne gruppens siste deltager.<br>Slett gruppen istedet.
+        <div style="text-align: center; margin-top: 10px;">
+            <button style="width: auto; font-size: small" onclick="popdown()">OK</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
