@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Grupper{% endblock %}
+
+{% block main %}
+
+<style>
+    table{
+        margin: auto;
+    }
+    td{
+        padding-right: 8px;
+    }
+    .bold{
+        font-weight: bold;
+    }
+    .important{
+        font-weight: bold;
+        color: orangered;
+    }
+</style>
+
+<script>
+</script>
+
+<h1 class="bigHeadlineH1">SLETTET GRUPPE</h1>
+<table>
+    <tr>
+        <td class="bold">Slettet gruppe:</td>
+        <td class="important">{{name}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Antall deltagere:</td>
+        <td>{{num_deleted}}</td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding-top: 25px">
+            <a href="/implementation_exam/group/{{exam_id}}">Tilbake til grupper for eksamen #{{exam_id}}</a>
+        </td>
+    </tr>
+</table>
+
+{% endblock %}

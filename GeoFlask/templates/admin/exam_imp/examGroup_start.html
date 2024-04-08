@@ -1,0 +1,257 @@
+{% extends "layout.html" %}
+
+{% block title %}EksamensGruppe{% endblock %}
+
+{% block main %}
+
+<style>
+    .centerDiv{
+        text-align: center;
+    }
+    .actionDiv{
+        display: none;
+    }
+    table{
+        margin: auto;
+    }
+    .addStudentButt{
+        font-size: x-small;
+        border-radius: 4px;
+    }
+    .greenColorH2{
+        color: green;
+        margin-bottom: 6px;
+    }
+    .tableInsideHeadline{
+        text-align: center;
+        font-size: large;
+        font-weight: bold;
+        color: orange;
+        padding-top: 10px;
+    }
+    .filledInInput{
+        border: none;
+        pointer-events: none;
+        color: limegreen;
+        font-weight: bold;
+    }
+    .filledInLabel{
+        color: limegreen;
+        font-weight: bold;
+    }
+    .visibleSubmit{
+        width: 25%;
+        color: white;
+        background: cornflowerblue;
+        border-radius: 6px;
+        display: none;
+    }
+    .underHeadLine{
+        color: green;
+        margin-top: 0;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+</style>
+
+<script>
+    function choose(){
+        const radioInputs = document.querySelectorAll('input[type="radio"]');
+        let action;
+        radioInputs.forEach(ri =>{
+          if (ri.checked){
+            action = ri.value;
+            return;
+          }
+        });
+
+        if (action === "delete"){
+            const anchor = document.getElementById("deleteA");
+            anchor.click();
+            return;
+        }
+
+        document.querySelectorAll('.actionDiv').forEach(elm=>{
+            if(elm.id === `${action}Div`){
+                elm.style.display = "block";
+            }
+            else{
+                elm.style.display = "none";
+            }
+        })
+    }
+
+    function giveName(){
+        const newName = document.getElementById("groupNameIp").value;
+        document.getElementById("groupNameInput").value = newName;
+        checkInputs();
+    }
+
+    function addStudent(){
+        const options = document.getElementById("studentSelect").options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].selected){
+              const val = options[i].value;
+              const inn = options[i].innerHTML;
+
+              const table = document.getElementById("newGroupTable");
+              const tr = document.createElement("tr");
+              table.append(tr);
+              tr.id = `tr${val}`;
+              tr.className = "studentTr";
+              const emptyTd = document.createElement("td");
+              tr.append(emptyTd);
+              const inputTd = document.createElement("td");
+              tr.append(inputTd);
+              const input = document.createElement("input");
+              inputTd.append(input);
+              input.type = "number";
+              input.value = Number(val);
+              input.name = "studentId";
+              // input.setAttribute("name", "studentId");
+              input.style.display = "none";
+              const label = document.createElement("label");
+              inputTd.append(label);
+              label.id = `label${val}`;
+              label.innerHTML = inn;
+              label.className = "filledInLabel";
+              const buttonTd = document.createElement("td");
+              tr.append(buttonTd);
+              const button = document.createElement("button");
+              buttonTd.append(button);
+              button.className = "addStudentButt";
+              button.innerHTML = "Fjern";
+              button.dataset.userid = Number(val);
+              button.addEventListener("click", removeStudent);
+              options[i].remove();
+
+              break;
+            }
+        }
+        checkInputs();
+    }
+
+    function removeStudent(event){
+        event.preventDefault();
+        const userId = event.target.dataset.userid;
+        const trId = `tr${userId}`;
+        const labelId = `label${userId}`;
+        const inner = document.getElementById(labelId).innerHTML;
+        document.getElementById(trId).remove();
+
+        const select = document.getElementById("studentSelect");
+        const option = document.createElement('option');
+        //select.append(option);
+        select.insertAdjacentElement("afterbegin", option);
+        option.value = userId;
+        option.innerHTML = inner;
+
+        checkInputs();
+    }
+
+    function checkInputs(){
+        const groupNameInput = document.getElementById("groupNameInput").value;
+        const regNewgrButt = document.getElementById('registerNewGroupButt');
+        if (groupNameInput === ""){
+            regNewgrButt.style.display = "none";
+            return;
+        }
+        const studentTrs = document.querySelectorAll(".studentTr");
+        if (studentTrs.length < 1){
+            regNewgrButt.style.display = "none";
+            return;
+        }
+        regNewgrButt.style.display = "initial";
+    }
+
+    function submitForm(event){
+        event.preventDefault();
+        let wrongInput = false;
+        const groupNameInput = document.getElementById("groupNameInput").value;
+        if (groupNameInput === ""){
+            alert("Du må gi gruppen et navn!");
+            wrongInput = true;
+        }
+        const studentTrs = document.querySelectorAll(".studentTr");
+        if (studentTrs.length < 1){
+            alert("Du må registrere minst én student i gruppen");
+            wrongInput = true;
+        }
+        if (wrongInput){
+            return;
+        }
+        // event.target.submit();
+        const form = document.getElementById("newGroupForm");
+        var studIdInputs = document.querySelectorAll('input[name^="studentId"]');
+        studIdInputs.forEach(elm=>{
+           form.appendChild(elm);
+        });
+        form.submit();
+        // const invisibleSubmit = document.getElementById("invisibleSubmit");
+        // invisibleSubmit.click();
+    }
+</script>
+
+<h1 class="bigHeadlineH1" style="margin-bottom: 5px;">GRUPPER FOR EKSAMEN #{{exam.id}}</h1>
+<h3 class="underHeadLine">{{exam.courseImplementationCode}} {{exam.courseImplementationName}}</h3>
+    <div class="centerDiv">
+        <input type="radio" name="action" value="register" onchange="choose()"> <label>Registrére</label>
+        <input type="radio" name="action" value="delete" onchange="choose()"> <label>Se/endre/slette</label>
+<!--        <input type="radio" name="action" value="update" onchange="choose()"> <label>Se/endre</label>-->
+    </div>
+
+    <div class="centerDiv actionDiv" id="registerDiv">
+        <h2 class="greenColorH2">Ny gruppe</h2>
+        <table id="newGroupTable">
+            <tr>
+                <td>Navn:</td>
+                <td><input placeholder="Gruppenavn" id="groupNameIp"></td>
+                <td><button class="addStudentButt" onclick="giveName()">Gi navn</button></td>
+            </tr>
+            <tr>
+                <td colspan="3"><i>Legg til minst én deltaker</i></td>
+            </tr>
+            <tr>
+                <td>Legg til deltaker:</td>
+                <td>
+                    <select id="studentSelect">
+                        {% for qs in qual_studs %}
+                            <option value="{{qs.id}}">{{qs.id}} {{qs.firstname}} {{qs.lastname}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <button class="addStudentButt" onclick="addStudent()">Legg til</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="tableInsideHeadline">Foreløpig registrert</td>
+            </tr>
+            <form action="/ExamGroup/{{exam.id}}" method="post" id="newGroupForm">
+                <tr>
+                    <td>Navn:</td>
+                    <td><input class="filledInInput" name="groupName" id="groupNameInput"></td>
+                </tr>
+                <tr>
+                    <td>Deltakere:</td>
+                </tr>
+        </table>
+                <input type="number" value="{{exam.id}}" name="examId" style="display: none">
+                <input value="ADD" name="requestMethod" style="display: none">
+                <button class="visibleSubmit" onclick="submitForm(event)" id="registerNewGroupButt">Registrér gruppe</button>
+                <button style="display: none" id="invisibleSubmit"></button>
+            </form>
+    </div>
+
+    <div class="centerDiv actionDiv" id="deleteDiv">
+<!--        <h2 class="greenColorH2">Se/slette gruppe</h2>-->
+<!--        <iframe src="/ExamGroup/{{exam.id}}" width="100%" height="100%"></iframe>-->
+        <a href="/ExamGroup/{{exam.id}}" id="deleteA"></a>
+    </div>
+
+<!--    <div class="centerDiv actionDiv" id="updateDiv">-->
+<!--        <h2>Se/endre gruppe</h2>-->
+<!--    </div>-->
+
+
+{% endblock %}
