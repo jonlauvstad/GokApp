@@ -46,6 +46,9 @@ def venue_calendar_function():
     today = start_date.strftime("%Y-%m-%d")
     current_day = datetime.now().date().strftime("%a %d.%b")
 
+    # debugging
+    # print("EVENTS_______________\n", events)
+
     return render_template("venue_calendar.html",
                            user=user,
                            events=events,
@@ -251,7 +254,6 @@ def venue_booking_data(day, date, time, venue_id):
             venue_availability[venue_id]['availability'][day_of_week] = False
 
     return venue_availability"""
-
 
 """def organize_events(events):
     # Initialiserer en struktur for å holde eventer organisert etter Venue og dag

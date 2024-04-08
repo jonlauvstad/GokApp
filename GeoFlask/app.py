@@ -147,6 +147,14 @@ def student_resources():
 # ----------------------------------------------------
 
 
+@app.route("/admin_assignment", methods=['GET', 'POST'])
+@login_required(roles=['teacher', 'admin'])
+def assignment_admin():
+    if request.method == 'POST':
+        return ass_routs.assignment_create_function()
+    else:
+        return render_template("admin/assignment/add_assignment.html", user=session["user"])
+
 @app.route("/Assignment/<int:id>")
 @login_required(roles=None)
 def assignment_id(id):
