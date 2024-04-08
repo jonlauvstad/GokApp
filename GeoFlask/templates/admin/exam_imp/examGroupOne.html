@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}Grupper{% endblock %}
+
+{% block main %}
+
+<style>
+    table{
+        margin: auto;
+    }
+    td{
+        padding-right: 8px;
+    }
+    .bold{
+        font-weight: bold;
+    }
+    .important{
+        font-weight: bold;
+        color: orangered;
+    }
+</style>
+
+<script>
+</script>
+
+<h1 class="bigHeadlineH1">
+    {% if removed %}SLETTET OPPFØRING
+    {% elif added %}TILLAGT OPPFØRING
+    {% endif %}
+</h1>
+<table>
+    <tr>
+        <td class="bold">Id:</td>
+        <td>{{examGroup.id}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Student:</td>
+        <td class="important">{{examGroup.firstName}} {{examGroup.lastName}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Gruppe:</td>
+        <td class="important">{{examGroup.name}}</td>
+    </tr>
+    <tr>
+        <td class="bold">Student-link:</td>
+        <td>
+            <a href="/User/{{examGroup.userId}}?name={{examGroup.name}}">Link til studenten</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="bold">Gruppe-link:</td>
+        <td>
+            <a href="/ExamGroup/{{examGroup.examId}}?name={{examGroup.name}}">Link til gruppen</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="bold">Eksamens-link:</td>
+        <td>
+            <a href="{{examGroup.examLink}}">{{examGroup.examLink}}</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="bold">Kurs-gjennomførings-link:</td>
+        <td>
+            <a href="{{examGroup.courseImplementationLink}}">{{examGroup.courseImplementationLink}}</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding-top: 25px">
+            <a href="/implementation_exam/group/{{examGroup.examId}}">Tilbake til grupper for eksamen #{{examGroup.examId}}</a>
+        </td>
+    </tr>
+</table>
+
+{% endblock %}

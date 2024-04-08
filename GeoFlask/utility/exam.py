@@ -1,3 +1,5 @@
+import datetime
+
 from dateutil import parser
 
 class Exam:
@@ -25,6 +27,7 @@ class Exam:
         self.periodEnd_iso =  self.periodEnd_datetime.isoformat()
         self.hours = int(duration_hours)
         self.minutes = int(60 * (duration_hours - self.hours))
+        self.perStart_dt_max = self.periodEnd_datetime - datetime.timedelta(hours=duration_hours)
 
     def serialize(self):
         return {
