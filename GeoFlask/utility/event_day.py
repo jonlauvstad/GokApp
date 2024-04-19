@@ -2,7 +2,7 @@ from dateutil import parser
 # from datetime import datetime
 import datetime
 # from utility.event import Event
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time      # Tror Andreas adda denne importen og det kødda til linje 21
 
 
 class EventDay:
@@ -18,8 +18,9 @@ class EventDay:
     def make_days(start_date, num_days, events):
         days = []
         for i in range(num_days):
-            timedelta = datetime.timedelta(days=i)
-            date = start_date + timedelta
+            timedelta_ = timedelta(days=i)      # 8. april Måtte endre fra timedelta = datetime.timedelta(days=i)
+            date = start_date + timedelta_
+
 
             event_day = EventDay(date, [item for item in events if item.date==date])   #  if item.date==date.date()
             days.append(event_day)

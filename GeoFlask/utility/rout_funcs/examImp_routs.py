@@ -10,7 +10,12 @@ from ..user import User
 from ..realExamGroup import RealExamGroup, make_groups
 import datetime
 from dateutil import parser
+from dateutil import tz
 
+tzinfos = {"CET": tz.gettz('Europe/Paris')}
+tzinfos["UTC"] = datetime.timezone.utc
+
+target_timezone = tz.gettz("CET")
 URLpre = configuration["URLpre"]
 
 
@@ -54,23 +59,15 @@ def examImp_start():
     ]
     exams = [item for item in exams if item.periodStart_datetime > datetime.datetime.now()]
 
-    # # Get courseimps
-    # url_ext = f"courseImplementation"
-    # url = URLpre + url_ext
-    # now = datetime.datetime.now().isoformat()
-    # url += f"?endDate={now}&userRole=Balle"
-    # headers = {"Authorization": f"Bearer {session['token']}"}
-    # response = requests.get(url, verify=False, headers=headers)
-    # if not response.ok:
-    #     abort(404)
-    # cis_lOfdics = response.json()
-
     return render_template("admin/exam_imp/examImp_start.html", user=user, exams=exams)     # , courseImps=cis_lOfdics
 
 def examImp_register(exam_id):
     user = session["user"]
     groups = None
     grps = None
+    err_msg = None
+    if "err_msg" in session:
+        err_msg = session.pop("err_msg")
 
     # Hente exam - varsle hvis allerede har examImplementation
     # A) Henter examImps -varsler hvis noen
@@ -79,9 +76,11 @@ def examImp_register(exam_id):
     headers = {"Authorization": f"Bearer {session['token']}"}
     response = requests.get(url, verify=False, headers=headers)
     if not response.ok:
+        print("Line 82")
         abort(404)
     examImp_dics = response.json()
     alreadyExImp = len(examImp_dics) > 0
+    alr_exImp = None if not alreadyExImp else f"Eksamen med id {exam_id} har allerede eksamens-gjennomføringer"
 
     # B) Henter exam
     url_ext = f"exam/{exam_id}"
@@ -89,6 +88,7 @@ def examImp_register(exam_id):
     headers = {"Authorization": f"Bearer {session['token']}"}
     response = requests.get(url, verify=False, headers=headers)
     if not response.ok:
+        print("Line93")
         abort(404)
     dic = response.json()
     exam = Exam(dic['id'], dic['courseImplementationId'], dic['category'], dic['durationHours'], dic['periodStart'],
@@ -103,9 +103,9 @@ def examImp_register(exam_id):
     headers = {"Authorization": f"Bearer {session['token']}"}
     response = requests.get(url, verify=False, headers=headers)
     if not response.ok:
+        print("Line 108")
         abort(404)
     user_ids = response.json()
-    print(user_ids)
 
     # D) Dersom exam.category er 'muntlig gruppe': Hente gruppene/lage dem
     if exam.category == "muntlig gruppe":
@@ -113,6 +113,7 @@ def examImp_register(exam_id):
         url = URLpre + url_ext
         response = requests.get(url, verify=False, headers=headers)
         if not response.ok:
+            print("Line 119")
             abort(404)
         exGr_dics = response.json()
         groups = make_groups(exGr_dics)
@@ -120,19 +121,11 @@ def examImp_register(exam_id):
 
     # E) Rendre html m/exam - hjemme/skriftlig/muntlig/muntlig gruppe:
 
-    # Spør om det man trenger deretter:
-    # Hjemme: Kun start - venue hjemme om ikke lagt inn - ferdig!
-    # Skriftlig: Kun start - finner venues for dagen med færrest ledige plasser/kombinasjon - minimumantall/rom
-    # Muntlig og muntlig gruppe: Flere runder: Beregne antallet eksamensimplementasjoner - vises
-    # Får starttidspkt, antall rom samtidig, minimumantall/rom, avslutningstidspunkt/dag - beregner
-
-    # return f"register already:{alreadyExImp} exam:{exam.id} {exam.courseImplementationName}"
-
     start_tpkt = exam.periodStart_datetime + datetime.timedelta(hours=9)
     b_holidays = json.dumps([item.isoformat() for item in bank_holidays])
 
     return render_template("admin/exam_imp/examImp_reg.html", user=user, exam=exam, stud_ids=user_ids, start_tpkt=start_tpkt,
-                           groups=groups, grps=grps, holidays=b_holidays)
+                           groups=groups, grps=grps, holidays=b_holidays, err_msg=err_msg, alr_exImp=alr_exImp)
 
 def examImplementation_function():
     user = session["user"]
@@ -158,16 +151,86 @@ def examImplementation_function():
                 "EndTime": endTime.isoformat(),
                 "ParticipantIds": participantIds
             }
+            examDTOs = [exam_dto]
 
-            response = requests.post(url, verify=False, headers=headers, json=[exam_dto])
-            if not response.ok:
-                abort(404)
-            examImp_dics = response.json()
-            return examImp_dics
+        elif category == "skriftlig":
+            startTime = parser.parse(request.form.get("startTime"))
+            participantIds = [int(item) for item in request.form.get("participants").split(",")]
+            venueIds = [int(item) for item in request.form.get("venueIds").split(",")]
+            numstudents = [int(item) for item in request.form.get("numstudents").split(",")]
+            num_studs_akk = [sum(numstudents[0:i+1]) for i in range(len(numstudents))]
+            duration = float(request.form.get("duration"))
+            endTime = startTime + datetime.timedelta(hours=int(duration)) + datetime.timedelta(minutes=(duration - int(duration)) * 60)
+            examDTOs = [{
+                "ExamId": exam_id,
+                "VenueId": venueIds[i],
+                "StartTime": startTime.isoformat(),
+                "EndTime": endTime.isoformat(),
+                "ParticipantIds": participantIds[0 if i==0 else num_studs_akk[i-1] : num_studs_akk[i]]
+            } for i in range(len(venueIds))]
 
-def examImp_delete(exam_id):
+        else:                   # elif category == "muntlig":         # Eller else ?
+            startTime = [parser.parse(f"{item} UTC", tzinfos=tzinfos).astimezone(target_timezone) for item in request.form.get("startTime").split(",")]
+            endTime = [parser.parse(f"{item} UTC", tzinfos=tzinfos).astimezone(target_timezone) for item in request.form.get("endTime").split(",")]
+            participantIds = json.loads(request.form.get("students"))
+            venueIds = [int(item) for item in request.form.get("venueIds").split(",")]
+
+            examDTOs = [{
+                "ExamId": exam_id,
+                "VenueId": venueIds[i % len(venueIds)],
+                "StartTime": startTime[i].isoformat(),
+                "EndTime": endTime[i].isoformat(),
+                "ParticipantIds": participantIds[i]
+            } for i in range(len(startTime))]
+
+        response = requests.post(url, verify=False, headers=headers, json=examDTOs)
+        if not response.ok:
+            session["err_msg"] = f"{response.text}.%" \
+                                 f"Sannsynligvis kolliderer den/de foreslåtte eksamenen(e) med andre for samme program-gjennomføring."
+            return redirect(f"/implementation_exam/register/{exam_id}")
+
+        examImp_dics = response.json()
+        exams = [ExamImplementation(item['id'], item['examId'], item['venueId'], item['startTime'], item['endTime'],
+                                    item['category'], item['durationHours'], item['courseImplementationId'],
+                                    item['courseImplementationName'], item['courseImplementationCode'],
+                                    item['venueName'],
+                                    item['location'], item['courseImplementationLink'], item['venueLink'],
+                                    item['link'], item['examLink']) for item in examImp_dics]
+        return render_template("admin/exam_imp/examImps.html", user=user, exams=exams)
+
+def examImplementation_ExamId_function(exam_id):
     user = session["user"]
-    return "delete"
+    url_ext = f"ExamImplementation/Exam/{exam_id}"
+    url = URLpre + url_ext
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    deleted = False
+    empty = False
+
+    if not request.args.get("delete"):
+        response = requests.get(url, verify=False, headers=headers)
+    else:
+        deleted = True
+        response = requests.delete(url, verify=False, headers=headers)
+    if not response.ok:
+        print(response.text)
+        abort(404)
+
+    examImp_dics = response.json()
+    exams = [ExamImplementation(item['id'], item['examId'], item['venueId'], item['startTime'], item['endTime'],
+                                item['category'], item['durationHours'], item['courseImplementationId'],
+                                item['courseImplementationName'], item['courseImplementationCode'],
+                                item['venueName'],
+                                item['location'], item['courseImplementationLink'], item['venueLink'],
+                                item['link'], item['examLink']) for item in examImp_dics]
+    if deleted:
+        num_studs = sum([len(item["userExamImplementation"]) for item in examImp_dics])
+        deleted = f"{len(exams)} gjennomføringer slettet, {num_studs} studenter påvirket"
+
+    if len(examImp_dics) == 0:
+        empty = True
+
+    return render_template("admin/exam_imp/examImps.html", user=user, exams=exams, deleted=deleted, empty=empty, exam_id=exam_id)
+
 
 def examImp_group(exam_id):
     user = session["user"]

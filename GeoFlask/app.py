@@ -250,15 +250,23 @@ def examImplementation_id(id):
 def examImplementation():
     return exImp_routs.examImplementation_function()
 
+@app.route("/ExamImplementation/Exam/<int:exam_id>", methods=["GET", "POST"])
+@login_required(roles=None)
+def examImplementation_ExamId(exam_id):
+    return exImp_routs.examImplementation_ExamId_function(exam_id)
+
+
 @app.route("/implementation_exam")
 @login_required(roles=["teacher", "admin"])
 def implementation_exam():
     return exImp_routs.examImp_start()
 
+# DENNE BØR ENDRES TIL DEN I L 253, DVS DENNE FJERNES, OG URL-HENVISNINGENE I HTML ENDRES ACCORDINGLY: examImp_start.html - eller bare redirecte
 @app.route("/implementation_exam/delete/<int:exam_id>")
 @login_required(roles=["teacher", "admin"])
-def implementation_exam_delete(exam_id):
-    return exImp_routs.examImp_delete(exam_id)
+def implementation_exam_see(exam_id):
+    # return exImp_routs.examImp_delete(exam_id)
+    return redirect(f"/ExamImplementation/Exam/{exam_id}")
 
 @app.route("/implementation_exam/register/<int:exam_id>")
 @login_required(roles=["teacher", "admin"])
@@ -274,6 +282,8 @@ def implementation_exam_group(exam_id):
 @login_required(roles=["teacher", "admin"])
 def exam_group(exam_id):
     return exImp_routs.exam_group(exam_id)
+
+
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
