@@ -18,4 +18,4 @@ def venue_id_function(id):
 
     dic = response.json()
     # return dic
-    return render_template("venue.html", venue=dic)
+    return render_template("venue.html", venue=dic, user=user)

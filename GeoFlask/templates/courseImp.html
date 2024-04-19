@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+        font-size: large;
+    }
+    .boldTd{
+        font-weight: bold;
+    }
+    td{
+        padding-right: 5px;
+        vertical-align: top;
+    }
+</style>
+<h1 class="bigHeadlineH1" style="text-align: center">KURS-GJENNOMFØRING</h1>
+<table>
+    <tr>
+        <td class="boldTd">Id:</td><td>{{course_imp.id}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Kode:</td><td>{{course_imp.code}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Navn:</td><td>{{course_imp.name}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Start-Semester:</td><td>{{course_imp.semester}}{{course_imp.year}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Slutt-Semester:</td><td>{{course_imp.endSemester}}{{course_imp.endYear}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Start:</td><td>{{course_imp.startDate}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Slutt:</td><td>{{course_imp.endDate}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Lærer(e):</td><td>{{course_imp.teachers}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Studenter:</td><td>{{course_imp.numStudents}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Program-gjennomføring:</td><td>{{course_imp.programImplementationName}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Link:</td><td><a href="{{course_imp.link}}">{{course_imp.link}}</a></td>
+    </tr>
+    <tr>
+        <td class="boldTd">Kurs:</td><td><a href="{{course_imp.courseLink}}">{{course_imp.courseLink}}</a></td>
+    </tr>
+</table>
+
+
+{% endblock %}

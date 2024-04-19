@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}Kurs{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+        font-size: large;
+    }
+    .boldTd{
+        font-weight: bold;
+    }
+    td{
+        padding-right: 5px;
+        vertical-align: top;
+    }
+</style>
+<h1 class="bigHeadlineH1" style="text-align: center">KURS</h1>
+<table>
+    <tr>
+        <td class="boldTd">Id:</td><td>{{course.id}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Kode:</td><td>{{course.code}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Navn:</td><td>{{course.name}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Studie-poeng:</td><td>{{course.points}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Undervisning:</td><td>{% if course.teachCourse %}JA{% else %}NEI{% endif %}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Vitnemål:</td><td>{% if course.diplomaCourse%}JA{% else %}NEI{% endif %}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Eksamen:</td><td>{%if course.examCourse %}JA{% else %}NEI{% endif %}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Link:</td><td><a href="{{course.link}}">{{course.link}}</a></td>
+    </tr>
+</table>
+
+
+{% endblock %}
