@@ -20,6 +20,7 @@ import utility.rout_funcs.alert_routs as alert_routs
 import utility.rout_funcs.exam_routs as exam_routs
 from utility.util_funcs import format_datetime
 import utility.rout_funcs.venue_routs as venue_routs
+import utility.rout_funcs.courseImp_routs as courseImp_routs
 
 urllib3.disable_warnings()
 
@@ -288,6 +289,16 @@ def exam_group(exam_id):
 @login_required(roles=None)
 def venue_id(id):
     return venue_routs.venue_id_function(id)
+
+@app.route("/CourseImplementation/<int:id>")
+@login_required(roles=None)
+def courseImplementation_id(id):
+    return courseImp_routs.courseImp_id_function(id)
+
+@app.route("/Course/<int:id>")
+@login_required(roles=None)
+def course_id(id):
+    return courseImp_routs.course_id_function(id)
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
