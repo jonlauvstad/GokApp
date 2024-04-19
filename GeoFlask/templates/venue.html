@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+        font-size: large;
+    }
+    .boldTd{
+        font-weight: bold;
+    }
+    td{
+        padding-right: 5px;
+        vertical-align: top;
+    }
+</style>
+<h1 class="bigHeadlineH1" style="text-align: center">LOKALE</h1>
+<table>
+    <tr>
+        <td class="boldTd">Id:</td><td>{{venue.id}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Navn:</td><td>{{venue.name}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Kapasitet:</td><td>{{venue.capacity}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Beskrivelse:</td><td>{{venue.description}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Stedsnavn:</td><td>{{venue.locationName}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Adresse:</td><td>{{venue.streetAddress}}<br>{{venue.postCode}} {{venue.city}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Link:</td><td><a href="{{venue.link}}">{{venue.link}}</a></td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding-top: 30px">
+            <a href="/venue_calendar">Link til rom-kalender</a>
+        </td>
+    </tr>
+</table>
+
+
+{% endblock %}
