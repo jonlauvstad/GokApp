@@ -4,7 +4,6 @@
 
 {% block main %}
 
-<!--<script src="/../static/JS/to_examImp_reg.js"></script>-->
 <script>
     class ExamImp {
         constructor(examId, venueIndexOrId, start, end){
@@ -31,6 +30,9 @@
         }
     }
 
+    var hostname = window.location.hostname;
+    var portNumber = window.location.port;
+
     var holidays = JSON.parse({{holidays | tojson}}).map(elm => new Date(elm))
         .map(elm => `${elm.getFullYear()}-${elm.getMonth()}-${elm.getDate()}`)
     var exam_id = {{exam.id}};
@@ -49,6 +51,8 @@
     var limitations = [];
     var starts = [];
 
+    var suggestions_x_venues = [];
+
 
     document.addEventListener('DOMContentLoaded', () => {
         {% if exam.category == "muntlig" or exam.category == "muntlig gruppe" %}
@@ -58,38 +62,31 @@
             updateStartsAfterLunch();
             updateTotalDur();
 
-            // let suggestions = calcSuggestion();
-            // suggestions.forEach(elm => {
-            //     console.log(elm.day, elm.startTime, elm.endTime, elm.venueInt);
-            // });
-
-            // alert(holidays[0]);
-
-            // holidays.forEach(elm=>{
-            //     console.log(elm);
-            // })
-
-            // var date_array = make_dateArray(5);
-            // date_array.forEach(elm =>{
-            //    console.log(elm);
-            // });
-
-            // var sugg_xVen = suggestion_xVenues();
-            // sugg_xVen.forEach(elm => {
-            //    console.log(elm.examId, elm.venueIndexOrId, elm.start, elm.end);
-            // });
+            suggestion_xVenues();       // 17.apr 14:02
 
         {% endif %}
-        // alert(dateFromDateTimeLocal("startTpkt"));
+
+        {% if err_msg %}
+            showErrMsg("{{err_msg}}");
+        {% elif alr_exImp %}
+            showAlrExImp("{{alr_exImp}}")
+        {% endif %}
+
+        {% if exam.category == "skriftlig" %}
+            getVenuesSkriftlig();
+            document.getElementById("startTpkt").addEventListener("change", getVenuesSkriftlig);
+        {% endif %}
+
+        {% if exam.category == "muntlig gruppe" %}
+            checkAllAssignedToGroups();
+        {% endif %}
     });
 
+    function getLastSuggestionEnd(){
+        return suggestions_x_venues[suggestions_x_venues.length - 1].end.toISOString().slice(0, 16);
+    }
+
     function updateLimitationsLunch(){
-        // const start_time = document.getElementById("dayStart").value;
-        // var [hours, minutes] = start_time.split(":");
-        // // var timeObject = new Date();
-        // // timeObject.setHours(parseInt(hours));
-        // // timeObject.setMinutes(parseInt(minutes));
-        // limitations[0] = hours + minutes/60;
         intFromTime("lunchStart", limitations, 0);
     }
     function updateLimitationsEnd(){
@@ -123,7 +120,6 @@
         updateStartsAfterLunch();
         updateTotalDur();
     }
-
 
     // function hoursMinutesFromDateObj(dateObj){
     //     return [dateObj.getHours(), dateObj.getMinutes()]
@@ -166,17 +162,27 @@
     function suggestion_xVenues(){
         let suggestions = calcSuggestion();
         let dateArray = make_dateArray(20);
-        return suggestions.map(elm => {
+        console.log("suggestions_length:", suggestions.length);
+        suggestionsMapped = suggestions.map(elm => {
                 let start_dateTime = new Date(dateArray[elm.day]);
                 start_dateTime.setHours(parseInt(elm.startTime));
                 start_dateTime.setMinutes( (elm.startTime-parseInt(elm.startTime)) * 60 );
                 let end_dateTime = new Date(dateArray[elm.day]);
                 end_dateTime.setHours(parseInt(elm.endTime));
                 end_dateTime.setMinutes( (elm.endTime-parseInt(elm.endTime)) * 60 );
-                return new ExamImp(exam_id, elm.venueInt, start_dateTime, end_dateTime);
+                try{
+                    return new ExamImp(exam_id, elm.venueInt, start_dateTime, end_dateTime);
+                }
+                catch(err){
+                    console.log(err);
+                }
             }
         );
+        suggestions_x_venues = suggestionsMapped;
 
+        getVenuesMuntlig();
+
+        return suggestionsMapped;
     }
 
     function dateFromDateTimeLocal(elementId){
@@ -208,6 +214,345 @@
         hjemmeInput.value = value;
     }
 
+    function showErrMsg(msg){
+        document.getElementById("errorLabel").innerHTML = multiLine(msg);
+        document.getElementById("popOuterDiv").style.display = "initial";
+        const errDiv = document.getElementById("errorDiv");
+        errDiv.style.display = "block";
+    }
+
+    function showAlrExImp(msg){
+        document.getElementById("alreadyLabel").innerHTML = multiLine(msg);
+        document.getElementById("popOuterDiv").style.display = "initial";
+        const errDiv = document.getElementById("alreadyDiv");
+        errDiv.style.display = "block";
+    }
+
+    function popDown(event){
+        document.querySelectorAll(".popInnerDiv").forEach(elm => {
+            elm.style.display = 'none';
+        });
+        {% if alr_exImp %}
+            if (event.target.id === "errorButt"){
+                showAlrExImp("{{alr_exImp}}");
+                return;
+            }
+            else{
+                document.getElementById("popOuterDiv").style.display = 'none';
+            }
+        {% else %}
+            document.getElementById("popOuterDiv").style.display = 'none';
+        {% endif %}
+    }
+
+    function multiLine(text){
+        lines = text.split('%');
+        return lines.join('<br>');
+    }
+
+    function updateNumUnassignedStudents(){
+
+    }
+
+    function moveToSelected(event){
+        moveElement(event, "selectedVenueDiv", "chooseVenueDiv");
+    }
+
+    function moveToChoose(event){
+        moveElement(event, "chooseVenueDiv", "selectedVenueDiv");
+    }
+    function moveElement(event, newParentId, oldParentId){
+        const element = event.target;
+
+        // Moving element
+        document.getElementById(newParentId).appendChild(element);
+
+        // Handling eventListeners
+        if (newParentId === "selectedVenueDiv"){
+            element.removeEventListener("click", moveToSelected);
+            element.addEventListener("click", moveToChoose);
+        }
+        else{
+            element.removeEventListener("click", moveToChoose);
+            element.addEventListener("click", moveToSelected);
+        }
+
+        // Getting unassignedNumElement and value/innerHTML
+        const unassignedNumElm = document.getElementById("unassignedLabel");
+        const unassignedNumIn = Number(unassignedNumElm.innerHTML);
+        const numStudents = Math.min(Number(element.dataset.capacity), unassignedNumIn);
+        const num_students = element.dataset.numstudents;
+
+        // Setting dataset.numstudents and adding/removing brukt-info
+        if (newParentId === "selectedVenueDiv"){
+            element.dataset.numstudents = numStudents;
+            element.innerHTML += `<label id="inside${element.dataset.id}">, brukt ${numStudents}</label>`
+        }
+        else{
+            document.getElementById(`inside${element.dataset.id}`).remove();
+        }
+
+        // Add number of students to venue & Update antall utilordnede studenter
+        if (newParentId === "selectedVenueDiv"){
+            const unassignedNumOut = unassignedNumIn - numStudents;
+            unassignedNumElm.innerHTML = unassignedNumOut;
+            if (unassignedNumOut === 0){
+                document.querySelectorAll("#chooseVenueDiv li").forEach(elm => {
+                   elm.disabled = true;
+                   elm.style.opacity = "30%";
+                   showSendInSkriftlig(true);
+                });
+            }
+        }
+        else{
+            const unassignedNumOut_ = unassignedNumIn + Number(element.dataset.numstudents);
+            unassignedNumElm.innerHTML = unassignedNumOut_;
+            if (unassignedNumIn === 0){
+                document.querySelectorAll("#chooseVenueDiv li").forEach(elm => {
+                   elm.disabled = false;
+                   elm.style.opacity = "100%";
+                   showSendInSkriftlig(false);
+                });
+            }
+        }
+    }
+
+    function moveOralElement(event, newParentId){
+        const element = event.target;
+
+        // Moving element
+        document.getElementById(newParentId).appendChild(element);
+
+        // Handling eventListeners
+        if (newParentId === "selectedVenueDivOral"){
+            element.removeEventListener("click", moveToSelectedOral);
+            element.addEventListener("click", moveToChooseOral);
+        }
+        else{
+            element.removeEventListener("click", moveToChooseOral);
+            element.addEventListener("click", moveToSelectedOral);
+        }
+
+        // Enabling/disabling submittance
+        showHideSubmitMuntlig();
+    }
+    function moveToSelectedOral(event){
+        moveOralElement(event, "selectedVenueDivOral");
+    }
+    function moveToChooseOral(event){
+        moveOralElement(event, "chooseVenueDivOral");
+    }
+
+    function showHideSubmitMuntlig(){
+        // Enabling/disabling submittance
+        const parent = document.getElementById("selectedVenueDivOral");
+        const numVenues = parent.querySelectorAll(".venueLi").length;
+
+        const parent2 = document.getElementById("chooseVenueDivOral");
+        const venueLis = parent2.querySelectorAll(".venueLi");
+
+        const numSim = document.getElementById("numSimul").value;
+        const button = document.getElementById("sendInMuntligButt");
+        // alert(`numSim: ${numSim}   numVenues:${numVenues}`);
+        if (numVenues == numSim){
+            button.innerHTML = `Registrér ${num_exams} ${num_exams===1 ? "gjennomføring" : "gjennomføringer"}`;
+            button.style.display = "initial";
+            venueLis.forEach(elm => {
+                elm.disabled = true;
+                elm.style.opacity = "30%";
+            });
+        }
+        else{
+            button.style.display = "none";
+            venueLis.forEach(elm => {
+                elm.disabled = false;
+                elm.style.opacity = "100%";
+            });
+        }
+    }
+
+    function getVenuesFromApi(from, to){
+        const url = `http://${hostname}:${portNumber}/api/venue?from=${from}&to=${to}`;
+        fetch(url,
+            {
+                method: "GET"
+            })
+            .then(response =>{
+                if(!response.ok){
+                    throw new Error("Network response was not ok.");
+                }
+                return response.json();
+            })
+            .then(data =>{
+                console.log(data);
+                const chooseDiv = document.getElementById("chooseVenueDiv");
+                data.forEach(elm =>{
+                    if (elm.locationName === "Internett") {
+                        return;
+                    }
+                    const li = document.createElement('li');
+                    li.dataset.id = elm.id;
+                    li.dataset.capacity = elm.capacity;
+                    li.innerHTML = `Id ${elm.id}, ${elm.name} ${elm.locationName}, kap. ${elm.capacity}`;
+                    li.addEventListener("click", moveToSelected);
+                    chooseDiv.append(li);
+                })
+            })
+            .catch(error =>{
+                console.error("There was a problem with the fetch operation:", error);
+            });
+    }
+
+    function getVenuesFromApiMuntlig(from, to){
+        const url = `http://${hostname}:${portNumber}/api/venue?from=${from}&to=${to}`;
+        fetch(url,
+            {
+                method: "GET"
+            })
+            .then(response =>{
+                if(!response.ok){
+                    throw new Error("Network response was not ok.");
+                }
+                return response.json();
+            })
+            .then(data =>{
+                console.log(data);
+                const chooseDiv = document.getElementById("chooseVenueDivOral");
+                data.forEach(elm =>{
+                    if (elm.locationName === "Internett") {
+                        return;
+                    }
+                    const li = document.createElement('li');
+                    li.dataset.id = elm.id;
+                    li.dataset.capacity = elm.capacity;
+                    li.className = "venueLi";
+                    li.innerHTML = `Id ${elm.id}, ${elm.name} ${elm.locationName}, kap. ${elm.capacity}`;
+                    li.addEventListener("click", moveToSelectedOral);
+                    chooseDiv.append(li);
+                })
+            })
+            .catch(error =>{
+                console.error("There was a problem with the fetch operation:", error);
+            });
+    }
+
+    function addFloatToDtLocValue(dtLocValue, float){
+        const originalDt = new Date(dtLocValue);
+        const newDate = new Date(originalDt.getTime() + float * 60 * 60 * 1000);
+        const formattedDate = newDate.toISOString().slice(0, 16);       // format matching input type datetimelocal
+        return formattedDate;
+    }
+
+    function getVenuesSkriftlig(){
+        const start = document.getElementById("startTpkt").value;
+        const durHours = Number(document.getElementById("durHoursLabel").innerHTML);
+        const end =  addFloatToDtLocValue(start, durHours);
+        document.getElementById("chooseVenueDiv").innerHTML = '<label  class="labelLi">Velg rom <span class="norm">(klikk for å velge)</span></label>';
+        document.getElementById("selectedVenueDiv").innerHTML = '<label class="labelLi">Valgte rom <span class="norm">(klikk for å avvelge)</span></label>';
+        getVenuesFromApi(start, end);
+    }
+
+    function getVenuesMuntlig(){
+        const start = document.getElementById("startTpkt").value;
+        const end = getLastSuggestionEnd();
+        document.getElementById("chooseVenueDivOral").innerHTML = '<label  class="labelLi">Velg rom <span class="norm">(klikk for å velge)</span></label>';
+        document.getElementById("selectedVenueDivOral").innerHTML = '<label class="labelLi">Valgte rom <span class="norm">(klikk for å avvelge)</span></label>';
+        getVenuesFromApiMuntlig(start, end);
+    }
+
+    function showSendInSkriftlig(show){
+        const button = document.getElementById("sendInSkriftligButt");
+        if (show){
+            const lis = document.querySelectorAll("#selectedVenueDiv li");
+            const numExInmps = lis.length;
+            button.innerHTML = `Registrér ${numExInmps} ${numExInmps===1 ? "gjennomføring" : "gjennomføringer"}`;
+            button.style.display = "initial";
+        }
+        else{
+            button.style.display = "none";
+        }
+    }
+
+    function submitSkriftlig(){
+        // Getting the form
+        const form = document.getElementById("skriftligForm");
+
+        // Getting values
+        const startTime = document.getElementById("startTpkt").value;
+        const duration = Number(document.getElementById("durHoursLabel").innerHTML);
+        const venueLis = Array.from(document.querySelectorAll("#selectedVenueDiv li"));
+        const venueIds = venueLis.map(elm => elm.dataset.id);
+        const numstudents = venueLis.map(elm => elm.dataset.numstudents);
+
+        // Creating, appending, naming and setting value of inputs
+        addInput(form, "datetime-local", "startTime", startTime);
+        addInput(form, "text", "duration", duration);
+        addInput(form, "text", "participants", stud_ids);
+        addInput(form, "text", "venueIds", venueIds.join(","));
+        addInput(form, "text", "numstudents", numstudents.join(","));
+
+        // Submitting the form
+        form.submit();
+    }
+
+    function submitMuntlig(){
+        // Getting the form
+        const form = document.getElementById("muntligForm");
+
+        // Getting values
+        const parent = document.getElementById("selectedVenueDivOral");
+        const venueLis = parent.querySelectorAll(".venueLi");
+        const venueIds = Array.from(venueLis).map(elm => elm.dataset.id).join(",");
+        const starts = suggestions_x_venues.map(elm => elm.start.toISOString().slice(0, 16)).join(",");
+        const ends = suggestions_x_venues.map(elm => elm.end.toISOString().slice(0, 16)).join(",");
+
+        // Creating, appending, naming and setting value of inputs
+        addInput(form, "text", "startTime", starts);
+        addInput(form, "text", "endTime", ends);
+        addInput(form, "text", "participants", stud_ids);
+        addInput(form, "text", "venueIds", venueIds);
+        {% if exam.category == "muntlig gruppe" %}
+        addInput(form, "text", "students", JSON.stringify(grps));
+        {% else %}
+        addInput(form, "text", "students", JSON.stringify(stud_ids.map(x => [x])));
+        {% endif %}
+        form.submit();
+    }
+
+    function addInput(formElement, inputType, inputName, inputValue){
+        const input = document.createElement('input');
+        input.type = inputType;
+        input.name = inputName;
+        input.value = inputValue;
+        formElement.append(input);
+    }
+
+    function checkAllAssignedToGroups(){
+        const numAssigned = sumArray(grps.map(elm => elm.length), 0);
+        console.log("numAssigned:", numAssigned);
+        if (numAssigned < num_studs){
+            document.getElementById("unassignedOuterDiv").style.display = "initial";    // "block" "initial" ?
+            document.getElementById("unassignedInnerDiv").style.display = "block";
+        }
+    }
+
+    function chooseWhenUnassigned(event){
+        const hrefid = event.target.dataset.hrefid;
+        document.getElementById(hrefid).click();
+    }
+
+    function sumArray(arr, index) {         // Always initially call with index=0
+        if (index === arr.length) {
+            return 0;
+        }
+        return arr[index] + sumArray(arr, index + 1);
+    }
+
+    function  setTimeFromDateTimeLocalInLine(event){
+        const datetimeValue = event.target.value;
+        const timeValue = datetimeValue.slice(11, 16);
+        document.getElementById("dayStart").value = timeValue;
+    }
 </script>
 
 <style>
@@ -232,6 +577,100 @@
         border: 1px solid grey;
         margin-top: 10px;
     }
+
+    #popOuterDiv, #unassignedOuterDiv {
+        display: none;
+        width: 100%;
+        position: absolute;
+        top: 185px;
+      }
+
+    .popInnerDiv{
+        position: relative;
+        z-index: 9;
+        background: #f5f5f0;
+        border: 1px solid black;
+        border-radius: 6px;
+        padding: 25px;
+        margin: auto;
+        width: fit-content;
+        display: none;
+      }
+
+    #errorLabel{
+        color: red;
+        font-weight: bold;
+    }
+    #alreadyLabel{
+        color: orangered;
+        font-weight: bold;
+    }
+    .errorOK{
+        background: darkgrey;
+        color: white;
+        width: initial;
+        display: block;
+        border-radius: 6px;
+        border: 1px solid black;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 30px;
+    }
+    .msgEmijiTd{
+        font-size: xx-large;
+    }
+    li{
+        list-style-type: none;
+    }
+    li:hover{
+        cursor: pointer;
+    }
+    .ulTd{
+        border: 1px solid black;
+        vertical-align: top;
+    }
+    .rowDiv{
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+    }
+    .ulDiv{
+        border: 1px solid gray;
+        border-radius: 4px;
+        vertical-align: top;
+        flex-grow: 1;
+        padding-left: 10px;
+        padding-right: 5px;
+    }
+    #chooseVenueDiv li, #chooseVenueDivOral li{
+        color: blue;
+    }
+    #selectedVenueDiv li, #selectedVenueDivOral li{
+        color:red;
+    }
+    .labelLi{
+        display: list-item;
+        list-style-type: none;
+        font-weight: bold;
+    }
+    .norm{
+        font-weight: normal;
+    }
+
+    .unassignedButt{
+        border-radius: 6px;
+        font-size: small;
+
+        background: darkgrey;
+        color: white;
+        width: 49%;
+        /*display: block;*/
+        border: 1px solid black;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 4px;
+    }
+
     @media screen and (max-width: 550px){
     }
 </style>
@@ -240,91 +679,195 @@
     NY EKSAMENSGJENNOMFØRING
 </h1>
 
-<!--<form>-->
-    <table>
-        <tr>
-            <td class="boldTd">Ekasmens-id:</td><td>{{exam.id}}</td>
-        </tr>
-        <tr>
-            <td class="boldTd">Kurs-gjennomføring:</td><td>{{exam.id}} {{exam.courseImplementationCode}} {{exam.courseImplementationName}}</td>
-        </tr>
-        <tr>
-            <td class="boldTd">Type:</td><td>{{exam.category}}</td>
-        </tr>
-        <tr>
-            <td class="boldTd">Varighet:</td><td>{{exam.duration_hours}} timer</td>
-        </tr>
-        <tr>
-            <td class="boldTd">Antall studenter:</td><td>{{stud_ids|length}}</td>
-        </tr>
-        {% if groups %}
-            <tr>
-                <td class="boldTd">Antall grupper:</td><td>{{groups|length}}</td>
-            </tr>
-        {% endif %}
-        <tr>
-            <td class="boldTd">Start-tidspunkt:</td>
-            <td>
-                <input type="datetime-local" value="{{start_tpkt}}" min="{{exam.periodStart_datetime}}" max="{{exam.perStart_dt_max}}" id="startTpkt"
-                    onchange="copyStartTpkt(event)">
-            </td>
-        </tr>
-        {% if exam.category != "hjemme" %}
-            {% if exam.category != "skriftlig" %}
-                <tr>
-                    <td class="boldTd">Antall samtidige eksamener:</td>
-                    <td><input type="number" min="1" max="9" value="1" id="numSimul"></td>
-                </tr>
-                <tr>
-                    <td class="boldTd">Starttidspunkt/dag:</td>
-                    <td>
-                        <input type="time" value="09:00" id="dayStart" onchange="updateStartsStart(); suggestion_xVenues();">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="boldTd">Slutt innen:</td>
-                    <td>
-                        <input type="time" value="14:00" id="dayEnd" onchange="updateLimitationsEnd(); suggestion_xVenues();">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="boldTd">Tid mellom eksamener:</td>
-                    <td>
-                        <input type="number" value="15" min="5" max="60" id="timeBetween" onchange="updateTotalDur(); suggestion_xVenues();"> minutter
-                    </td>
-                </tr>
-                <tr>
-                    <td class="boldTd">Lunsj start:</td>
-                    <td>
-                        <input type="time" value="11:30" id="lunchStart" onchange="updateLimitationsLunch(); updateStartsAfterLunch(); suggestion_xVenues();">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="boldTd">Lunsj varighet:</td>
-                    <td>
-                        <input type="number" value="30" min="0" max="60" id="lunchDuration" onchange="updateStartsAfterLunch(); suggestion_xVenues();">
-                        minutter</td>
-                </tr>
-            {% endif %}
 
-        {% else %}
-            <form id="hjemmeForm" action="/ExamImplementation" method="post">
+<table>
+    <tr>
+        <td class="boldTd">Ekasmens-id:</td><td id="examIdTd">{{exam.id}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Kurs-gjennomføring:</td><td>{{exam.id}} {{exam.courseImplementationCode}} {{exam.courseImplementationName}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Type:</td><td id="examCategoryTd">{{exam.category}}</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Varighet:</td><td><label id="durHoursLabel">{{exam.duration_hours}}</label> timer</td>
+    </tr>
+    <tr>
+        <td class="boldTd">Antall studenter:</td><td>{{stud_ids|length}}</td>
+    </tr>
+    {% if groups %}
+        <tr>
+            <td class="boldTd">Antall grupper:</td><td>{{groups|length}}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="boldTd">Start-tidspunkt:</td>
+        <td>
+            <input type="datetime-local" value="{{start_tpkt}}" min="{{exam.periodStart_datetime}}" max="{{exam.perStart_dt_max}}" id="startTpkt"
+                {% if exam.category == "hjemme" %}
+                    onchange="copyStartTpkt(event)"
+                {% elif exam.category == "muntlig" or exam.category == "muntlig gruppe" %}
+                    onchange="setTimeFromDateTimeLocalInLine(event); updateStartsStart(); suggestion_xVenues();"
+            {% endif %}
+            >
+        </td>
+    </tr>
+    {% if exam.category != "hjemme" %}
+        {% if exam.category != "skriftlig" %}
+            <tr>
+                <td class="boldTd">Antall samtidige eksamener:</td>
+                <td><input type="number" min="1" max="9" value="1" id="numSimul" onchange="suggestion_xVenues(); showHideSubmitMuntlig()"></td>  <!-- HVORFOR INGEN EVENT HER?! -->
+            </tr>
+            <tr>
+                <td class="boldTd">Starttidspunkt/dag:</td>
+                <td>
+                    <input type="time" value="09:00" id="dayStart" disabled>    <!--  onchange="updateStartsStart(); suggestion_xVenues();" // !!! moved to #startTpkt !!! -->
+            </td>                                                               <!-- also disabled the input -->
+            </tr>
+            <tr>
+                <td class="boldTd">Slutt innen:</td>
+                <td>
+                    <input type="time" value="14:00" id="dayEnd" onchange="updateLimitationsEnd(); suggestion_xVenues();">
+                </td>
+            </tr>
+            <tr>
+                <td class="boldTd">Tid mellom eksamener:</td>
+                <td>
+                    <input type="number" value="15" min="5" max="60" id="timeBetween" onchange="updateTotalDur(); suggestion_xVenues();"> minutter
+                </td>
+            </tr>
+            <tr>
+                <td class="boldTd">Lunsj start:</td>
+                <td>
+                    <input type="time" value="11:30" id="lunchStart" onchange="updateLimitationsLunch(); updateStartsAfterLunch(); suggestion_xVenues();">
+                </td>
+            </tr>
+            <tr>
+                <td class="boldTd">Lunsj varighet:</td>
+                <td>
+                    <input type="number" value="30" min="0" max="60" id="lunchDuration" onchange="updateStartsAfterLunch(); suggestion_xVenues();">
+                    minutter</td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <div class="rowDiv">
+                        <div class="ulDiv" id="chooseVenueDivOral">
+                            <label  class="labelLi">Velg rom <span class="norm">(klikk for å velge)</span></label>
+                            <li class="venueLi" onclick="moveOralElement(event, 'selectedVenueDivOral')">1 Verdens ende</li>    <!-- , 'selectedVenueDivOral', 'chooseVenueDivOral' -->
+                            <li class="venueLi" onclick="moveOralElement(event, 'selectedVenueDivOral')">3 Ferder</li>
+                        </div>
+                        <div class="ulDiv" id="selectedVenueDivOral">
+                            <label class="labelLi">Valgte rom <span class="norm">(klikk for å avvelge)</span></label>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="sendInButt" id="sendInMuntligButt" style="display: none;" onclick="submitMuntlig()"></button>
+                </td>
+            </tr>
+            <form id="muntligForm"  action="/ExamImplementation" method="post" style="display: none">
                 <input style="display: none" name="category" value="{{exam.category}}">
                 <input style="display: none" name="examId" value="{{exam.id}}">
-                <input style="display: none" name="startTime" value="{{start_tpkt}}" id="hjemmeStartTime">
-                <input style="display: none" name="duration" value="{{exam.duration_hours}}">
-                {% for partip in stud_ids %}
-                    <input style="display: none" name="participant" value="{{partip}}">
-                {% endfor %}
-                <tr>
-                    <td colspan="2"><button class="sendInButt" form="hjemmeForm" type="submit">Registrér</button></td>
-                </tr>
             </form>
+
+        {% else %}
+            <tr>
+                <td colspan="2">
+                    <div class="rowDiv">
+                        <div class="ulDiv" id="chooseVenueDiv">
+                            <label  class="labelLi">Velg rom <span class="norm">(klikk for å velge)</span></label>
+                            <li onclick="moveElement(event, 'selectedVenueDiv', 'chooseVenueDiv')">1 Verdens ende</li>
+                            <li onclick="moveElement(event, 'selectedVenueDiv', 'chooseVenueDiv')">3 Ferder</li>
+                        </div>
+                        <div class="ulDiv" id="selectedVenueDiv">
+                            <label class="labelLi">Valgte rom <span class="norm">(klikk for å avvelge)</span></label>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="boldTd">
+                    Antall utilordnede studenter:
+                    <label id="unassignedLabel" class="norm">{{stud_ids|length}}</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="sendInButt" id="sendInSkriftligButt" style="display: none;" onclick="submitSkriftlig()"></button>
+                </td>
+            </tr>
+            <form id="skriftligForm"  action="/ExamImplementation" method="post" style="display: none">
+                <input style="display: none" name="category" value="{{exam.category}}">
+                <input style="display: none" name="examId" value="{{exam.id}}">
+            </form>
+
+
         {% endif %}
 
-        <tr>
-            <td></td>
-        </tr>
-    </table>
-<!--</form>-->
+    {% else %}
+        <form id="hjemmeForm" action="/ExamImplementation" method="post">
+            <input style="display: none" name="category" value="{{exam.category}}">
+            <input style="display: none" name="examId" value="{{exam.id}}">
+            <input style="display: none" name="startTime" value="{{start_tpkt}}" id="hjemmeStartTime">
+            <input style="display: none" name="duration" value="{{exam.duration_hours}}">
+            {% for partip in stud_ids %}
+                <input style="display: none" name="participant" value="{{partip}}">
+            {% endfor %}
+            <tr>
+                <td colspan="2"><button class="sendInButt" form="hjemmeForm" type="submit">Registrér</button></td>
+            </tr>
+        </form>
+    {% endif %}
+
+    <tr>
+        <td></td>
+    </tr>
+</table>
+
+
+<div id="popOuterDiv">
+    <div class="popInnerDiv" id="errorDiv">
+        <table>
+            <tr>
+                <td class="msgEmijiTd">❌</td>
+                <td><label id="errorLabel"></label></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button class="errorOK" id="errorButt" onclick="popDown(event)">OK</button></td>
+            </tr>
+        </table>
+    </div>
+    <div class="popInnerDiv" id="alreadyDiv">
+        <table>
+            <tr>
+                <td class="msgEmijiTd">⚠️</td>
+                <td><label id="alreadyLabel"></label></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button class="errorOK" id="alreadyButt" onclick="popDown(event)">OK</button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="unassignedOuterDiv">
+    <div class="popInnerDiv" id="unassignedInnerDiv">
+        <table>
+            <tr>
+                <td class="msgEmijiTd">⚠️</td>
+                <td>
+                    Det er studenter som ikke er blitt tilordnet en gruppe.<br>
+                    <button class="unassignedButt" data-hrefid="unassignedBackA" onclick="chooseWhenUnassigned(event)">Tilbake</button>
+                    <button class="unassignedButt" data-hrefid="unassignedGroupA" onclick="chooseWhenUnassigned(event)">Lag grupper</button>
+                    <a href="/implementation_exam" style="display: none" id="unassignedBackA"></a>
+                    <a href="/implementation_exam/group/{{exam.id}}" style="display: none" id="unassignedGroupA"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 {% endblock %}

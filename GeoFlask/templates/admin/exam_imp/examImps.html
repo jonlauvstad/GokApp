@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}Eksamen{% endblock %}
+
+{% block main %}
+
+<style>
+    table{
+        border-collapse: collapse;
+        margin: auto;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+    td{
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    tr:nth-child(10n), tr:nth-child(10n - 1), tr:nth-child(10n - 2), tr:nth-child(10n - 3), tr:nth-child(10n - 4) {
+        background: white;
+    }
+    tr:nth-child(10n - 5), tr:nth-child(10n - 6), tr:nth-child(10n - 7), tr:nth-child(10n - 8), tr:nth-child(10n - 9) {
+        background-color: #ffeecc;
+    }
+
+    tr:nth-child(5n+1) td{
+        padding-top: 10px;
+    }
+
+    .important{
+        font-weight: bold;
+        color: green;
+    }
+    .boldTd{
+        font-weight: bold;
+    }
+</style>
+{% if deleted %}
+<h1  class="bigHeadlineH1" style="text-align: center;">SLETTEDE GJENNOMFØRINGER EKSAMEN #{{exam_id}}</h1>
+{% else %}
+<h1  class="bigHeadlineH1" style="text-align: center;">EKSAMENS-GJENNOMFØRINGER EKSAMEN #{{exam_id}}</h1>
+{% endif %}
+{% if not empty %}
+<h3 style="color: green; text-align: center;">
+    Kursgjennomføring #{{exams[0].courseImplementationId}} {{exams[0].courseImplementationCode}} {{exams[0].courseImplementationName}}<br>
+    {% if deleted %}
+    <label style="font-size: 88%; color: orangered;">{{deleted}}</label>
+    {% endif %}
+</h3>
+{% endif %}
+
+{% if empty %}
+    <h3 style="color: red; text-align: center">Vi kunne ikke finne noen gjennomføringer for eksamen #{{exam_id}}</h3>
+{% else %}
+<div class="singleDiv">
+    <table class="singleTable">
+        {% for exam in exams %}
+            <tr>
+                <td class="boldTd">Id:</td><td class="important">{{exam.id}}</td>
+            </tr>
+            <tr>
+                <td class="boldTd">Type:</td><td>{{exam.category}}</td>
+            </tr>
+            <tr>
+                <td class="boldTd">Start:</td><td>{{exam.start_string}}</td>
+            </tr>
+            <tr>
+                <td class="boldTd">Sted:</td><td>{{exam.venueName}} {{exam.location}}</td>
+            </tr>
+            <tr>
+                <td class="boldTd">Link:</td>
+                <td>
+                    <a href="{{exam.link}}">{{exam.link}}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if not deleted %}
+        <tr>
+            <td colspan="2" style="padding-top: 17px; background: white">
+                <a href="/ExamImplementation/Exam/{{exams[0].examId}}?delete=Balle" style="color: red">Slett alle</a>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td colspan="2" style="padding-top: 34px; background: white">
+                <a href="/implementation_exam">Tilbake til eksamensgjennomføring</a>
+            </td>
+        </tr>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
