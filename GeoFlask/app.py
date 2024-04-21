@@ -19,6 +19,8 @@ import utility.api_funcs.api_1 as api_1
 import utility.rout_funcs.alert_routs as alert_routs
 import utility.rout_funcs.exam_routs as exam_routs
 from utility.util_funcs import format_datetime
+import utility.rout_funcs.venue_routs as venue_routs
+import utility.rout_funcs.courseImp_routs as courseImp_routs
 
 urllib3.disable_warnings()
 
@@ -248,15 +250,23 @@ def examImplementation_id(id):
 def examImplementation():
     return exImp_routs.examImplementation_function()
 
+@app.route("/ExamImplementation/Exam/<int:exam_id>", methods=["GET", "POST"])
+@login_required(roles=None)
+def examImplementation_ExamId(exam_id):
+    return exImp_routs.examImplementation_ExamId_function(exam_id)
+
+
 @app.route("/implementation_exam")
 @login_required(roles=["teacher", "admin"])
 def implementation_exam():
     return exImp_routs.examImp_start()
 
+# DENNE BØR ENDRES TIL DEN I L 253, DVS DENNE FJERNES, OG URL-HENVISNINGENE I HTML ENDRES ACCORDINGLY: examImp_start.html - eller bare redirecte
 @app.route("/implementation_exam/delete/<int:exam_id>")
 @login_required(roles=["teacher", "admin"])
-def implementation_exam_delete(exam_id):
-    return exImp_routs.examImp_delete(exam_id)
+def implementation_exam_see(exam_id):
+    # return exImp_routs.examImp_delete(exam_id)
+    return redirect(f"/ExamImplementation/Exam/{exam_id}")
 
 @app.route("/implementation_exam/register/<int:exam_id>")
 @login_required(roles=["teacher", "admin"])
@@ -272,6 +282,21 @@ def implementation_exam_group(exam_id):
 @login_required(roles=["teacher", "admin"])
 def exam_group(exam_id):
     return exImp_routs.exam_group(exam_id)
+
+@app.route("/Venue/<int:id>")
+@login_required(roles=None)
+def venue_id(id):
+    return venue_routs.venue_id_function(id)
+
+@app.route("/CourseImplementation/<int:id>")
+@login_required(roles=None)
+def courseImplementation_id(id):
+    return courseImp_routs.courseImp_id_function(id)
+
+@app.route("/Course/<int:id>")
+@login_required(roles=None)
+def course_id(id):
+    return courseImp_routs.course_id_function(id)
 
 # API ROUTS HERE!
 @app.route("/api/venue", methods=["GET"])
