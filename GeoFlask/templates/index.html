@@ -7,12 +7,11 @@
     document.addEventListener('DOMContentLoaded', function(){
         var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         if (screenWidth > 550) {
-            document.getElementById("indexAttendanceA").style.display = "none";
+
         }
         else{
 
         }
-
 });
 </script>
 <h1 style="text-align: center;font-weight: normal;" class="logoH1">
@@ -23,29 +22,19 @@
 {% if user %}
     <div>
         <a class="menuDiv" style="background: orangered; display: block;text-decoration: none" href="/calendar">
-            <div><!-- style="margin-bottom: -20px;"-->KALENDER<!--<BR>--></div>
+            <div>KALENDER</div>
             <label class="menuLabel">🗓️</label>
         </a>
         {% if user.role == "student" %}
-            <a class="menuDiv" style="background: green;" href="/attendance">
-                <div><!-- style="margin-bottom: -20px;"-->OPPMØTE<!--<BR>--></div>
-                <label class="menuLabel">👩‍🎓</label>
-            </a>
-        {% else %}
-            <a class="menuDiv" style="background: green;" href="/admin">
-                <div><!-- style="margin-bottom: -20px;"-->ADMIN<!--<BR>--></div>
-                <label class="menuLabel">🗄️</label>
-            </a>
-            <a id="indexAttendanceA" class="menuDiv" style="background:purple; padding:6px; font-size:18px; margin-top: 20px;width: 88%;" href="/attendance">
-                OPPMØTE
-            </a>
-
-            <!-- ny link for "Student Resources" -->
             <a class="menuDiv" style="background: blue;" href="/StudentResources">
                 <div>STUDENT-RESSURSER</div>
                 <label class="menuLabel">📚</label>
             </a>
-
+        {% else %}
+            <a class="menuDiv" style="background: green;" href="/admin">
+                <div>ADMIN</div>
+                <label class="menuLabel">🗄️</label>
+            </a>
         {% endif %}
     </div>
 {% else %}
@@ -53,17 +42,13 @@
         <form action="/login" method="post">
             <h1 style="text-align: center">Innlogging</h1>
             <table>
-               <!-- <caption style="font-size: 1.8em;font-weight: bold">Innlogging</caption>-->
                 <tr>
-                    <!--<td>Gokstad-email:</td>-->
                     <td><input name="gokstadmail" placeholder="Gokstad-email" required></td>
                 </tr>
                 <tr>
-                    <!--<td>Passord:</td>-->
                     <td><input type="password" name="password" placeholder="Passord" required></td>
                 </tr>
                 <tr>
-                    <!--<td></td>-->
                     <td><button style="width: 100%;">Logg inn!</button></td>
                 </tr>
                 <tr>
@@ -75,6 +60,5 @@
         </form>
     </div>
 {% endif %}
-    <!--<img src="static/images/garden.jpg" width="600px" class="center">-->
 
 {% endblock %}
