@@ -3,6 +3,19 @@
 {% block head %}
     <link href="/static/styles.css" rel="stylesheet">
     <link href="/static/styles_venues.css" rel="stylesheet">
+    <style>
+        #studResDiv{
+            margin-left: 100px;
+        }
+        @media screen and (max-width: 550px){
+            #studResDiv{
+                margin-left: 4px;
+            }
+        }
+        #studResH1{
+            color: green;
+        }
+    </style>
 {% endblock %}
 
 {% block title %}
@@ -10,8 +23,8 @@
 {% endblock %}
 
 {% block main %}
-<div class="admin-venue-container">
-    <h1>Student Ressurser</h1>
+<div class="admin-venue-container" id="studResDiv">
+    <h1 id="studResH1">Student Ressurser</h1>
     {% if resources %}
         <ul>
             {% for resource in resources %}
