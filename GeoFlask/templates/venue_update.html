@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block main %}
+<script>
+</script>
+<style>
+    table{
+        margin: auto;
+    }
+    button{
+        border-radius: 6px;
+        background: green;
+        color: white;
+    }
+</style>
+
+<h1 class="bigHeadlineH1">Oppdatere lokale #{{venue.id}}</h1>
+<form action="/venue_update/{{venue.id}}" method="post">
+    <table>
+        <tr>
+            <td>Navn:</td>
+            <td><input name="name" value="{{venue.name}}" required></td>
+        </tr>
+        <tr>
+            <td>Beskrivelse:</td>
+            <td><input name="description" value="{{venue.description}}" required></td>
+        </tr>
+        <tr>
+            <td>Sted:</td>
+            <td>
+                <select name="locationId">
+                    {% for loc in locations %}
+                        <option value="{{loc.id}}"
+                            {% if loc.id == venue.locationId %} selected {% endif %}
+                        >{{loc.name}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Gate-adresse:</td>
+            <td><input name="streetAddress" value="{{venue.streetAddress}}" required></td>
+        </tr>
+        <tr>
+            <td>Post-nummer:</td>
+            <td><input name="postCode" required type="number" min="1" max="10000" value="{{venue.postCode}}"></td>
+        </tr>
+        <tr>
+            <td>Post-sted:</td>
+            <td><input name="city" value="{{venue.city}}" required></td>
+        </tr>
+        <tr>
+            <td>Kapasitet:</td>
+            <td><input name="capacity" value="{{venue.capacity}}" required type="number" min="1" value="10"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><button>Oppdatér</button></td>
+        </tr>
+    </table>
+</form>
+{% endblock %}
