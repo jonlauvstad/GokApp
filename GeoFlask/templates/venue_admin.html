@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block main %}
+<script>
+    function showPopup(){
+        document.getElementById("popUpOuterDiv").style.display = "initial";
+    }
+    function hidePopup(){
+        document.getElementById("popUpOuterDiv").style.display = "none";
+    }
+    function seeVenue(){
+        const venueId = Number(document.getElementById("venueSelect").value);
+        const a = document.getElementById("venueA");
+        a.href = `/Venue/${venueId}`;
+        a.click();
+    }
+</script>
+<style>
+    #admDiv{
+        background: orangered;
+    }
+    #admDiv2{
+        background: purple;
+    }
+    #calDiv{
+        background: green;
+    }
+    .buttonDiv{
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+        height: 20%;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid gray;
+        border-radius: 12px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+        font-weight: bold;
+        font-size: xx-large;
+    }
+    .insideAdiv{
+        height: 100%;
+    }
+    .emojiLabel{
+        font-size: 60px;
+    }
+    #insidePopup{
+        border: 1px solid black;
+        border-radius: 5px;
+        width: 34%;
+        height: 400px;
+        background: lightgrey;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        justify-content: center;
+    }
+    #popUpOuterDiv{
+        position: absolute;
+        top: 200px;
+        width: 100%;
+        display: none;
+    }
+    .getButt{
+        background: darkgray;
+        color: white;
+        border-radius: 4px;
+        font-size: large;
+    }
+    @media screen and (max-width: 550px){
+        .buttonDiv{
+            width: 96%;
+            height: 24%;
+            margin-bottom: 8px;
+        }
+        #insidePopup{
+            width:96%;
+            height: 330px;
+        }
+        .insideAdiv{
+            width: 96%;
+        }
+        #popUpOuterDiv{
+            width: 96%;
+            top: 150px;
+        }
+    }
+    .aAsButt{
+        text-decoration: none;
+        color: white;
+    }
+    table{
+        margin: auto;
+        font-size: x-large;
+    }
+    select{
+        font-size: large;
+    }
+</style>
+<h1 class="bigHeadlineH1">LOKALER</h1>
+
+<div class="buttonDiv" id="admDiv">
+    <a href="/venue_register" class="aAsButt">
+        <div class="insideAdiv">
+            Registrére<br>
+            <label class="emojiLabel">✔</label>
+        </div>
+    </a>
+</div>
+<div class="buttonDiv" id="admDiv2">
+    <a class="aAsButt" onclick="showPopup()">
+        <div class="insideAdiv">
+            Se-Endre-Slette<br>
+            <label class="emojiLabel">👀</label>
+        </div>
+    </a>
+</div>
+<div class="buttonDiv" id="calDiv">
+    <a href="/venue_calendar" class="aAsButt">
+        <div class="insideAdiv">
+            Kalender<br>
+            <label class="emojiLabel">📅</label>
+        </div>
+    </a>
+</div>
+
+<div id="popUpOuterDiv">
+    <div id="insidePopup">
+        <table>
+            <tr>
+                <td>Velg lokale:</td>
+                <td>
+                    <button class="getButt" onclick="hidePopup()">Avbryt</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <select id="venueSelect">
+                        {% for venue in venues %}
+                            <option value="{{venue.id}}">{{venue.name}} {{venue.locationName}} {{venue.capacity}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <button class="getButt" onclick="seeVenue()">Hent</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<a style="display: none" id="venueA"></a>
+
+{% endblock %}

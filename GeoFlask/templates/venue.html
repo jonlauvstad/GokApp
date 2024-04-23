@@ -3,6 +3,11 @@
 {% block title %}Eksamen{% endblock %}
 
 {% block main %}
+<script>
+    function popDown(){
+        document.getElementById("popDownOuter").style.display = "none";
+    }
+</script>
 <style>
     table{
         margin: auto;
@@ -15,8 +20,35 @@
         padding-right: 5px;
         vertical-align: top;
     }
+    .alterButt{
+        border-radius: 5px;
+        color: white;
+    }
+    #updateButt{
+        background: green;
+    }
+    #deleteButt{
+        background: red ;
+    }
+    #popDownOuter{
+        position: absolute;
+        top: 150px;
+        width: 100%;
+    }
+    #popDownInner{
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 8px;
+        padding-bottom: 15px;
+        padding-left: 28px;
+        padding-right: 28px;
+        border: 1px solid black;
+        border-radius: 7px;
+        background: lightgrey;
+    }
 </style>
-<h1 class="bigHeadlineH1" style="text-align: center">LOKALE</h1>
+<h1 class="bigHeadlineH1" style="text-align: center">{{headl_prefix}}LOKALE</h1>
 <table>
     <tr>
         <td class="boldTd">Id:</td><td>{{venue.id}}</td>
@@ -36,9 +68,25 @@
     <tr>
         <td class="boldTd">Adresse:</td><td>{{venue.streetAddress}}<br>{{venue.postCode}} {{venue.city}}</td>
     </tr>
-    <tr>
-        <td class="boldTd">Link:</td><td><a href="{{venue.link}}">{{venue.link}}</a></td>
-    </tr>
+    {% if not delete %}
+        <tr>
+            <td class="boldTd">Link:</td><td><a href="{{venue.link}}">{{venue.link}}</a></td>
+        </tr>
+        {% if user.role == "admin" %}
+        <tr>
+            <td>
+                <a class="aButt" href="/venue_update/{{venue.id}}">
+                    <button class="alterButt" id="updateButt">🖋 Endre</button>
+                </a>
+            </td>
+            <td>
+                <a class="aButt" href="/venue_delete/{{venue.id}}">
+                    <button class="alterButt" id="deleteButt">✖ Slette</button>
+                </a>
+            </td>
+        </tr>
+        {% endif %}
+    {% endif %}
     <tr>
         <td colspan="2" style="padding-top: 30px">
             <a href="/venue_calendar">Link til rom-kalender</a>
@@ -46,5 +94,35 @@
     </tr>
 </table>
 
+{% if not delete %}
+    {% if user.role == "admin" %}
+<div id="popDownOuter">
+    <div id="popDownInner">
+        <table>
+            <tr>
+                <td style="font-size: xx-large">⚠️</td>
+                <td style="vertical-align: bottom;color: red;font-weight: bold">Obs før sletting!</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="color: black; font-size: medium"><i>
+                    Husk å slette alle events som<br>
+                    skal skje i lokalet før du<br>
+                    sletter det - da blir<br>
+                    alle involverte varslet.</i>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <button style="background: darkgray; color: white; font-weight: bold; border-radius: 5px; width: fit-content"
+                    onclick="popDown()">
+                        OK</button>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+    {% endif %}
+{% endif %}
 
 {% endblock %}

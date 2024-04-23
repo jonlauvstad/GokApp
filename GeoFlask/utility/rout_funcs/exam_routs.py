@@ -74,8 +74,8 @@ def conf_exam_function():
         "CourseImplementationId": courseId,
         "Category": category,
         "DurationHours": hours + minutes/60,
-        "Start": parser.parse(start).isoformat(),
-        "End": parser.parse(end).isoformat()
+        "PeriodStart": parser.parse(start).isoformat(),
+        "PeriodEnd": parser.parse(end).isoformat()
     }
 
     url_ext = f"exam"
