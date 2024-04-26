@@ -1,6 +1,213 @@
 {% extends "layout.html" %}
+{% block head %}
+{% endblock %}
 
 {% block title %}Arbeidskrav{% endblock %}
 
 {% block main %}
+<style>
+  .chooseDiv{
+    border: 1px solid grey;
+    border-radius: 6px;
+    padding: 15px;
+    background: antiquewhite;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+  }
+  .divH1{
+    text-align: center;
+    color: green;
+  }
+  table{
+    margin: auto;
+  }
+  td{
+    padding-right: 6px;
+  }
+  table select{
+    width: 400px;
+  }
+  button{
+    font-size: x-small;
+    border-radius: 4px;
+    background: green;
+    color: white;
+    font-weight: bold;
+  }
+  #errorDiv{
+    display: none;
+    width: 100%;
+    position: absolute;
+    top: 185px;
+  }
+  #insidePopup{
+    position: relative;
+    z-index: 9;
+    background: white;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 50px;
+    margin: auto;
+    color: red;
+    font-weight: bold;
+  }
+  #errorOK{
+    background: initial;
+    color: initial;
+    width: initial;
+  }
+  .groupRadio{
+    display: none;
+  }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function (){
+       showGroupRadio()
+    });
+
+    function showGroupRadio(){
+        const options = document.getElementById("assignmentSelect").options;
+        const elmsToShow = document.querySelectorAll(".groupRadio");
+        let display = "none";
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].selected){
+                if(options[i].dataset.category === ""){
+                    display = "initial";
+                }
+                break;
+            }
+        }
+        elmsToShow.forEach(elm=>{
+            elm.style.display = display;
+        })
+    }
+
+    function nextStep(){
+        const radioInputs = document.querySelectorAll('input[type="radio"]');
+        let action;
+        radioInputs.forEach(radioInput =>{
+            if (radioInput.checked){
+                action = radioInput.value;
+                return;
+            }
+        });
+    }
+
+</script>
+
+
+<h1 id="singleH1"  class="bigHeadlineH1" style="text-align: center">ARBEIDSKRAV</h1>
+
+<div class="chooseDiv">
+  <h1 class="divH1">Hente ut arbeidskrav</h1>
+
+   {% if assignments %}
+    <table>
+      <tr>
+        <td>Handling:</td>
+        <td>
+          <input type="radio" name="action" value="register"> <label>Registrére</label>
+          <input type="radio" name="action" value="delete"> <label>Se/slette</label>
+          <input type="radio" name="action" value="group" class="groupRadio"> <label class="groupRadio">Gruppe</label>
+        </td>
+      </tr>
+      <tr>
+        <td>Arbeidskrav-id:</td>
+        <td>
+          <select id="examSelect" onchange="showGroupRadio()">
+            {% for assignment in assignments %}
+            <option value="{{ assignment.id }}" data-category="{{ assignment.category }}">
+              Id:{{ assignment.id }} Kursgjf:{{ assignment.courseImplementationCode }} {{ assignment.courseImplementationName }}
+            </option>
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><button onclick="nextStep()">Hent</button></td>
+      </tr>
+    </table>
+    {% endif %}
+
+
+
+<!--  </form>-->
+</div>
+
+<a style="display: none" id="nextStepA"></a>
+
+<div id="errorDiv">
+  <table id="insidePopup">
+    <tr>
+      <td>Du må velge handling!</td>
+      <td><button id="errorOK" onclick="popDown()">OK</button></td>
+  </table>
+</div>
+
 {% endblock %}
+
+
+    <!--
+<style>
+    .dropbtn
+    {
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Dropdown Content (Hidden by default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {background-color: #f1f1f1}
+
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .dropdown:hover .dropbtn {
+      background-color: #3e8e41;
+    }
+</style>
+    <p>GET_ASSIGNMENT.HTML</p>
+
+    <div class="dropdown">
+        <button class="dropbtn">Dropdown Menu</button>
+        <div class="dropdown-content">
+            <a href="#">Link 1</a>
+            <a href="#">Link 2</a>
+
+    </div>
+</div>
+-->

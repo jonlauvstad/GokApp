@@ -1,25 +1,410 @@
 {% extends "layout.html" %}
-{% block title %}Arbeidskrav{% endblock %}
+
+{% block title %}Admin{% endblock %}
 
 {% block main %}
+<style>
+    table{
+        position: relative;
+        margin:auto;
+        background: beige;
+        z-index: 0;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    #specTable{
+        padding-bottom: 15px;
+    }
+    table select{
+        width: 210px;
+    }
+    input[type="datetime-local"]{
+        width: 210px;
+    }
+    table td{
+        vertical-align: top;
+    }
+    .leftColumn{
+        width: 200px;
+    }
+    .rightColumn{
+        width: 250px;
+        max-width: 250px;
+    }
+    .durationInput{
+        width: 60px;
+        margin-right: 10px;
+    }
+    #insidePopup{
+        position: relative;
+        width: 500px;
+        min-height:50px;
+        margin-left: auto;
+        margin-right: auto;
+        z-index: 9;
+        background: white;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 15px;
+        height: 3em;
+    }
+    #insidePopup label{
+        display: inline-block;
+        width:185px;
+    }
+    #insidePopup input, #insidePopup select{
+        width: 210px;
+    }
+    #insidePopup button{
+        width: 60px;
+        border-radius: 5px;
+        margin-left: 15px;
+        font-size: x-small;
+        float: right;
+        margin-right: 20px;
+    }
+    #popupError{
+        width: 76% !important;
+        color: red;
+        display: inline-block;
+        /*border: 1px solid blue;*/
+    }
+    #registerButt{
+        border-radius: 5px;
+        color: white;
+        background: cornflowerblue;
+    }
+    #hideButtonDiv{
+        width: 100%;
+        display: inline-block;
+        text-align: left;
+    }
+    #hideButton{
+        /*float: right;*/
+    }
 
-{% block head %}
-{% endblock %}
+
+    @media screen and (max-width:550px){
+        #insidePopup{
+            font-size: x-small;
+            display: table;
+            margin: auto;
+            /*width: fit-content;*/
+            width: 92%;
+        }
+        #insidePopup select, #insidePopup input {
+            font-size: xx-small;
+            width: 130px;
+        }
+        #insidePopup label{
+            width: 115px;
+        }
+        #insidePopup button{
+            margin-left: 5px;
+            float: initial;
+            min-width: 40px;
+            width: auto;
+            font-size: xx-small;
+        }
+
+        #hideButton{
+            /*float: right;*/
+        }
+        #insidePopup div{
+            margin-bottom: 6px;
+        }
+        #hideButtonDiv{
+            width: 100%;
+            text-align: right;
+        }
+        #popupError{
+            text-align: left;
+        }
+    }
+
+    .button-like
+    {
+        display: inline-block;
+        text-align: center;
+        width: 210px; /* Match the width of your input/select elements or adjust as needed */
+        font-size: 15px; /* Adjust based on your preference */
+        padding: 10px 0;
+        text-decoration: none;
+        color: white;
+        background-color: cornflowerblue; /* Match the color of your other buttons or adjust as needed */
+        border-radius: 5px;
+        cursor: pointer;
+        border: none; /* For button elements to remove default styling */
+    }
+
+</style>
+
+<script>
+    const cimps = "{{courseImps|tojson}}";
+
+    let try_delete = false;
+    {% if try_delete %} try_delete = true; {% endif %}
+
+    document.addEventListener("DOMContentLoaded", () =>{
+        if (try_delete){
+            document.querySelectorAll("select").forEach((elm)=>{
+                if (elm.id !== "regChangeDeleteSelect" && elm.id !== "courseIdSelect"){
+                    elm.disabled = true;
+                }
+
+            });
+            document.querySelectorAll("input").forEach((elm)=>{
+                if (elm.id !== "assignmentIdInput"){
+                    elm.disabled = true;
+                }
+
+            });
+            document.getElementById("registerButt").innerHTML= "Slett!"
+        }
+
+        {% if put %} history.pushState({}, '', '/template_assignment'); {% endif %}
+        {% if not put %} updateCourseStartEnd(); {% endif %}    // Hadde denne en stund inn jinja if not put
+
+    });
 
 
-    <form action="/admin_assignment" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+    function popUp(event){
+        choice = event.target.value;
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea>
+        const popupDiv = document.getElementById("popup");
+        if (["endre", "slette"].includes(choice)){
+            popupDiv.style.display = "block";
+            document.getElementById('popupError').innerHTML = "";
 
-        <label for="deadline">Deadline:</label>
-        <input type="datetime-local" id="deadline" name="deadline" required>
+            document.querySelectorAll("select").forEach((elm)=>{
+                elm.required = false;
+            });
+            document.querySelectorAll("input").forEach((elm)=>{
+                elm.required = false;
+            });
+        }
+        else{
+            popupDiv.style.display = "none";
 
-        <label for="courseImplementationId">CourseImplementationId:</label>
-        <input type="number" id="courseImplementationId" name="courseImplementationId" required>
+            document.querySelectorAll("select").forEach((elm)=>{
+                elm.required = true;
+                elm.disabled = false;
+            });
+            document.querySelectorAll("input").forEach((elm)=>{
+                elm.required = true;
+                elm.disabled = false;
+            });
 
-        <button type="submit">Registrer</button>
-    </form>
+            // sette forms action til /conf_exam
+            const theForm = document.getElementById("theForm");
+            theForm.setAttribute("action", "/conf_assignment");
+            theForm.setAttribute("method", "post");
+
+            // sette knappens innerHTML til Registrér!
+            document.getElementById("registerButt").innerHTML = 'Registrér!';
+        }
+    }
+
+    function getAssignmentById(){
+        // Sjekke at har fått tall
+        const action = document.getElementById("regChangeDeleteSelect").value;
+        const assignmentId = Number(document.getElementById("assignmentIdInput").value);
+        if (assignmentId===0){
+            document.getElementById("popupError").innerHTML = "Du må oppgi et arbeidskrav-id.";
+            return null;
+        }
+
+        // calle api_exam_id_function i fetch med GET - klikke submit his ikke feilmelding
+        const url = `http://${hostname}:${portNumber}/api/assignment/${assignmentId}?save=Balle`;
+        console.log("URL:", url);
+        fetch(url,
+        {
+            method: "GET"
+        })
+        .then(response =>{
+            console.log(response);
+            if(!response.ok){
+                throw new Error("Network response was not ok.");
+            }
+            return response.json();
+        })
+        .then(data =>{
+            console.log("data", data);
+            if ("err_msg" in data){
+                document.getElementById("popupError").innerHTML = data.err_msg;
+            }
+            else{
+                console.log(data.category);
+                const theForm = document.getElementById("theForm");
+                theForm.setAttribute("action", "/conf_assignment");
+                theForm.setAttribute("method", "post");
+                document.getElementById("registerButt").click();
+            }
+        })
+        .catch(error =>{
+            console.error("There was a problem with the fetch operation:", error);
+        });
+
+    }
+
+    function getAssignmentsByCourseImpId(){
+        const action = document.getElementById("regChangeDeleteSelect").value;
+        const courseImpId = document.getElementById("courseIdSelect").value;
+        const anchor = document.getElementById("searchA");
+        console.log(action, courseImpId, anchor.innerHTML);
+        anchor.href = `/Assignment?courseImpId=${courseImpId}&action=${action}`;
+        anchor.click();
+    }
+
+    function hidePopup(){
+        selectOptionByValue("regChangeDeleteSelect", "registrére");
+        document.getElementById("popup").style.display = "none";
+
+        document.querySelectorAll("select").forEach((elm)=>{
+            elm.required = true;
+        });
+        document.querySelectorAll("input").forEach((elm)=>{
+            elm.required = true;
+        });
+    }
+
+    function selectOptionByValue(selectId, value) {
+        var select = document.getElementById(selectId);
+        for (var i = 0; i < select.options.length; i++) {
+          if (select.options[i].value === value) {
+            select.selectedIndex = i;
+            break;
+          }
+        }
+      }
+
+      function updateCourseStartEnd(){
+        const courseImpId = Number(document.getElementById("courseIdFormSelect").value);
+        const courseImpArray = cimps.filter(item => item.id === courseImpId);
+        const courseImp = courseImpArray[0];
+
+        const startElm = document.getElementById("startInput");
+        startElm.value = courseImp.startDate;
+        startElm.min = courseImp.startDate;
+        const endElm = document.getElementById("endInput");
+        endElm.value = courseImp.endDate;
+        endElm.max = courseImp.endDate;
+
+        console.log(endElm.value);
+      }
+
+      function updateEndByStart(event){
+        const minVal = event.target.value;
+        const endElm = document.getElementById("endInput");
+        endElm.min = minVal;
+        console.log("minVal:", minVal);
+      }
+
+      function updateStartByEnd(event){
+        const maxVal = event.target.value;
+        const startElm = document.getElementById("startInput");
+        startElm.max = maxVal;
+      }
+</script>
+
+<h1 class="bigHeadlineH1">
+    ARBEIDSKRAV {% if put %} #{{assignment.id}} {% endif %}
+</h1>
+
+<div style="position:relative">
+
+<form id="theForm"   method="post"  {% if put %} action="{{assignment.link}}" {% else %} action="/conf_assignment"{% endif %}>
+    <table id="specTable">
+        <tr>
+            <td class="leftColumn">Handling:</td>
+            <td class="rightColumn">
+                <select id="regChangeDeleteSelect" onchange="popUp(event)" name="action" required> <!--{% if put %} disabled {% endif %} -->
+                    {% for opt in options %}
+                        <option {% if opt==option %} selected {% endif %} value="{{opt}}">{{opt}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">Kurs-gjennomføring:</td>
+            <td class="rightColumn">
+                <select name="courseId" required id="courseIdFormSelect" onchange="updateCourseStartEnd()">
+                    {% for cimp in courseImps %}
+                    <option value="{{cimp.id}}" {% if cimp.id == assignment.courseImplementationId %} selected {% endif %} >
+                        {{cimp.id}} {{cimp.code}} {{cimp.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="leftColumn">Tittel:</td>
+            <td class="rightColumn">
+                <input type="text" name="name" value="{{ assignment.name if assignment else '' }}" placeholder="Tittel">
+            </td>
+        </tr>
+
+        <tr>
+            <td class="leftColumn">Beskrivelse:</td>
+            <td class="rightColumn">
+                <input type="text" name="description" value="{{ assignment.description if assignment else '' }}" placeholder="Beskrivelse">
+            </td>
+        </tr>
+
+        <tr>
+            <td class="leftColumn">Deadline:</td>
+            <td class="rightColumn">
+                <input type="datetime-local" name="deadline" value="{{ assignment.datetime_local_format }}" placeholder="YYYY-MM-DDTHH:MM">
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td colspan="2">
+                <button id="registerButt" form="theForm" type="submit">
+                    {% if put %} Endr! {% else %} Registrér! {% endif %}
+                </button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% if error_msg %}
+    <h3 style="color:red;text-align: center">{{error_msg}}</h3>
+{% endif %}
+
+    <div style="position: absolute; top:45px;width:100%;display: none" id="popup">
+        <div id="insidePopup">
+            <div>
+                <label>Arbeidskrav-id:</label>
+                <input type="number" id="assignmentIdInput">
+                <button onclick="getAssignmentById()">Hent</button>
+            </div>
+            <div>
+                <label>Kurs-gjennomføring:</label>
+                <select id="courseIdSelect">
+                    {% for cimp in courseImps %}
+                    <option value="{{cimp.id}}" {% if put %} {% if cimp.id == assignment.courseImplementationId %} selected {% endif %} {% endif %}>
+                        {{cimp.id}} {{cimp.code}} {{cimp.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button onclick="getExamsByCourseImpId()">Søk</button>
+            </div>
+            <div id="hideButtonDiv">
+                <label id="popupError"></label> <!-- style="width: initial"-->
+                <button onclick="hidePopup()" id="hideButton">Skjul</button>
+            </div>
+        </div>
+        <!--<input style="display: none" name="search_action" id="searchActionInput">-->
+
+    </div>
+
+
+
+</div>
+<a id="searchA" style="display:none">A</a>
+<a style="display: none" id="reloadAnchor" href="/template_assignment"></a>
 {% endblock %}

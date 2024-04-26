@@ -30,7 +30,7 @@ def template_assignment_function(put=None, try_delete=None):
     user = session["user"]
     logging.debug("\n\tℹ️User object at start of function: %s", user)
     options = ["registrére", "endre", "slette"]
-    assignment = session.pop('assignment', None) if put else None
+    assignment = session.pop('exam', None) if put else None
     option = "slette" if try_delete and put else ("endre" if put else None)
 
     # Getting CourseImplementationIds:
@@ -48,13 +48,13 @@ def template_assignment_function(put=None, try_delete=None):
         logging.error("\n\t❌Failed to fetch course implementations: %s", str(e))
         abort(404)
 
-    courseImplementations = response.json()
-    logging.debug("\n\t✅ Parsed JSON data: %s", courseImplementations)
+    cis_lOfdics = response.json()
+    logging.debug("\n\t✅ Parsed JSON data: %s", cis_lOfdics)
 
     error_msg = None
 
     if assignment:
-        valid_ids = [item['id'] for item in courseImplementations]
+        valid_ids = [item['id'] for item in cis_lOfdics]
         if assignment.courseImplementationId not in valid_ids:
             logging.warning("\n\t❌Unauthorized access attempt by user %s on assignment %s", user, assignment.id)
             error_msg = f"Du er ikke  autorisert til å {option} arbeidskrav med id {assignment.id}."
@@ -63,7 +63,7 @@ def template_assignment_function(put=None, try_delete=None):
 
     logging.debug("\n\t✅Exiting template_assignment_function with rendered template.")
     return render_template("admin/assignment/add_assignment.html",
-            user=user, options=options, courseImps=courseImplementations,
+            user=user, options=options, courseImps=cis_lOfdics,
             put=put, assignment=assignment, try_delete=try_delete,
             option=option, error_msg=error_msg)
 
@@ -88,31 +88,34 @@ def conf_assignment_function():
     }
 
     logging.debug("ℹ️Form data for new assignment: %s", data)
+
     url = URLpre + "assignment"
     headers = {"Authorization": f"Bearer {session['token']}"}
+
+
 
     try:
         response = requests.post(url, verify=False, headers=headers, json=data)
         response.raise_for_status()
         dic = response.json()
         assignment = (Assignment
-                      (dic['id'],
-                       dic['name'],
-                       dic['description'],
-                       dic['deadline'],
-                       dic['courseImplementationId'],
-                       dic['courseImplementationCode'],
-                       dic['courseImplementationName'],
-                       dic['courseImplementationLink'],
-                       dic['link']))
+                 (dic['id'],
+                  dic['name'],
+                  dic['description'],
+                  dic['deadline'],
+                  dic['courseImplementationId'],
+                  dic['courseImplementationCode'],
+                  dic['courseImplementationName'],
+                  dic['courseImplementationLink'],
+                  dic['link']))
+
         logging.debug("\n\t✅New assignment created successfully with ID: %s", assignment.id)
-        flash('Assignment created successfully!', 'success')
         return render_template("admin/assignment/conf_assignment.html", user=user, assignment=assignment, headl_prefix="NY ")
 
     except requests.RequestException as e:
         logging.error("\n\t❌Failed to create assignment %s", str(e))
-        # abort(response.status_code if response else 500)
-        return render_template("admin/assignment/add_assignment.html", user=user, form_data=request.form)
+        abort(response.status_code if response else 500)
+
 
 
 def assignment_getAll_function():

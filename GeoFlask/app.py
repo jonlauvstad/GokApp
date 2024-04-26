@@ -149,16 +149,86 @@ def student_resources():
 # ----------------------------------------------------
 
 
-@app.route("/admin_assignment", methods=['GET', 'POST'])
+@app.route('/admin_assignment/landing', methods=['GET']) # ASSIGNMENT LANDING PAGE
 @login_required(roles=['teacher', 'admin'])
-def assignment_admin():
+def assignment_landing():
+    assignments = ass_routs.assignment_getAll_function()  # Fetch all assignments
+    print(assignments)  # Debug output to see what's being sent to the template
+    return render_template('admin/assignment/assignment.html', assignments=assignments)
+
+@app.route("/template_assignment", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def template_assignment():
     return ass_routs.template_assignment_function()
 
+@app.route("/conf_assignment", methods=["GET", "POST"])
+@login_required(roles=["teacher", "admin"])
+def conf_assignment():
+    print("Recieved data:", request.form)
+    return ass_routs.conf_assignment_function()
 
-@app.route("/Assignment/<int:id>")
-@login_required(roles=None)
-def assignment_id(id):
-    return ass_routs.assignment_id_function(id)
+
+@app.route('/admin_assignment/select/<action>', methods=['GET'])
+@login_required(roles=['teacher', 'admin'])
+def select_assignment(action):
+    assignments = ass_routs.assignment_getAll_function()  # Fetch all assignments
+    return render_template('admin/assignment/select_assignment.html', assignments=assignments, action=action)
+
+
+@app.route('/admin_assignment', methods=['GET'])
+@app.route('/admin_assignment/<int:id>', methods=['GET'])
+@login_required(roles=['teacher', 'admin'])
+def get_assignments(id=None):
+    if id is not None:
+        assignments = [ass_routs.assignment_get_function(id)]
+    else:
+        assignments = ass_routs.assignment_getAll_function()
+    return render_template('admin/assignment/get_assignments.html', assignments=assignments)
+
+
+@app.route('/admin_assignment/new', methods=['GET', 'POST'])
+@login_required(roles=['teacher', 'admin'])
+def create_assignment():
+    if request.method == 'POST':
+        # Process the creation form submission
+        return ass_routs.assignment_create_function()
+    return render_template('admin/assignment/create_assignment.html')
+
+
+@app.route('/admin_assignment/update/<int:id>', methods=['GET', 'POST'])
+@login_required(roles=['teacher', 'admin'])
+def update_assignment(id):
+    if request.method == 'POST':
+        return ass_routs.assignment_update_function(id)
+
+    return render_template('admin/assignment/update_assignment.html', id=id)
+
+
+@app.route('/admin_assignment/delete/<int:id>', methods=['GET', 'POST'])
+@login_required(roles=['teacher', 'admin'])
+def delete_assignment(id):
+    if request.method == 'POST':
+        return ass_routs.assignment_delete_function(id)
+
+    return render_template('admin/assignment/delete_assignment.html', id=id)
+
+
+@app.route('/admin_assignment/manage/<int:id>/<action>', methods=['GET', 'POST'])
+@login_required(roles=['teacher', 'admin'])
+def manage_assignment(id, action):
+    if request.method == 'GET':
+        return render_template(f'admin/assignment/{action}_assignment.html', id=id)
+    elif request.method == 'POST':
+        if action == 'update':
+            return ass_routs.assignment_update_function(id)
+        elif action == 'delete':
+            return ass_routs.assignment_delete_function(id)
+
+
+# @app.route("/Assignment/<int:id>")
+# @login_required(roles=None)
+# def assignment_id(id):
+#    return ass_routs.assignment_id_function(id)
 
 @app.route("/Lecture/<int:id>", methods=["get", "post"])
 @login_required(roles=None)
