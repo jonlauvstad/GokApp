@@ -62,7 +62,7 @@
         <div>FORELESNING</div>
         <label class="adminMenuLabel">🧑‍🏫</label>
     </a>
-    <a class="menuAasButt" style="background: #90ee90;" href="/venue_calendar">
+    <a class="menuAasButt" style="background: #90ee90;" href={% if user.role == 'teacher' %}"/venue_calendar"{% else %}"/venue_admin"{% endif %}>
         <div>ROM</div>
         <label class="adminMenuLabel">🚪</label>
     </a>
@@ -86,7 +86,7 @@
                 </a>
             </td>
             <td>
-                <a class="menuAasButt" style="background: #00cc44;" href="/venue_calendar">
+                <a class="menuAasButt" style="background: #00cc44;" href={% if user.role == 'teacher' %}"/venue_calendar"{% else %}"/venue_admin"{% endif %}>
                     <div>ROM</div>
                     <label class="menuLabel">🚪</label>
                 </a>

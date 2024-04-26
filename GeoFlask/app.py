@@ -358,6 +358,26 @@ def exam_group(exam_id):
 def venue_id(id):
     return venue_routs.venue_id_function(id)
 
+@app.route("/venue_admin")
+@login_required(roles=["admin"])
+def venue_admin():
+    return venue_routs.venue_admin_function()
+
+@app.route("/venue_register", methods=["GET", "POST"])
+@login_required(roles=["admin"])
+def venue_register():
+    return venue_routs.venue_register_function()
+
+@app.route("/venue_update/<int:id>", methods=["GET", "POST"])
+@login_required(roles=["admin"])
+def venue_update(id):
+    return venue_routs.venue_update_function(id)
+
+@app.route("/venue_delete/<int:id>")
+@login_required(roles=["admin"])
+def venue_delete(id):
+    return venue_routs.venue_delete_function(id)
+
 @app.route("/CourseImplementation/<int:id>")
 @login_required(roles=None)
 def courseImplementation_id(id):

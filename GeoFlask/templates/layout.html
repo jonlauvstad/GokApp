@@ -232,7 +232,7 @@
             <a href="/alert_see_unseen" id="msgA"><label id="msgLabel">Meldinger: </label><label id="countLabel" style="color: red;"></label></a>
             {% if user.role in ["admin", "teacher"] %}
                 <a href="/admin_lecture" id="lectureNav" class="admNavItem">Forel.</a>  <!-- id="attendanceNav" -->
-                <a href="/venue_calendar" id="venueNav" class="admNavItem">Rom</a>
+                <a href={% if user.role == 'teacher' %}"/venue_calendar"{% else %}"/venue_admin"{% endif %} id="venueNav" class="admNavItem">Rom</a>
                 <a href="/admin_exam" id="examNav" class="admNavItem">Eksamen</a>
                 <a href="/admin_assignment" id="assignmentNav" class="admNavItem">Oppg.</a>
             {% else %}
@@ -245,7 +245,8 @@
                 <ul id="moreUl">
                     {% if user.role in ["admin", "teacher"] %}
                         <li><a href="/admin_lecture" id="lectureNavOption">Forel.</a></li>
-                        <li><a href="/venue_calendar" id="venueNavOption">Rom</a></li>
+                        <li><a href= {% if user.role == 'teacher' %} "/venue_calendar" {% else %} "/venue_admin" {% endif %}
+                            id="venueNavOption">Rom</a></li>
                         <li><a href="/admin_exam" id="examNavOption">Eksamen</a></li>
                         <li><a href="/admin_assignment" id="assignmentNavOption">Oppg.</a></li>
                     {% else %}
