@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block title %}Arbeidskrav{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+        width: 36%;
+    }
+    .menuAasButt{
+        color: white;
+        font-weight: bold;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        text-align: center;
+        font-size: 2.5em;
+        border-radius: 10px;
+        padding: 14px;
+        display: block;
+        text-decoration: none;
+    }
+    #aOrange{
+        background: orangered;
+    }
+    #aGreen{
+        background: green;
+    }
+
+    #aBlue{
+        background: dodgerblue;
+    }
+    .normalFontWeight{
+        font-weight: normal;
+    }
+    @media screen and (max-width: 550px){
+        .menuAasButt{
+            font-size: 1.5em;
+        }
+        #aOrange{
+            background: #ffbf80;
+        }
+        #aGreen{
+            background: #90ee90;
+        }
+    }
+
+
+</style>
+<h1 class="bigHeadlineH1">
+    ARBEIDSKRAV
+</h1>
+
+<table>
+
+    <!-- < create > -->
+    <tr>
+        <td>
+            <a class="menuAasButt" style="display: block;text-decoration: none" href="/template_assignment" id="aOrange">
+                <div>ADMINISTRERE</div>
+                <label class="menuLabel">📃</label>
+            </a>
+        </td>
+    </tr>
+
+    <!-- < search / delete / edit > -->
+    <tr>
+        <td>
+            <a class="menuAasButt" style="display: block;text-decoration: none" href="/get_assignments" id="aGreen">
+                <div>FINNE</div>
+                <label class="menuLabel normalFontWeight">🔍</label>
+            </a>
+        </td>
+    </tr>
+
+    <!-- < edit from list > -->
+    <tr>
+        <td>
+            <a class="menuAasButt" style="display: block;text-decoration: none" href="{{ url_for('select_assignment', action='oppdatere') }}" id="aBlue">
+                <div>Oppdatere fra liste</div>
+                <label class="menuLabel normalFontWeight">🔧</label>
+            </a>
+        </td>
+    </tr>
+
+    <!-- < delete from list >
+    <tr>
+        <td>
+            <a class="menuAasButt" style="display: block;text-decoration: none" href="{{ url_for('select_assignment', action='slette') }}" id="aBlue">
+                <div>Slette fra liste</div>
+                <label class="menuLabel normalFontWeight">🗑️</label>
+            </a>
+        </td>
+    </tr>
+    -->
+
+</table>
+
+
+
+
+{% endblock %}

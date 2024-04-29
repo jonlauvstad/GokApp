@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block title %}Arbeidskrav{% endblock %}
+
+{% block main %}
+<style>
+    table{
+        margin: auto;
+    }
+    button{
+        font-size: x-small;
+        border-radius: 4px;
+        width: 40%;
+    }
+
+    td{
+        vertical-align: top;
+    }
+    @media screen  and (max-width:550px){
+        .smallFontA{
+            font-size: small;
+        }
+    }
+
+</style>
+
+<script>
+    function getAssignmentById(event){
+        console.log("Button clicked:", event.target.dataset.action);
+
+        const action = event.target.dataset.action;
+        document.getElementById("actionInput").value = action;
+        const assignmentId = Number("{{assignment.id}}");
+        const url = `http://${hostname}:${portNumber}/api/assignment/${assignmentId}?save=Balle`;
+        console.log("URL:", url);
+        fetch(url, {method: "GET"})
+        .then(response =>{
+            console.log(response);
+            if(!response.ok) throw new Error("Network response was not ok.");
+            return response.json();
+        })
+        .then(data =>{
+            console.log("Data received:", data);
+            document.getElementById("formButton").click();
+        })
+        .catch(error =>{
+            console.error("There was a problem with the fetch operation:", error);
+        });
+    }
+
+function handleAssignmentAction(event) {
+    const action = event.target.dataset.action;
+    const assignmentId = Number("{{assignment.id}}");
+    const urlBase = `http://${hostname}:${portNumber}/api/assignment/${assignmentId}`;
+    let url = urlBase;
+    let method = "GET"; // Default method for fetching
+
+    switch (action) {
+        case "slette":
+            url = `${urlBase}/delete`; // Adjusted to a specific endpoint for delete
+            method = "DELETE";
+            break;
+        case "endre":
+            url = `${urlBase}/update`; // Adjusted to a specific endpoint for update
+            method = "PUT";
+            break;
+    }
+
+    console.log("URL:", url, "Method:", method);
+    fetch(url, {method: method})
+    .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok.");
+        return response.json();
+    })
+    .then(data => {
+        console.log("Data received:", data);
+        // Handle redirection or UI updates here
+    })
+    .catch(error => {
+        console.error("There was a problem with the fetch operation:", error);
+    });
+}
+
+</script>
+
+
+
+<h1 class="bigHeadlineH1">
+    {{head_prefix}}ARBEIDSKRAV
+</h1>
+<table>
+    <tr>
+        <td>Id:</td><td>{{assignment.id}}</td>
+    </tr>
+    <tr>
+        <td>Name:</td><td>{{assignment.name}}</td>
+    </tr>
+    <tr>
+        <td>Beskrivelse:</td><td>{{assignment.description}}</td>
+    </tr>
+    <tr>
+        <td>Deadline</td><td>{{assignment.deadline}}</td>
+    </tr>
+    <tr>
+        <td>Obligatorisk</td><td>{{assignment.mandatory}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomførings-id:</td> <td>{{assignment.courseImplementationId}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomførings-kode:</td><td>{{assignment.courseImplementationCode}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomførings-navn:</td><td>{{assignment.courseImplementationName}}</td>
+    </tr>
+    <tr>
+        <td>Kursgjennomførings-link:</td>
+        <td><a href="{{assignment.courseImplementationLink}}" class="smallFontA">{{assignment.courseImplementationLink}}</a></td>
+    </tr>
+    <tr>
+        <td>Link:</td><td><a href="{{assignment.link}}">{{assignment.link}}</a></td>
+    </tr>
+
+    <tr>
+        <td><a href="/template_assignment">Tilbake til arbeidskrav</a></td>
+        <td>
+            <button data-action="slette" onclick="getAssignmentById(event)">Slett!</button>
+            <button data-action="endre" onclick="getAssignmentById(event)">Endr!</button>
+        </td>
+    </tr>
+</table>
+
+<form style="display: none" id="form" action="/conf_assignment" method="post">
+    <input name="action" id="actionInput">
+    <button id="formButton"></button>
+</form>
+
+{% endblock %}

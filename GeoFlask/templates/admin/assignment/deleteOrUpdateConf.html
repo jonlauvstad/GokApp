@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}Confirmation{% endblock %}
+
+{% block main %}
+
+<style>
+    .confirmation-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        background: #f4f4f4;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+    .button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+
+<div class="confirmation-container">
+    <h1>Confirmation</h1>
+    <p>{{ message }}</p>
+    <div>
+        <h2>Details:</h2>
+        <p>ID: {{ assignment.id }}</p>
+        <p>Name: {{ assignment.name }}</p>
+        <p>Description: {{ assignment.description }}</p>
+        <!-- Add more fields as necessary -->
+    </div>
+    <a href="{{ url_for('select_assignment') }}" class="button">Back to Assignments</a>
+    {% if action == 'updated' %}
+    <a href="{{ url_for('manage_assignment', id=assignment.id, action='update') }}" class="button">Edit Again</a>
+    {% endif %}
+</div>
+{% endblock %}

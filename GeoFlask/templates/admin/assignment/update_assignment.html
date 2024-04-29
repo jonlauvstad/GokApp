@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}Select Assignment{% endblock %}
+
+{% block main %}
+<h1>Select an Assignment to {{ action|capitalize }}</h1>
+<ul>
+    {% for assignment in assignments %}
+    <li>
+        {{ assignment.name }}
+        <a href="{{ url_for('manage_assignment', id=assignment.id, action=action) }}">
+            {{ action|capitalize }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block title %}Arbeidskrav{% endblock %}
+
+{% block main %}
+<style>
+  .chooseDiv{
+    border: 1px solid grey;
+    border-radius: 6px;
+    padding: 15px;
+    background: antiquewhite;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+  }
+  .divH1{
+    text-align: center;
+    color: green;
+  }
+  table{
+    margin: auto;
+  }
+  td{
+    padding-right: 6px;
+  }
+  table select{
+    width: 400px;
+  }
+  button{
+    font-size: x-small;
+    border-radius: 4px;
+    background: green;
+    color: white;
+    font-weight: bold;
+  }
+</style>
+
+<script>
+
+    function navigate(url) {
+        window.location.href = url;
+    }
+
+    function fetchAssignmentAndRedirect() {
+        const selectElement = document.getElementById('assignmentSelect');
+        const assignmentId = selectElement.value;
+        const url = `http://${window.location.hostname}:${window.location.port}/api/assignment/${assignmentId}?save=Balle`;
+
+        fetch(url, { method: "GET" })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to fetch");
+            return response.json();
+        })
+        .then(data => {
+            redirectToDisplayPage(data);
+        })
+        .catch(error => {
+            console.error("Error fetching assignment:", error);
+        });
+    }
+
+
+    function redirectToDisplayPage(assignmentData){
+        sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData))
+        window.location.href = '/get_success';
+    }
+</script>
+
+<h1 class="bigHeadlineH1" style="text-align: center">ARBEIDSKRAV</h1>
+
+<div class="chooseDiv">
+  <h1 class="divH1">Hente ut arbeidskrav</h1>
+  <table>
+    <tr>
+      <td>Arbeidskrav:</td>
+      <td>
+        <select id="assignmentSelect">
+          {% for assignment in assignments %}
+          <option value="{{ assignment.id }}">
+            Id: {{ assignment.id }} - {{ assignment.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <button onclick="fetchAssignmentAndRedirect()">Hent</button>
+      </td>
+
+      <td>
+        <button class="button" onclick="navigate('/admin_assignment')">Tilbake til arbeidskrav</button>
+      </td>
+    </tr>
+
+
+  </table>
+</div>
+
+
+
+
+{% endblock %}
