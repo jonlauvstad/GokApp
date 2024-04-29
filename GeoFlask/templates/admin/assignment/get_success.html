@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+{% block title %}Arbeidskrav{% endblock %}
+
+{% block main %}
+
+<style>
+  .chooseDiv {
+    border: 1px solid grey;
+    border-radius: 6px;
+    padding: 15px;
+    background: antiquewhite;
+    width: 60%;
+    margin: 20px auto;
+    text-align: center;
+  }
+  .divH1 {
+    color: green;
+  }
+  table {
+    width: 100%;
+    margin: auto;
+    text-align: left;
+  }
+  select, button {
+    width: 90%;
+    margin: 10px 0;
+  }
+  button {
+    font-size: x-small;
+    border-radius: 4px;
+    background: green;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
+
+<h1 class="bigHeadlineH1" style="text-align: center">ARBEIDSKRAV</h1>
+
+<div class="chooseDiv">
+  <h1 class="divH1">Arbeidskrav-detaljer:</h1>
+  <div id="assignmentDetails"></div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const element = document.getElementById('yourElementId');
+        console.log(element);
+        if (element) {
+            element.style.display = 'block';
+        } else {
+            console.error('Element not found');
+        }
+    });
+
+                /**
+     * Represents an assignment.
+     * @typedef {Object} AssignmentData
+     * @property {number} id - The ID of the assignment.
+     * @property {string} name - The name of the assignment.
+     * @property {string} description - The description of the assignment.
+     * @property {string} deadline - The deadline of the assignment.
+     * @property {boolean} mandatory - Whether the assignment is mandatory.
+     * @property {number} courseImplementationId - The ID of the course implementation.
+     * @property {string} courseImplementationCode - The code of the course implementation.
+     * @property {string} courseImplementationLink - The link to the course implementation.
+     * @property {string} link - The link to the assignment.
+     */
+
+     window.onload = function() {
+         const data = JSON.parse(sessionStorage.getItem('assignmentData'));
+         const container = document.getElementById('assignmentDetails');
+         if (data) {
+            container.innerHTML = `
+                <h1>Id: ${data.id}</h1>
+                <p>Name: ${data.name}</p>
+                <p>Description: ${data.description}</p>
+                <p>Deadline: ${data.deadline}</p>
+                <p>Mandatory: ${data.mandatory}</p>
+                <p>CourseImpId: ${data.courseImplementationId}</p>
+                <p>CourseImpCode: ${data.courseImplementationCode ? data.courseImplementationCode : 'Not provided'}</p>
+                <p>CourseImpLink: <a href="${data.courseImplementationLink}">${data.courseImplementationLink}</a></p>
+                <p>Link: <a href="${data.link}">${data.link}</a></p>
+            `;
+        } else {
+            container.innerHTML = "<p>Error: No data found.</p>";
+        }
+    }
+ </script>
+    <td><a href="/get_assignments">Tilbake til søk</a></td><p></p>
+    <td><a href="/admin_assignment">Tilbake til arbeidskrav</a></td>
+
+</div>
+
+
+{% endblock %}

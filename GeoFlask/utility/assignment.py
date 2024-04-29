@@ -3,11 +3,13 @@ from datetime import datetime
 from typing import Optional
 
 class Assignment:
-    def __init__(self, id, name, description, deadline, courseImplementationId, courseImplementationCode, courseImplementationName,
+    def __init__(self, id, name, description, deadline, mandatory, courseImplementationId, courseImplementationCode, courseImplementationName,
                  courseImplementationLink, link):
         self.id = id
         self.name = name
         self.description = description
+        self.deadline = deadline
+        self.mandatory = mandatory
         self.courseImplementationId = courseImplementationId
         self.courseImplementationCode = courseImplementationCode
         self.courseImplementationName = courseImplementationName
@@ -27,18 +29,15 @@ class Assignment:
                 self.datetime_string = "Invalid date"
                 self.datetime_local_format = ""  # Ensure this is empty if parsing fails
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "courseImplementationId": self.courseImplementationId,
+            "courseImplementationLink": self.courseImplementationLink,
+            "link": self.link,
+            "deadline": self.deadline,
+            "mandatory": self.mandatory
+        }
 
-"""class Assignment:
-    def __init__(self, id, name, description, deadline, courseImplementationId, courseImplementationCode, courseImplementationName,
-                 courseImplementationLink, link):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.deadline = deadline
-        self.courseImplementationId = courseImplementationId
-        self.courseImplementationCode = courseImplementationCode
-        self.courseImplementationName = courseImplementationName
-        self.courseImplementationLink = courseImplementationLink
-        self.datetime = parser.parse(deadline)
-        self.datetime_string = self.datetime.strftime("%d.%b %H:%M")
-        self.link = link"""

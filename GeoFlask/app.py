@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, flash
 
 from utility.rout_funcs import a_venue_calendar_routs
 from flask_session import Session
@@ -51,9 +51,9 @@ def after_request(response):
     return response
 
 
-# ------------------------------------------------------------------
-
-
+# ----------------------------------------------------
+# ---------------- MAIN ------------------------------
+# ----------------------------------------------------
 
 @app.route("/")
 def index():
@@ -76,6 +76,8 @@ def calendar():
     return cal_routs.calendar_function()
 
 # ----------------------------------------------------
+# ---------------- VENUE -----------------------------
+# ----------------------------------------------------
 
 
 @app.route("/venue_calendar")
@@ -88,13 +90,9 @@ def venue_calendar():
 @login_required(roles=["teacher", "admin"])
 def book_from_venue():
     date = request.args.get('date')
-    print("DATE! (fra app.route('/book_from_venue'):", date)
     day = request.args.get('day')
-    print("DAY! (fra app.route('/book_from_venue'):", day)
     time = request.args.get('time')
-    print("TIME!(fra app.route('/book_from_venue'):", time)
     venue_id = request.args.get('venue_id')
-    print("VENUE ID!(fra app.route('/book_from_venue'):" + venue_id)
     return ven_routs.venue_booking_data(date, day, time, venue_id)
 
 
@@ -147,19 +145,38 @@ def student_resources():
     return stud_rescr.get_resources()
 
 # ----------------------------------------------------
+# ---------------- ASSIGNMENT ------------------------
+# ----------------------------------------------------
 
-
-@app.route('/admin_assignment/landing', methods=['GET']) # ASSIGNMENT LANDING PAGE
+@app.route('/admin_assignment')
 @login_required(roles=['teacher', 'admin'])
-def assignment_landing():
-    assignments = ass_routs.assignment_getAll_function()  # Fetch all assignments
-    print(assignments)  # Debug output to see what's being sent to the template
-    return render_template('admin/assignment/assignment.html', assignments=assignments)
+def admin_assignment():
+    return ass_routs.admin_assignment_function()
+
 
 @app.route("/template_assignment", methods=["GET", "POST"])
 @login_required(roles=["teacher", "admin"])
 def template_assignment():
     return ass_routs.template_assignment_function()
+
+
+@app.route("/get_assignments")
+@login_required(roles=["teacher", "admin"])
+def get_assignments():
+    return ass_routs.get_assignments()
+
+
+@app.route('/get_success')
+def get_success():
+    return render_template('admin/assignment/get_success.html')
+
+
+@app.route("/implementation_assignment/delete/<int:assignment_id>")
+@login_required(roles=["teacher", "admin"])
+def see_assignments(assignment_id):
+    # return exImp_routs.examImp_delete(exam_id)
+    return redirect(f"/Assignment/{assignment_id}")
+
 
 @app.route("/conf_assignment", methods=["GET", "POST"])
 @login_required(roles=["teacher", "admin"])
@@ -167,37 +184,66 @@ def conf_assignment():
     print("Recieved data:", request.form)
     return ass_routs.conf_assignment_function()
 
+@app.route("/api/assignment/<int:id>")
+@login_required(roles=None)
+def api_assignment_id(id):
+    return api_1.api_assignment_id_function(id)
+
+
+@app.route("/Assignment/<int:id>", methods=["GET", "POST"])
+@login_required(roles=None)
+def assignment_id(id):
+    print(f"\n\t ➡️ Request method: {request.method}, ID: {id}")
+    return ass_routs.assignment_id_function(id)
+
+
+@app.route("/Assignment")
+@login_required(roles=None)
+def assignment():
+    return ass_routs.assignment_getAll_function()
+
+
+# ----------------------------------------------------
 
 @app.route('/admin_assignment/select/<action>', methods=['GET'])
 @login_required(roles=['teacher', 'admin'])
 def select_assignment(action):
-    assignments = ass_routs.assignment_getAll_function()  # Fetch all assignments
+    assignments = ass_routs.assignment_getAll_function()
+    print("Assignments:", assignments)
     return render_template('admin/assignment/select_assignment.html', assignments=assignments, action=action)
 
 
-@app.route('/admin_assignment', methods=['GET'])
-@app.route('/admin_assignment/<int:id>', methods=['GET'])
+@app.route('/admin_assignment/manage/<int:id>/<action>', methods=['POST'])
 @login_required(roles=['teacher', 'admin'])
-def get_assignments(id=None):
-    if id is not None:
-        assignments = [ass_routs.assignment_get_function(id)]
+def manage_assignment(id, action):
+    if action == 'update':
+        result = ass_routs.assignment_update_function(id, request.form)
+    elif action == 'delete':
+        result = ass_routs.assignment_delete_function(id)
+
+    print("Result from function:", result)  # Add this line to debug
+
+    if result['status'] == 'success':
+        # Redirect to a confirmation page with details
+        return redirect(url_for('admin/assignment/deleteOrUpdateConf.html', id=id, action=action))
     else:
-        assignments = ass_routs.assignment_getAll_function()
-    return render_template('admin/assignment/get_assignments.html', assignments=assignments)
+        # Handle errors or redirect back to the list with a flash message
+        flash('Failed to process your request.', 'error')
+        return redirect(url_for('select_assignment'))
 
 
-@app.route('/admin_assignment/new', methods=['GET', 'POST'])
+@app.route('/confirmation_page/<int:id>/<action>')
 @login_required(roles=['teacher', 'admin'])
-def create_assignment():
-    if request.method == 'POST':
-        # Process the creation form submission
-        return ass_routs.assignment_create_function()
-    return render_template('admin/assignment/create_assignment.html')
+def confirmation_page(id, action):
+    # Fetch details of the assignment to show on confirmation
+    assignment_details = ass_routs.assignment_id_function(id)
+    return render_template('admin/assignment/deleteOrUpdateConf.html', assignment=assignment_details, action=action)
 
 
 @app.route('/admin_assignment/update/<int:id>', methods=['GET', 'POST'])
 @login_required(roles=['teacher', 'admin'])
 def update_assignment(id):
+    app.logger.debug(f"Update endpoint hit with ID: {id}")
     if request.method == 'POST':
         return ass_routs.assignment_update_function(id)
 
@@ -207,28 +253,17 @@ def update_assignment(id):
 @app.route('/admin_assignment/delete/<int:id>', methods=['GET', 'POST'])
 @login_required(roles=['teacher', 'admin'])
 def delete_assignment(id):
+    app.logger.debug(f"Delete endpoint hit with ID: {id}")
     if request.method == 'POST':
         return ass_routs.assignment_delete_function(id)
 
     return render_template('admin/assignment/delete_assignment.html', id=id)
 
 
-@app.route('/admin_assignment/manage/<int:id>/<action>', methods=['GET', 'POST'])
-@login_required(roles=['teacher', 'admin'])
-def manage_assignment(id, action):
-    if request.method == 'GET':
-        return render_template(f'admin/assignment/{action}_assignment.html', id=id)
-    elif request.method == 'POST':
-        if action == 'update':
-            return ass_routs.assignment_update_function(id)
-        elif action == 'delete':
-            return ass_routs.assignment_delete_function(id)
+# ----------------------------------------------------
+# ---------------- LECTURE ---------------------------
+# ----------------------------------------------------
 
-
-# @app.route("/Assignment/<int:id>")
-# @login_required(roles=None)
-# def assignment_id(id):
-#    return ass_routs.assignment_id_function(id)
 
 @app.route("/Lecture/<int:id>", methods=["get", "post"])
 @login_required(roles=None)
@@ -284,6 +319,10 @@ def lecture_add_multiple():
 @login_required(roles=None)
 def alert_see_unseen():
     return alert_routs.alert_see_unseen_function()
+
+# ----------------------------------------------------
+# ---------------- EXAM ------------------------------
+# ----------------------------------------------------
 
 @app.route("/admin_exam")
 @login_required(roles=["teacher", "admin"])
@@ -353,6 +392,10 @@ def implementation_exam_group(exam_id):
 def exam_group(exam_id):
     return exImp_routs.exam_group(exam_id)
 
+# ----------------------------------------------------
+# ---------------- VENUE MANAGEMENT ------------------
+# ----------------------------------------------------
+
 @app.route("/Venue/<int:id>")
 @login_required(roles=None)
 def venue_id(id):
@@ -393,6 +436,10 @@ def course_id(id):
 @login_required(roles=None)
 def api_get_venues():
     return api_1.api_get_venues_func()
+
+# ----------------------------------------------------
+# ---------------- ALERTS ----------------------------
+# ----------------------------------------------------
 
 @app.route("/api/alert/user")
 @login_required(roles=None)

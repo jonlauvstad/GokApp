@@ -31,10 +31,7 @@
         width: 250px;
         max-width: 250px;
     }
-    .durationInput{
-        width: 60px;
-        margin-right: 10px;
-    }
+
     #insidePopup{
         position: relative;
         width: 500px;
@@ -140,7 +137,9 @@
 </style>
 
 <script>
-    const cimps = "{{courseImps|tojson}}";
+
+
+    const courseImps = '{{courseImps|tojson}}';
 
     let try_delete = false;
     {% if try_delete %} try_delete = true; {% endif %}
@@ -163,12 +162,13 @@
         }
 
         {% if put %} history.pushState({}, '', '/template_assignment'); {% endif %}
-        {% if not put %} updateCourseStartEnd(); {% endif %}    // Hadde denne en stund inn jinja if not put
 
     });
 
+    console.log("\n\tℹ️ Defining popUp function");
 
     function popUp(event){
+
         choice = event.target.value;
 
         const popupDiv = document.getElementById("popup");
@@ -210,31 +210,30 @@
         const action = document.getElementById("regChangeDeleteSelect").value;
         const assignmentId = Number(document.getElementById("assignmentIdInput").value);
         if (assignmentId===0){
-            document.getElementById("popupError").innerHTML = "Du må oppgi et arbeidskrav-id.";
+            document.getElementById("\n\t❌ popupError").innerHTML = "Du må oppgi et arbeidskrav-id.";
             return null;
         }
 
-        // calle api_exam_id_function i fetch med GET - klikke submit his ikke feilmelding
+        // call assignment_id_function with GET
         const url = `http://${hostname}:${portNumber}/api/assignment/${assignmentId}?save=Balle`;
-        console.log("URL:", url);
+        console.log("\n\tℹ️ function getAssignmentByID: 🔗 URL:", url);
         fetch(url,
         {
             method: "GET"
         })
         .then(response =>{
-            console.log(response);
+            console.log("\n\tℹ️ function getAssignmentByID: HTTP Response Status:", response.status);
             if(!response.ok){
-                throw new Error("Network response was not ok.");
+                return response.text().then(text => { throw new Error(text) });
             }
             return response.json();
         })
         .then(data =>{
-            console.log("data", data);
+            console.log("\n\tℹ️ Data received:", data);
             if ("err_msg" in data){
-                document.getElementById("popupError").innerHTML = data.err_msg;
+                document.getElementById("\n\t❌ popupError").innerHTML = data.err_msg;
             }
             else{
-                console.log(data.category);
                 const theForm = document.getElementById("theForm");
                 theForm.setAttribute("action", "/conf_assignment");
                 theForm.setAttribute("method", "post");
@@ -242,7 +241,7 @@
             }
         })
         .catch(error =>{
-            console.error("There was a problem with the fetch operation:", error);
+            console.error("\n\t❌ There was a problem with the fetch operation:", error.message);
         });
 
     }
@@ -276,11 +275,11 @@
             break;
           }
         }
-      }
+    }
 
-      function updateCourseStartEnd(){
+     function updateCourseStartEnd(){
         const courseImpId = Number(document.getElementById("courseIdFormSelect").value);
-        const courseImpArray = cimps.filter(item => item.id === courseImpId);
+        const courseImpArray = courseImps.filter(item => item.id === courseImpId);
         const courseImp = courseImpArray[0];
 
         const startElm = document.getElementById("startInput");
@@ -305,7 +304,13 @@
         const startElm = document.getElementById("startInput");
         startElm.max = maxVal;
       }
+
+
+    function navigate(url) {
+        window.location.href = url;
+    }
 </script>
+
 
 <h1 class="bigHeadlineH1">
     ARBEIDSKRAV {% if put %} #{{assignment.id}} {% endif %}
@@ -316,15 +321,17 @@
 <form id="theForm"   method="post"  {% if put %} action="{{assignment.link}}" {% else %} action="/conf_assignment"{% endif %}>
     <table id="specTable">
         <tr>
+            <!-- Popup -->
             <td class="leftColumn">Handling:</td>
             <td class="rightColumn">
-                <select id="regChangeDeleteSelect" onchange="popUp(event)" name="action" required> <!--{% if put %} disabled {% endif %} -->
+                <select id="regChangeDeleteSelect" onchange="popUp(event)" name="action" required>
                     {% for opt in options %}
                         <option {% if opt==option %} selected {% endif %} value="{{opt}}">{{opt}}</option>
                     {% endfor %}
                 </select>
             </td>
         </tr>
+
         <tr>
             <td class="leftColumn">Kurs-gjennomføring:</td>
             <td class="rightColumn">
@@ -359,7 +366,12 @@
             </td>
         </tr>
 
-
+        <tr>
+            <td class="leftColumn">Obligatorisk:</td>
+            <td class="rightColumn">
+                <input type="checkbox" name="mandatory" value="true" {{ 'checked' if assignment.mandatory else '' }}>
+            </td>
+        </tr>
 
         <tr>
             <td colspan="2">
@@ -368,8 +380,20 @@
                 </button>
             </td>
         </tr>
+
     </table>
+
 </form>
+
+<div style="display: flex; justify-content: center; width: 100%;">
+    <table>
+        <tr>
+            <td style="text-align: center;">
+                <button style="max-width: 200px; width: 100%; padding: 10px; border-radius: 4px; background: green; color: white;" onclick="navigate('/admin_assignment')">Tilbake til arbeidskrav</button>
+            </td>
+        </tr>
+    </table>
+</div>
 
 {% if error_msg %}
     <h3 style="color:red;text-align: center">{{error_msg}}</h3>
@@ -391,15 +415,13 @@
                     </option>
                     {% endfor %}
                 </select>
-                <button onclick="getExamsByCourseImpId()">Søk</button>
+                <button onclick="getAssignmentsByCourseImpId()">Søk</button>
             </div>
             <div id="hideButtonDiv">
-                <label id="popupError"></label> <!-- style="width: initial"-->
+                <label id="popupError"></label>
                 <button onclick="hidePopup()" id="hideButton">Skjul</button>
             </div>
         </div>
-        <!--<input style="display: none" name="search_action" id="searchActionInput">-->
-
     </div>
 
 

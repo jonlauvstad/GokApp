@@ -3,14 +3,24 @@
 {% block title %}Select Assignment{% endblock %}
 
 {% block main %}
-<h1>Velg et arbeidskrav å {{ action }}</h1>
+<h1>Manage Assignments</h1>
 <ul>
     {% for assignment in assignments %}
     <li>
         {{ assignment.name }}
-        <a href="{{ url_for('manage_assignment', id=assignment.id, action=action) }}">
-            {{ action|capitalize }}
-        </a>
+        <!-- Update Form -->
+        <form action="{{ url_for('manage_assignment', id=assignment.id, action='update') }}" method="post">
+            <!-- Include form fields for updating with current values as defaults -->
+            <input type="text" name="name" value="{{ assignment.name }}">
+            <input type="text" name="name" value="{{ assignment.description }}">
+            <input type="text" name="name" value="{{ assignment.deadline }}">
+            <input type="text" name="name" value="{{ assignment.mandatory }}">
+            <input type="submit" value="Update">
+        </form>
+        <!-- Delete Form -->
+        <form action="{{ url_for('manage_assignment', id=assignment.id, action='delete') }}" method="post">
+            <input type="submit" value="Delete">
+        </form>
     </li>
     {% endfor %}
 </ul>
