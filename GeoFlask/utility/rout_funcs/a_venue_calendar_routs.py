@@ -37,12 +37,15 @@ def venue_calendar_function():
     venues = fetch_venues(headers)
     events = fetch_events(headers, from_date=start_date.isoformat(), to_date=end_date.isoformat())
 
+    print(f"ℹ️ venue_calendar_function() : events:  {events}")
+
     # Genererer "days" med "events" + weekend logic
     num_days = (end_date - start_date).days + 1
     days = []
     for i in range(num_days):
         day_date = start_date + timedelta(days=i)
-        day_events = [event for event in events if event.date == day_date]
+        day_events = [event for event in events if event.datetime.date() == day_date.date()]
+        print(f"ℹ️ DAY_EVENTS: {day_events}")
         day = EventDay(day_date, day_events)
         day.is_weekend = day_date.weekday() >= 5
         days.append(day)
@@ -62,6 +65,61 @@ def venue_calendar_function():
                            current_day=current_day,
                            start_date=start_date.strftime("%Y-%m-%dT%H:%M"),
                            end_date=end_date.strftime("%Y-%m-%dT%H:%M"))
+
+
+def fetch_events(headers, from_date=None, to_date=None):
+    events_url = f"{URLpre}Event/"
+
+    params = {
+        'from': from_date,
+        'to_date': to_date
+    }
+
+    response = requests.get(events_url, headers=headers, params=params, verify=False)
+    print(f"ℹ️ RESPONSE: {response}")
+
+    if response.ok:
+        # print("Events JSON Data:", response.json())
+        events = [
+            Event(
+                item['time'],
+                item['underlyingId'],
+                item['type'],
+                item['typeEng'],
+                item['courseImplementationId'],
+                item['courseImpCode'],
+                item['courseImpName'],
+                item['courseImplementationLink'],
+                item['link'],
+                item['timeEnd'] if item['timeEnd'] != '0001-01-01T00:00:00' else None,
+                item['venueId'],
+                item['venueName'],
+                item['venueCapacity']
+            ) for item in response.json()
+        ]
+
+        filteredEvents = [item for item in events if item.typeEng == "Lecture"]
+
+        print(len(filteredEvents))
+        print(f"ℹ️ FILTERED EVENTS: {filteredEvents}")
+
+        for event in events:
+            event.datetime = parser.parse(event.time)
+            event.datetimeFormatted = event.datetime.strftime("%Y-%m-%d %H:%M")
+            if event.timeEnd and event.timeEnd != '0001-01-01T00:00:00':
+                event.datetimeEnd = parser.parse(event.timeEnd)
+                event.datetimeEndFormatted = event.datetimeEnd.strftime("%Y-%m-%d %H:%M")
+            else:
+                event.datetimeEnd = None
+                event.datetimeEndFormatted = None
+    else:
+        print(f"Error fetching event data: {response.status_code}, {response.text}")
+        events = []
+
+    for event in events:
+        print(f"Event Date: {event.datetime.date()}")
+
+    return events
 
 
 def venue_cal_single_day(date_str):
@@ -159,48 +217,6 @@ def fetch_venue_by_id(headers, venue_id):
     return None
 
 
-def fetch_events(headers, from_date=None, to_date=None):
-    events_url = f"{URLpre}Event/"
-
-    params = {
-        'from': from_date,
-        'to_date': to_date
-    }
-
-    response = requests.get(events_url, headers=headers, params=params, verify=False)
-    if response.ok:
-        # print("Events JSON Data:", response.json())
-        events = [
-            Event(
-                item['time'],
-                item['underlyingId'],
-                item['type'],
-                item['typeEng'],
-                item['courseImplementationId'],
-                item['courseImpCode'],
-                item['courseImpName'],
-                item['courseImplementationLink'],
-                item['link'],
-                item['timeEnd'] if item['timeEnd'] != '0001-01-01T00:00:00' else None,
-                item['venueId'],
-                item['venueName'],
-                item['venueCapacity']
-            ) for item in response.json()
-        ]
-        for event in events:
-            event.datetime = parser.parse(event.time)
-            event.datetimeFormatted = event.datetime.strftime("%Y-%m-%d %H:%M")
-            if event.timeEnd and event.timeEnd != '0001-01-01T00:00:00':
-                event.datetimeEnd = parser.parse(event.timeEnd)
-                event.datetimeEndFormatted = event.datetimeEnd.strftime("%Y-%m-%d %H:%M")
-            else:
-                event.datetimeEnd = None
-                event.datetimeEndFormatted = None
-    else:
-        print(f"Error fetching event data: {response.status_code}, {response.text}")
-        events = []
-
-    return events
 
 
 def calculate_num_days(start_date, end_date):
