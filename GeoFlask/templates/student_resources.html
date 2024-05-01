@@ -4,16 +4,40 @@
     <link href="/static/styles.css" rel="stylesheet">
     <link href="/static/styles_venues.css" rel="stylesheet">
     <style>
-        #studResDiv{
-            margin-left: 100px;
+        #studResDiv {
+            margin-right: 20px;  /* Adds space between the two divs */
         }
-        @media screen and (max-width: 550px){
-            #studResDiv{
-                margin-left: 4px;
+        @media screen and (max-width: 550px) {
+            #studResDiv {
+                margin-right: 0;  /* Remove margin in small screens */
             }
         }
-        #studResH1{
+        #studResH1 {
             color: green;
+        }
+
+        body { font-family: Arial, sans-serif; }
+        .repository { margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; }
+        .repository h2 { margin: 0 0 5px 0; }
+        .repository a { text-decoration: none; color: #0077cc; }
+        .repository p { margin: 5px 0; }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items at the start of the flex container */
+            flex-wrap: wrap; /* Allows items to wrap in small screens */
+        }
+        .flex-item {
+            flex: 1;  /* Allows the flex items to grow and take up equal space */
+            min-width: 300px; /* Minimum width of each flex item */
+            padding-left: 100px;
+        }
+
+        .flex-item_github{
+            flex: 1;  /* Allows the flex items to grow and take up equal space */
+            min-width: 300px; /* Minimum width of each flex item */
+            padding-right: 100px;
         }
     </style>
 {% endblock %}
@@ -23,20 +47,60 @@
 {% endblock %}
 
 {% block main %}
-<div class="admin-venue-container" id="studResDiv">
-    <h1 id="studResH1">Student Ressurser</h1>
-    {% if resources %}
-        <ul>
-            {% for resource in resources %}
-                <li>
-                    <h2>{{ resource.title }}</h2>
-                    <p>{{ resource.description }}</p>
-                    <a href="{{ resource.url }}" target="_blank">Undervisnings-opptak</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No resources found.</p>
-    {% endif %}
+<div class="flex-container">
+    <div class="flex-item" id="studResDiv">
+        <h1 id="studResH1">Student Ressurser</h1>
+        {% if resources %}
+            <ul>
+                {% for resource in resources %}
+                    <li>
+                        <h2>{{ resource.title }}</h2>
+                        <p>{{ resource.description }}</p>
+                        <a href="{{ resource.url }}" target="_blank">Undervisnings-opptak</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No resources found.</p>
+        {% endif %}
+    </div>
+
+    <div class="flex-item_github" id="repositories">
+    </div>
+
 </div>
+
+<script>
+    function fetchRepositories() {
+        fetch('/student_resources/daily')
+            .then(response => response.json())
+            .then(data => {
+                console.log("\n\t 🤖 FETCH GITHUB REPO DATA:", data);
+
+                const container = document.getElementById('repositories');
+                container.innerHTML = '';  // Clear previous contents
+                data.slice(1).forEach(repo => {
+                    const repoEl = document.createElement('div');
+                    repoEl.className = 'repository';
+
+                    const truncatedDescription = repo.description ?
+                        (repo.description.length > 100 ? repo.description.substring(0, 100) + '...' : repo.description)
+                        : "No description provided.";
+
+                    repoEl.innerHTML = `
+                        <h2><a href="${repo.url}" target="_blank">${repo.name}</a></h2>
+                        <p>${truncatedDescription}</p>
+                        <p>⭐ ${repo.stars}</p>
+                    `;
+                    container.appendChild(repoEl);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error)
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchRepositories);
+</script>
+
 {% endblock %}

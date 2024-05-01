@@ -1,9 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
-    mobScreen();
-    filterVenue(); // Call it once to apply initial filter based on default or URL parameters
+    toggleDisplayBasedOnScreenWidth();
+    // mobScreen();
+    filterVenue();
     datePickerForm()
 });
 
+function toggleDisplayBasedOnScreenWidth() {
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    if (screenWidth < 550) {
+        document.getElementById("venue_cal_PcDiv").style.display = "none";
+        document.getElementById("venue_cal_MobDiv").style.display = "block";
+    } else {
+        document.getElementById("venue_cal_PcDiv").style.display = "block";
+        document.getElementById("venue_cal_MobDiv").style.display = "none";
+    }
+}
 
 function datePickerForm() {
     // Adjust the selector to target the specific form by ID
@@ -16,22 +27,6 @@ function datePickerForm() {
             const actionURL = `/venue_cal_single_day/${date}`;
             window.location.href = actionURL;
         });
-    }
-}
-
-
-
-function mobScreen() {
-    let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    if (screenWidth < 550)
-    {
-        document.getElementById("venue_cal_PcDiv").style.display = "none";
-        document.getElementById("venue_cal_MobDiv").style.display = "block";
-    }
-    else
-    {
-        document.getElementById("venue_cal_PcDiv").style.display = "block";
-        document.getElementById("venue_cal_MobDiv").style.display = "none";
     }
 }
 
@@ -48,23 +43,23 @@ function filterVenue() {
     console.log("Selected Venue:", selectedVenue)
     console.log("Selected Date:", selectedDate)
 
-    // Select all properties (venues, events)
+    // velg ALLE properties (venues, events)
     const venues = document.querySelectorAll('[id^="venue-info-"]');
     console.log("Total Venues Found:", venues.length);
     const events = document.querySelectorAll('[id^="event-info-"]');
     console.log("Total Events Found:", events.length);
 
 
-    // Initially hide all venues & events.
+    // utgangspunkt - hide alle venues & events
     venues.forEach(venue => venue.style.display = 'none');
     events.forEach(event => event.style.display = 'none');
 
-    // If ID -> show venue.id OR if "All -> show all venues
+    // hvis ID -> show venue.id ELLER hvis "All -> show all venues
     venues.forEach(function (venue) {
         let venueId = venue.getAttribute('id').replace('venue-info-', '');
         console.log("Checking Venue ID:", venueId);
 
-        // Show venue if "all" is selected OR if venue matches selection
+        // Vis venue hvis "all" er selected ELLER hvis venue matcher selection
         if (selectedVenue === 'all' || venueId === selectedVenue) {
             console.log("Displaying Venue ID:", venueId); // Debugging log
             venue.style.display = 'block';
@@ -85,3 +80,15 @@ function filterVenue() {
         }
     });
 }
+
+
+
+document.querySelectorAll('.datePickerForm').forEach(form => {
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const startDate = form.querySelector('[name="start"]').value;
+        const endDate = form.querySelector('[name="end"]').value;
+        const actionURL = `/venue_calendar?start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(endDate)}`;
+        window.location.href = actionURL;
+    });
+});

@@ -87,8 +87,13 @@ class EventDay:
                                event.datetime >= current_time and event.datetime < block_end_time]
 
             for event in events_in_block:
-                event_duration = (event.datetimeEnd - event.datetime).total_seconds() / 60
-                event.rowspan = int(event_duration // time_blocks_duration)
+                if event.datetimeEnd:
+                    event_duration = (event.datetimeEnd - event.datetime).total_seconds() / 60
+                    event.rowspan = int(event_duration // time_blocks_duration)
+                else:
+                    # Assuming a default duration if event.datetimeEnd is None
+                    default_duration = 60  # Default duration in minutes
+                    event.rowspan = int(default_duration // time_blocks_duration)
 
             self.time_blocks.append({
                 "start": current_time,

@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, url_for, flash
+import requests
+from flask import Flask, render_template, request, url_for, flash, jsonify
 
 from utility.rout_funcs import a_venue_calendar_routs
 from flask_session import Session
@@ -116,7 +117,7 @@ def venue_booking_exam():
     return ven_book_routs.venue_booking_exam_function(date, day, time, venue_id,)
 
 
-@app.route('/venue_cal_single_day/<date>')
+@app.route('/venue_cal_single_day/<date>', methods=['GET'])
 @login_required(roles=["teacher", "admin"])
 def venue_cal_single_view(date):
     return ven_routs.venue_cal_single_day(date)
@@ -181,21 +182,25 @@ def see_assignments(assignment_id):
 @app.route("/conf_assignment", methods=["GET", "POST"])
 @login_required(roles=["teacher", "admin"])
 def conf_assignment():
-    print("Recieved data:", request.form)
+    # print("Recieved data:", request.form)
     return ass_routs.conf_assignment_function()
 
-@app.route("/api/assignment/<int:id>")
-@login_required(roles=None)
-def api_assignment_id(id):
-    return api_1.api_assignment_id_function(id)
 
 
 @app.route("/Assignment/<int:id>", methods=["GET", "POST"])
 @login_required(roles=None)
 def assignment_id(id):
-    print(f"\n\t ➡️ Request method: {request.method}, ID: {id}")
+    """Results (assignment.link) from DELETE / PUT"""
+    # print(f"\n\t ➡️ Request method: {request.method}, ID: {id}")
     return ass_routs.assignment_id_function(id)
 
+
+
+@app.route("/api/assignment/<int:id>")
+@login_required(roles=None)
+def api_assignment_id(id):
+    """Results (assignment.link) from POST"""
+    return api_1.api_assignment_id_function(id)
 
 @app.route("/Assignment")
 @login_required(roles=None)
@@ -209,29 +214,10 @@ def assignment():
 @login_required(roles=['teacher', 'admin'])
 def select_assignment(action):
     assignments = ass_routs.assignment_getAll_function()
-    print("Assignments:", assignments)
     return render_template('admin/assignment/select_assignment.html', assignments=assignments, action=action)
 
 
-@app.route('/admin_assignment/manage/<int:id>/<action>', methods=['POST'])
-@login_required(roles=['teacher', 'admin'])
-def manage_assignment(id, action):
-    if action == 'update':
-        result = ass_routs.assignment_update_function(id, request.form)
-    elif action == 'delete':
-        result = ass_routs.assignment_delete_function(id)
-
-    print("Result from function:", result)  # Add this line to debug
-
-    if result['status'] == 'success':
-        # Redirect to a confirmation page with details
-        return redirect(url_for('admin/assignment/deleteOrUpdateConf.html', id=id, action=action))
-    else:
-        # Handle errors or redirect back to the list with a flash message
-        flash('Failed to process your request.', 'error')
-        return redirect(url_for('select_assignment'))
-
-
+"""
 @app.route('/confirmation_page/<int:id>/<action>')
 @login_required(roles=['teacher', 'admin'])
 def confirmation_page(id, action):
@@ -239,7 +225,7 @@ def confirmation_page(id, action):
     assignment_details = ass_routs.assignment_id_function(id)
     return render_template('admin/assignment/deleteOrUpdateConf.html', assignment=assignment_details, action=action)
 
-
+"""
 @app.route('/admin_assignment/update/<int:id>', methods=['GET', 'POST'])
 @login_required(roles=['teacher', 'admin'])
 def update_assignment(id):
@@ -470,3 +456,34 @@ def page_not_found(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     return err_handl.internal_server_error_function(error)
+
+# ----------------------------------------------------
+# ---------------- EKSTERNT --------------------------
+# ----------------------------------------------------
+
+
+@app.route('/student_resources/daily', methods=["GET"])
+@login_required(roles=None, )
+def get_daily_resource():
+    url = "https://api.github.com/search/repositories"
+    query = "backend+language:python"
+    params = {
+        "q": query,
+        "sort": "stars",
+        "order": "desc"
+    }
+    headers = {
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.get(url, headers=headers, params=params)
+
+    data = response.json()
+
+    repositories = [{
+        'name': repo['name'],
+        'url': repo['html_url'],
+        'description': repo['description'],
+        'stars': repo['stargazers_count'],
+    } for repo in data['items']]
+
+    return jsonify(repositories)

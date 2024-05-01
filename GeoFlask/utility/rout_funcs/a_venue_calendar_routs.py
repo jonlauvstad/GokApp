@@ -18,22 +18,27 @@ def venue_calendar_function():
         return render_template("error.html", message="You are not logged in.")
     headers = {"Authorization": f"Bearer {token}"}
 
-    # DATES-LOGIC
+    # get start & end dates
     start_date_str = request.args.get('start')
-    if start_date_str:
-        start_date = parser.parse(start_date_str).date()
-    else:
-        start_date = datetime.now().date()
+    end_date_str = request.args.get('end')
 
-    num_days = request.args.get('num_days', default=7, type=int)
-    from_date = start_date
-    to_date = from_date+timedelta(days=num_days)
+    if start_date_str:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%dT%H:%M")
+    else:
+        start_date = datetime.now()
+
+    if end_date_str:
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%dT%H:%M")
+    else:
+        end_date = start_date + timedelta(days=7)
+
 
     # get venues and events
     venues = fetch_venues(headers)
-    events = fetch_events(headers, from_date=from_date.isoformat(), to_date=to_date.isoformat())
+    events = fetch_events(headers, from_date=start_date.isoformat(), to_date=end_date.isoformat())
 
     # Genererer "days" med "events" + weekend logic
+    num_days = (end_date - start_date).days + 1
     days = []
     for i in range(num_days):
         day_date = start_date + timedelta(days=i)
@@ -44,21 +49,19 @@ def venue_calendar_function():
 
     # Date-formater ..
     today = start_date.strftime("%Y-%m-%d")
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
     current_day = datetime.now().date().strftime("%a %d.%b")
-
-    # debugging
-    # print("EVENTS_______________\n", events)
 
     return render_template("venue_calendar.html",
                            user=user,
                            events=events,
                            venues=venues,
                            days=days,
-                           num_days=num_days,
                            today=today,
+                           tomorrow=tomorrow,
                            current_day=current_day,
                            start_date=start_date.strftime("%Y-%m-%dT%H:%M"),
-                           end_date=to_date.strftime("%Y-%m-%dT%H:%M"))
+                           end_date=end_date.strftime("%Y-%m-%dT%H:%M"))
 
 
 def venue_cal_single_day(date_str):
