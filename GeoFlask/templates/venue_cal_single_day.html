@@ -17,7 +17,7 @@
         </div>
 
 
-        <!-- SINGLE DAY DATE PICKER -->
+        <!-- SINGLE DAY DATE PICKER
         <div class="form-container">
             <form action="/single_day_view" method="get">
                 <label for="singleDay"></label>
@@ -27,7 +27,10 @@
 
             </form>
 
-            <a style="width: 100px;" class="submit-button" href="/venue_calendar">Vis flere dager</a>
+        </div> -->
+
+        <div class="form-container">
+            <a style="width: 100px; " class="submit-button" href="/venue_calendar">Vis flere dager</a>
         </div>
 
         <table style="table-layout: fixed; width: 100%; border-collapse: collapse;">
@@ -35,9 +38,8 @@
             <tr>
                 <td style="width: 100px"></td>
                 {% for venue in venues %}
-                    <td style="border: 1px solid #ddd; padding: 8px; background-color: yellowgreen">
-                        <b>{{ venue.name }}</b>
-                        <p>Kapasitet: {{ venue.capacity }}</p>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: yellowgreen;">
+                        <b><a style="text-decoration: none" href="{{ url_for('venue_id', id=venue.id) }}"> {{ venue.name }} </a></b>
                     </td>
                 {% endfor %}
             </tr>

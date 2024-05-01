@@ -10,6 +10,8 @@ from ..assignment import Assignment
 
 URLpre = configuration["URLpre"]
 logging.basicConfig(level=logging.DEBUG)
+MAX_LENGTH = 50
+
 
 # URLpre = "https://localhost:7042/api/v1/"
 
@@ -27,7 +29,7 @@ def api_call(url, method='get', headers=None, json=None):
         else:
             response = requests.get(url, headers=headers)
 
-        response.raise_for_status()  # Raises HTTPError for bad responses
+        response.raise_for_status()
         return response.json()
     except RequestException as e:
         logging.error(f"\n\tℹ️ API_CALL: Failed to {method} data: {str(e)}")
@@ -74,7 +76,7 @@ def template_assignment_function(put=None, try_delete=None):
             put, try_delete, option = None, None, None
 
     logging.debug("\n\t✅ TEMPLATE_ASSIGNMENT_FUNCTION: Exiting with rendered template.")
-    return render_template("admin/assignment/add_assignment.html",
+    return render_template("admin/assignment/manage_assignment.html",
             user=user, options=options, courseImps=courseImplementations,
             put=put, assignment=assignment, try_delete=try_delete,
             option=option, error_msg=error_msg)
@@ -83,7 +85,7 @@ def template_assignment_function(put=None, try_delete=None):
 def conf_assignment_function():
     logging.debug("\n\tℹ️ Entering CONF_ASSIGNMENT_FUNCTION")
     user = session["user"]
-    action = request.form.get("action")
+    action = request.form.get("action", "")[:MAX_LENGTH]
     logging.info(f"\n\t✅ CONF_ASSIGNMENT_FUNCTION: Action received: {action}")
 
     match action:
@@ -134,7 +136,7 @@ def conf_assignment_function():
         error_message = response.json() if response else str(e)
         logging.error("\n\t❌ CONF_ASSIGNMENT_FUNCTION: Failed to create assignment %s", str(e))
         flash(f"Error: {error_message}", 'error')
-        return render_template("admin/assignment/add_assignment.html", user=user, form_data=request.form)
+        return render_template("admin/assignment/manage_assignment.html", user=user, form_data=request.form)
 
 
 def assignment_id_function(id):
@@ -186,6 +188,9 @@ def assignment_id_function(id):
                     dic['courseImplementationLink'],
                     dic['link']))
     return render_template("admin/assignment/assignment.html", user=user, assignment=assignment, headl_prefix=headl_prefix)
+
+
+
 
 def assignment_getAll_function():
     courseImpId = request.args.get("courseImpId")

@@ -17,28 +17,25 @@
             <label style="font-size: 30px; "><b>Rom-kalender 🚪</b></label>
         </div>
 
-
-
-        <form action="/set_date" method="post" style="padding-left: 100px">
+        <form action="/venue_calendar" method="get" style="padding-left: 100px">
             <label for="startDateTime">Start:</label>
-            <input type="datetime-local" id="startDateTime" name="startDateTime" value="{{ start_date|default('', true) }}">
+            <input type="datetime-local" id="startDateTime" name="start" value="{{ start_date }}">
 
             <label for="endDateTime">End:</label>
-            <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ end_date|default('', true) }}">
+            <input type="datetime-local" id="endDateTime" name="end" value="{{ end_date }}">
 
             <button style="width: 120px; font-size: 15px;" type="submit">Sett dato</button>
-
-            <a href="/add_lecture_one" class="venues_button-add">Ny forelesning</a>
         </form>
+
 
         <table style="table-layout: fixed; width: 100%; border-collapse: collapse;">
             <!-- VENUES -->
             <tr>
                 <td style="width: 100px"></td>
                 {% for venue in venues %}
-                    <td style="border: 1px solid #ddd; padding: 8px; background-color: yellowgreen">
-                        <b>{{ venue.name }}</b>
-                            <p>Kapasitet: {{ venue.capacity }}</p>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: yellowgreen;">
+                        <b><a style="text-decoration: none" href="{{ url_for('venue_id', id=venue.id) }}"> {{ venue.name }} </a></b>
+                            <!-- <p>Kapasitet: {{ venue.capacity }}</p> -->
                     </td>
                 {% endfor %}
             </tr>
@@ -81,18 +78,17 @@
             <label style="font-size: 30px; "><b>Rom-Kalender</b></label>
         </div>
 
-        <!-- DATE PICKER -->
-        <form action="/set_date" method="post" style="margin-bottom: -20px">
-            <label class="venues_label" for="startDateTime">Start-tid:</label>
-            <input type="datetime-local" id="startDateTime" name="startDateTime" value="{{ start_date|default('', true) }}">
+        <!-- DATE PICKER FOR MOB DIV -->
+        <form action="/venue_calendar" method="get" style="margin-bottom: -20px">
+            <label class="venues_label" for="mobStartDateTime">Start-tid:</label>
+            <input type="datetime-local" id="mobStartDateTime" name="start" value="{{ start_date }}">
 
-            <label class="venues_label" for="endDateTime">Slutt-tid:</label>
-            <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ end_date|default('', true) }}">
+            <label class="venues_label" for="mobEndDateTime">Slutt-tid:</label>
+            <input type="datetime-local" id="mobEndDateTime" name="end" value="{{ end_date }}">
 
             <input type="date" id="filterDate" name="filterDate" onchange="filterVenue()" hidden>
 
             <button style="width: 100%; font-size: 15px;" type="submit">Sett dato</button>
-
         </form>
 
         <!-- VENUE DROPDOWN MENY -->
