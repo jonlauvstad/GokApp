@@ -137,17 +137,20 @@
 </style>
 
 <script>
-
-
+    // Konverterer 'courseImps' fra Jinja til JSON for bruk i JavaScript.
     const courseImps = '{{courseImps|tojson}}';
 
+    // Initialiserer en variabel for å sjekke om handlingen er å slette.
     let try_delete = false;
     {% if try_delete %} try_delete = true; {% endif %}
 
+    // Setter opp når dokumentet er lastet.
     document.addEventListener("DOMContentLoaded", () =>{
+
+        // Hvis handlingen er slette, deaktiverer visse inndatafelt og endrer knappen til "Slett".
         if (try_delete){
             document.querySelectorAll("select").forEach((elm)=>{
-                if (elm.id !== "regChangeDeleteSelect" && elm.id !== "courseIdSelect"){
+                if (elm.id !== "crudActionSelect" && elm.id !== "courseIdSelect"){
                     elm.disabled = true;
                 }
 
@@ -161,21 +164,22 @@
             document.getElementById("registerButt").innerHTML= "Slett!"
         }
 
-        {% if put %} history.pushState({}, '', '/template_assignment'); {% endif %}
+        // Legger til nettleserhistorikk ved behov.
+       {% if put %} history.pushState({}, '', '/template_assignment'); {% endif %}
 
     });
 
     console.log("\n\tℹ️ Defining popUp function");
 
+    // Håndterer popup-vinduet basert på valgt handling.
     function popUp(event){
-
         choice = event.target.value;
-
         const popupDiv = document.getElementById("popup");
         if (["endre", "slette"].includes(choice)){
             popupDiv.style.display = "block";
             document.getElementById('popupError').innerHTML = "";
 
+            // Gjør selekter og input felter ikke obligatoriske når popup vises.
             document.querySelectorAll("select").forEach((elm)=>{
                 elm.required = false;
             });
@@ -186,6 +190,7 @@
         else{
             popupDiv.style.display = "none";
 
+            // Gjør selekter og input felter obligatoriske igjen.
             document.querySelectorAll("select").forEach((elm)=>{
                 elm.required = true;
                 elm.disabled = false;
@@ -195,7 +200,7 @@
                 elm.disabled = false;
             });
 
-            // sette forms action til /conf_exam
+            // Oppdaterer skjemaets action og metode for ny registrering. - /conf_assignment
             const theForm = document.getElementById("theForm");
             theForm.setAttribute("action", "/conf_assignment");
             theForm.setAttribute("method", "post");
@@ -207,7 +212,7 @@
 
     function getAssignmentById(){
         // Sjekke at har fått tall
-        const action = document.getElementById("regChangeDeleteSelect").value;
+        // const action = document.getElementById("crudActionSelect").value;
         const assignmentId = Number(document.getElementById("assignmentIdInput").value);
         if (assignmentId===0){
             document.getElementById("\n\t❌ popupError").innerHTML = "Du må oppgi et arbeidskrav-id.";
@@ -247,7 +252,7 @@
     }
 
     function getAssignmentsByCourseImpId(){
-        const action = document.getElementById("regChangeDeleteSelect").value;
+        const action = document.getElementById("crudActionSelect").value;
         const courseImpId = document.getElementById("courseIdSelect").value;
         const anchor = document.getElementById("searchA");
         console.log(action, courseImpId, anchor.innerHTML);
@@ -256,7 +261,7 @@
     }
 
     function hidePopup(){
-        selectOptionByValue("regChangeDeleteSelect", "registrére");
+        selectOptionByValue("crudActionSelect", "registrére");
         document.getElementById("popup").style.display = "none";
 
         document.querySelectorAll("select").forEach((elm)=>{
@@ -277,33 +282,6 @@
         }
     }
 
-     function updateCourseStartEnd(){
-        const courseImpId = Number(document.getElementById("courseIdFormSelect").value);
-        const courseImpArray = courseImps.filter(item => item.id === courseImpId);
-        const courseImp = courseImpArray[0];
-
-        const startElm = document.getElementById("startInput");
-        startElm.value = courseImp.startDate;
-        startElm.min = courseImp.startDate;
-        const endElm = document.getElementById("endInput");
-        endElm.value = courseImp.endDate;
-        endElm.max = courseImp.endDate;
-
-        console.log(endElm.value);
-      }
-
-      function updateEndByStart(event){
-        const minVal = event.target.value;
-        const endElm = document.getElementById("endInput");
-        endElm.min = minVal;
-        console.log("minVal:", minVal);
-      }
-
-      function updateStartByEnd(event){
-        const maxVal = event.target.value;
-        const startElm = document.getElementById("startInput");
-        startElm.max = maxVal;
-      }
 
 
     function navigate(url) {
@@ -318,13 +296,13 @@
 
 <div style="position:relative">
 
-<form id="theForm"   method="post"  {% if put %} action="{{assignment.link}}" {% else %} action="/conf_assignment"{% endif %}>
+<form id="theForm" method="post" {% if put %} action="{{assignment.link}}" {% else %} action="/conf_assignment"{% endif %}>
     <table id="specTable">
         <tr>
             <!-- Popup -->
             <td class="leftColumn">Handling:</td>
             <td class="rightColumn">
-                <select id="regChangeDeleteSelect" onchange="popUp(event)" name="action" required>
+                <select id="crudActionSelect" onchange="popUp(event)" name="action" required>
                     {% for opt in options %}
                         <option {% if opt==option %} selected {% endif %} value="{{opt}}">{{opt}}</option>
                     {% endfor %}
