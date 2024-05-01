@@ -1,6 +1,8 @@
-from flask import request, session, abort
+from flask import request, session, abort, jsonify
 import requests
 from datetime import datetime
+
+from ..assignment import Assignment
 from ..config import configuration
 from ..venue import Venue
 from ..exam import Exam
@@ -79,3 +81,34 @@ def api_exam_id_function(id):
         "err_msg": f"Kunne ikke finne eksamen med id {id}."
     }
 
+
+def api_assignment_id_function(id):
+    url_ext = f"assignment/{id}"
+    url = URLpre + url_ext
+
+    headers = {"Authorization": f"Bearer {session['token']}"}
+    response = requests.get(url, verify=False, headers=headers)
+    if response.ok:
+        dic = response.json()
+        assignment = Assignment(
+            id=dic.get('id'),
+            name=dic.get('name'),
+            description=dic.get('description', 'No description provided'),
+            deadline=dic.get('deadline', 'No deadline provided'),
+            mandatory=dic.get('mandatory', False),
+            courseImplementationId=dic.get('courseImplementationId'),
+            courseImplementationCode=dic.get('courseImplementationCode', 'No Code'),
+            courseImplementationName=dic.get('courseImplementationName', 'No Course Name'),
+            courseImplementationLink=dic.get('courseImplementationLink', 'No Link'),
+            link=dic.get('link', 'No Link')
+        )
+        if request.args.get("save"):
+            session['assignment'] = assignment
+        if assignment:
+            return jsonify(assignment.serialize())
+        else:
+            return jsonify({"error": "Assignment not found"}), 404
+    print(response.status_code, response.text)
+    return {
+        "err_msg": f"Kunne ikke finne arbeidskarv med id {id}."
+    }
