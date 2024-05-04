@@ -24,14 +24,14 @@ def lecture_id_function(id):
 
     if (request.method == "GET"):
         response = requests.get(url, verify=False, headers=headers)
-        # Håndtere response.ok
+
     else:
         to_do = request.form.get("to_do")
         if to_do == "DELETE":
             to_do = "SLETTET "
             deleted = True
             response = requests.delete(url, verify=False, headers=headers)
-            # Håndtere response.ok
+
         elif to_do == "PUT_EXECUTE":
             to_do = "ENDRET "
             courseId = request.form.get("courseId")
@@ -52,10 +52,9 @@ def lecture_id_function(id):
             }
 
             response = requests.put(url, verify=False, headers=headers, json=data)
-            # Håndtere response.ok
+
         else:
-            # SKAL NÅ CALLLE add_lecture_one_function()
-            return admin_routs.add_lecture_one_function(put=id)    # put=int(to_do)
+            return admin_routs.add_lecture_one_function(put=id)
 
     if response.ok:
         as_dic = response.json()
@@ -79,9 +78,6 @@ def lecture_id_function(id):
                "Standardmelding:\n"
                "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.\n"
                "not_sorry")
-    # msg = f"Statuskode: {response.status_code}"
-    # return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
-
 def lecture_search_result_function():
     user = session['user']
 

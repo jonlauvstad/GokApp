@@ -175,14 +175,12 @@ def get_success():
 @app.route("/implementation_assignment/delete/<int:assignment_id>")
 @login_required(roles=["teacher", "admin"])
 def see_assignments(assignment_id):
-    # return exImp_routs.examImp_delete(exam_id)
     return redirect(f"/Assignment/{assignment_id}")
 
 
 @app.route("/conf_assignment", methods=["GET", "POST"])
 @login_required(roles=["teacher", "admin"])
 def conf_assignment():
-    # print("Recieved data:", request.form)
     return ass_routs.conf_assignment_function()
 
 
@@ -191,7 +189,6 @@ def conf_assignment():
 @login_required(roles=None)
 def assignment_id(id):
     """Results (assignment.link) from DELETE / PUT"""
-    # print(f"\n\t ➡️ Request method: {request.method}, ID: {id}")
     return ass_routs.assignment_id_function(id)
 
 
@@ -360,7 +357,6 @@ def implementation_exam():
 @app.route("/implementation_exam/delete/<int:exam_id>")
 @login_required(roles=["teacher", "admin"])
 def implementation_exam_see(exam_id):
-    # return exImp_routs.examImp_delete(exam_id)
     return redirect(f"/ExamImplementation/Exam/{exam_id}")
 
 @app.route("/implementation_exam/register/<int:exam_id>")

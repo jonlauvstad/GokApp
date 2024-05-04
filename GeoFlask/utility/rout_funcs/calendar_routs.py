@@ -3,7 +3,6 @@ import requests
 from datetime import datetime, timezone
 from dateutil import parser
 from ..config import configuration
-# from ..user import User
 from ..event_day import EventDay
 from ..event import Event
 
@@ -12,9 +11,6 @@ URLpre = configuration["URLpre"]      #"https://localhost:7042/api/v1/"
 
 
 def calendar_function():
-    # if "user" not in session or datetime.now() > session['token_expiration_dt']:        # timezone.utc
-    #     session.clear()
-    #     return redirect("/")      # login_required ERSTATTER DENNE OG DE TO LINJENE OVER!
     user = session["user"]
 
     start_date = request.args.get('start')

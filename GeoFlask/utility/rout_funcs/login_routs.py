@@ -6,15 +6,15 @@ from ..config import configuration
 from ..user import User
 
 
-URLpre = configuration["URLpre"]      #"https://localhost:7042/api/v1/"
+URLpre = configuration["URLpre"]
 
 def login_function():
     gokstadmail = request.form.get("gokstadmail")
     password = request.form.get("password")
 
     data = {
-        "GokstadEmail": gokstadmail,    # "nora.moe@gokstadakademiet.no",   johannes.andersen@gokstadakademiet.no, MZHlhk54 (1)
-        "Password": password,           # "POGxar99"                        ole.larsen@gokstadakademiet.no, UQTyho81 (10)
+        "GokstadEmail": gokstadmail,
+        "Password": password,
     }
 
     url_ext = "login"
@@ -28,10 +28,8 @@ def login_function():
 
     token = response.text
     decoded_token = jwt.decode(token, options={'verify_signature': False})
-    # print(decoded_token)
 
     expiration = decoded_token['exp']
-    # expiration_datetime = datetime.utcfromtimestamp(expiration)
     expiration_datetime = datetime.fromtimestamp(expiration)
     gokmail = decoded_token["gokstademail"]
     first = decoded_token["firstname"]

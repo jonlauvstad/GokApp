@@ -47,7 +47,6 @@ def add_lecture_one_function(put=None, prefill=None):
     response = requests.get(url, verify=False, headers=headers)
     if response.ok:
         as_lOfdics = response.json()
-        # as_lOfdics = response.text
 
         url_ext2 = "venue"
         url2 = URLpre + url_ext2
@@ -61,7 +60,6 @@ def add_lecture_one_function(put=None, prefill=None):
             # Make Api call to get the lecture to fill in values
             put_ext = f"lecture/{put}"
             url_put = URLpre + put_ext
-            print("PUT-URL:", url_put)
             response = requests.get(url_put, verify=False, headers=headers)
             if response.ok:
                 as_dic = response.json()
@@ -130,12 +128,12 @@ def search_lecture_function():
     url_ext_course = "CourseImplementation"
     url_course = URLpre + url_ext_course
     now = datetime.datetime.now().isoformat()
-    response = requests.get(url_course, verify=False, headers=headers, params={"startDate": now})
+    response = requests.get(url_course, verify=False, headers=headers, params={"endDate": now})   # "startDate": now
     if not response.ok:
         msg = f"Statuskode: {response.status_code}"
         return render_template("error.html", user=user, msg=msg, status=int(response.status_code))
     courseImps = response.json()
-    courseImps.sort(key=lambda x: x['name'])
+    courseImps.sort(key=lambda x: x['id'])
 
     # Venue-context:
     url_ext_venue = "Venue"

@@ -17,7 +17,6 @@ def venue_id_function(id):
         abort(404)
 
     dic = response.json()
-    # return dic
     return render_template("venue.html", venue=dic, user=user)
 
 def venue_admin_function():
@@ -99,7 +98,6 @@ def venue_update_function(id):
 
         return render_template("venue_update.html", user=user, venue=dic, locations=locations)
 
-    # POST: returnere "venue.html" headl_prefix="ENDRET "
     name = request.form.get("name")
     description = request.form.get("description")
     locationId = request.form.get("locationId")
@@ -123,10 +121,6 @@ def venue_update_function(id):
         abort(404)
     dic = response.json()
     return render_template("venue.html", venue=dic, user=user, headl_prefix="ENDRET ")
-    # return {
-    #     "URL": url,
-    #     "Date": data
-    # }
 
 
 def venue_delete_function(id):

@@ -13,8 +13,6 @@ logging.basicConfig(level=logging.DEBUG)
 MAX_LENGTH = 50
 
 
-# URLpre = "https://localhost:7042/api/v1/"
-
 def admin_assignment_function():
     user = session["user"]
     return render_template("admin/assignment/assignment_main.html", user=user)

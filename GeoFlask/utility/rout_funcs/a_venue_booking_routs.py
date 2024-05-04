@@ -23,7 +23,6 @@ def venue_booking_lecture_function(day, date, time, venue_id):
     prefill = Prefill(venue_id, start_date=date, end_date=None, with_time=time)
 
     return admin_routs.add_lecture_one_function(prefill=prefill) # må legge til context argument som må reflekteres i funksjonen
-    # return render_template("venue_booking_lecture.html", user=user, day=day, date=date, time=time, venue_details=venue_details, venue_id=venue_id)
 
 
 def venue_booking_exam_function(day, date, time, venue_id):
